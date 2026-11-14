@@ -3,8 +3,8 @@ import type { ReactNode } from "react";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Verdict Earth | Karachi Temperature",
-  description: "Investigate Karachi’s long-term temperature trend using NASA POWER reanalysis.",
+  title: "Verdict Earth | Sindh Temperature Trends",
+  description: "Investigate temperature trends across Sindh and test how the estimates change with method and period.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

@@ -119,3 +119,84 @@ ul.data-list { list-style: none; padding: 0; max-height: 240px; overflow: auto; 
   .methods { padding-block: 28px; }
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+.regional-hero { padding: 64px 0 44px; }
+.regional-hero h1 { margin: 12px 0 16px; font-size: clamp(3.35rem, 8vw, 7rem); line-height: .95; letter-spacing: -.082em; font-weight: 725; }
+.regional-hero h1 span { color: var(--accent); }
+.hero-mission { color: #c1d0d2; font-size: clamp(1rem, 2.35vw, 1.24rem); }
+.hero-facts { display: flex; flex-wrap: wrap; gap: 7px 21px; margin-top: 22px; color: var(--muted); font: .73rem/1.5 var(--mono); }
+.hero-facts span + span::before { content: "·"; margin-right: 12px; color: var(--accent); }
+.regional-section, .stress-section { padding-bottom: 35px; }
+.section-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 10px 24px; flex-wrap: wrap; margin-bottom: 13px; }
+.section-heading h2 { font-size: clamp(1.6rem, 4vw, 2.35rem); }
+.section-heading p { color: var(--muted); font-size: .91rem; }
+.regional-grid { display: grid; grid-template-columns: minmax(0, 2.45fr) minmax(0, 1fr); gap: 15px; }
+.geo-panel, .location-card, .controls, .stress-evidence, .source-detail { padding: 19px 23px; min-width: 0; }
+.geo-panel figcaption { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 14px; }
+.geo-panel figcaption span, .location-coordinate { color: var(--muted); font: .76rem/1.5 var(--mono); }
+.plot { position: relative; height: 250px; margin: 14px 0 3px; border: 1px solid #2a414b; border-radius: 9px; background: radial-gradient(ellipse at 40% 60%, #193039, #0d1a23 75%); }
+.plot-grid { position: absolute; inset: 9% 12% 13% 11%; }
+.latitude, .longitude { position: absolute; color: #a0b3bc; font: .64rem/1 var(--mono); }
+.latitude { left: 0; width: 100%; border-top: 1px solid #2c414b; }
+.latitude b { position: absolute; left: -5px; transform: translate(-100%, -50%); font-weight: 500; white-space: nowrap; }
+.longitude { top: 0; height: 100%; border-left: 1px solid #2c414b; }
+.longitude b { position: absolute; bottom: -14px; transform: translateX(-50%); font-weight: 500; white-space: nowrap; }
+.site-point { position: absolute; z-index: 1; width: 27px; height: 27px; transform: translate(-50%, -50%); display: grid; place-items: center; cursor: pointer; }
+.site-point:hover, .site-point:focus-visible, .site-point[aria-pressed=true] { z-index: 2; }
+.site-point i { width: 9px; height: 9px; border-radius: 50%; background: currentColor; box-shadow: 0 0 0 2px #0b1721; }
+.site-point:hover i, .site-point[aria-pressed=true] i { box-shadow: 0 0 0 2px #0b1721, 0 0 0 4px currentColor; }
+.point-label { position: absolute; font-size: .72rem; color: var(--ink); font-weight: 640; white-space: nowrap; left: 22px; top: 3px; line-height: 1.15; text-shadow: 0 1px 4px #09131a, 0 0 3px #09131a; pointer-events: none; }
+.point-label.label-left { left: auto; right: 21px; }
+.point-label.label-low { top: 14px; }
+.geo-legend { display: flex; gap: 6px 16px; flex-wrap: wrap; color: var(--muted); font: .67rem/1.5 var(--mono); }
+.geo-legend span { display: inline-flex; align-items: center; gap: 7px; }
+.geo-legend i { display: inline-block; width: 7px; height: 7px; border-radius: 50%; }
+.location-card h3 { font-size: clamp(1.65rem, 4vw, 2.7rem); letter-spacing: -.06em; font-weight: 700; line-height: 1.15; margin: 8px 0 4px; }
+.selected-meta { margin-block: 14px 10px; }
+.selected-meta div { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; padding: 7px 0; gap: 2px 10px; border-top: 1px solid var(--line); }
+.selected-meta dt { color: var(--muted); font-size: .76rem; overflow-wrap: anywhere; }
+.selected-meta dd { font: .77rem/1.35 var(--mono); overflow-wrap: anywhere; }
+.location-note { color: #f4bc83; font-size: .82rem; }
+.select-label { display: block; margin-top: 14px; color: var(--muted); font-size: .8rem; }
+.select-label select { display: block; width: 100%; margin-top: 5px; padding: 8px 10px; border: 1px solid #39525c; border-radius: 6px; background: #0d1820; color: var(--ink); font-size: .87rem; }
+.controls { display: flex; flex-wrap: wrap; gap: 14px 24px; justify-content: space-between; margin-bottom: 15px; }
+.controls fieldset { padding: 0; border: 0; margin: 0; min-width: 0; }
+.controls legend { color: var(--muted); font: .7rem/1.4 var(--mono); margin-bottom: 7px; }
+.button-group { display: flex; flex-wrap: wrap; gap: 6px; }
+.button-group button, .download-result { padding: 7px 10px; border: 1px solid #3b545e; border-radius: 6px; color: #c6d3d6; background: #0e1920; font-size: .82rem; cursor: pointer; }
+.button-group button:hover, .download-result:hover { border-color: var(--accent); color: var(--accent); }
+.button-group button[aria-pressed=true] { border-color: #67b7a8; background: #1b3939; color: #a4f5e1; }
+button:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.stress-section .chart-panel h3, .stress-evidence h3, .source-detail h3 { margin-top: 4px; font-size: 1.25rem; letter-spacing: -.03em; font-weight: 680; }
+.active-meta { margin-top: 23px; }
+.active-conclusion { color: #b8d2ce; font-size: .83rem; }
+.legend-peer { border-top-color: #f4bc83; }
+.stress-evidence { margin-top: 15px; }
+.stress-evidence > p, .source-detail p, .peer-summary p { margin-top: 7px; color: var(--muted); font-size: .9rem; }
+.stress-evidence .active-estimate { color: #b1f3e1; }
+.stress-evidence .evidence-summary { margin-top: 14px; max-width: 72ch; }
+.evidence-summary strong, .peer-summary strong { color: var(--ink); font-weight: 650; }
+.peer-summary { margin-top: 15px; border-top: 1px solid var(--line); padding-top: 12px; }
+.peer-summary h4 { color: #f4bc83; font-weight: 640; }
+.provenance-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 15px; }
+.source-detail ul { list-style: disc; padding-left: 18px; color: var(--muted); font-size: .9rem; margin-top: 9px; }
+.source-detail li + li { margin-top: 8px; }
+.source-links { display: flex; flex-wrap: wrap; gap: 7px 18px; margin-top: 12px; }
+.source-links a { font-size: .8rem; color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+.giovanni-panel { margin-top: 15px; }
+.annual-details { margin-top: 12px; color: var(--muted); font-size: .82rem; }
+.annual-details summary { cursor: pointer; }
+.annual-details ol { padding: 5px 0 0; list-style: none; max-height: 220px; overflow: auto; }
+.annual-details li + li { margin-top: 0; }
+
+@media (max-width: 680px) {
+  .regional-hero { padding: 37px 0 30px; }
+  .hero-facts { gap: 5px 10px; }
+  .hero-facts span + span::before { margin-right: 6px; }
+  .regional-grid, .provenance-grid { grid-template-columns: minmax(0,1fr); }
+  .geo-panel, .location-card, .controls, .stress-evidence, .source-detail { padding: 15px; }
+  .plot { height: 245px; }
+  .point-label { font-size: .65rem; }
+  .geo-legend { gap: 4px 10px; }
+  .controls { gap: 12px; }
+}
