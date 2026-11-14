@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
-import { identify, pointerPoint, searchPlaces, tileKey } from "../app/scan-geography.ts";
+import { identify, pointerPoint, searchedPlaceLabel, searchPlaces, tileKey } from "../app/scan-geography.ts";
 
 const assets = new URL("../public/world-scan/geo-v1/", import.meta.url);
 const read = async name => JSON.parse(await readFile(new URL(name, assets), "utf8"));
@@ -69,4 +69,15 @@ test("search supports countries, aliases, and region disambiguation", () => {
   assert.equal(searchPlaces(places, "UK")[0].place[0], "United Kingdom");
   assert.ok(searchPlaces(places, "Punjab").some(({place}) => place[1] === "region" && place[2] === "PAK"));
   assert.ok(searchPlaces(places, "Punjab").some(({place}) => place[1] === "region" && place[2] === "IND"));
+});
+
+test("Istanbul retains its gazetteer name and matches the refined coast", async () => {
+  const [{ place }] = searchPlaces(places, "Istanbul");
+  assert.equal(searchedPlaceLabel(place), "Istanbul, Turkey");
+  const point = [place[5], place[6]];
+  const resolved = await lookup(point);
+  assert.equal(resolved.country?.[2], "TUR");
+  assert.equal(resolved.city?.[0], "Istanbul");
+  assert.equal(identify(point, places, []).country, undefined);
+  assert.equal(searchedPlaceLabel(place), "Istanbul, Turkey");
 });

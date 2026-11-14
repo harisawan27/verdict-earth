@@ -127,8 +127,12 @@ def generate(cache, output):
                         tiles.setdefault((x, y), []).append([identifier, rings])
 
     coastal = {fields["adm0_a3"]: polygon(raw) for raw, fields in data["coastal"]
-               if fields["adm0_a3"] in {"USA", "FJI"}}
-    coast_windows = {"USA": box(-75, 39.5, -72, 42), "FJI": box(176, -21, 180, -15)}
+               if fields["adm0_a3"] in {"USA", "FJI", "TUR"}}
+    coast_windows = {
+        "USA": box(-75, 39.5, -72, 42),
+        "FJI": box(176, -21, 180, -15),
+        "TUR": box(28.7, 40.8, 29.3, 41.3),
+    }
     for raw, fields in data["countries"]:
         area = polygon(raw)
         name = fields["admin"]

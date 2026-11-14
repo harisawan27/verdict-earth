@@ -101,6 +101,12 @@ export async function resolvePlace(point: Point, geo: Geography) {
   }
   return identify(point, geo.places, await tiles.get(key)!);
 }
+export function searchedPlaceLabel(place: Place) {
+  const [name, kind, , context] = place;
+  return kind === "city" || kind === "capital" || kind === "region"
+    ? [name, context].filter(Boolean).join(", ") : name;
+}
+
 const normalized = (name: string) => name.toLowerCase().normalize("NFD").replace(/\p{M}/gu, "")
   .replace(/[^\p{L}\p{N}]+/gu, " ").trim();
 

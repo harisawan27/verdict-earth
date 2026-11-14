@@ -5,7 +5,7 @@ import type { KeyboardEvent, PointerEvent } from "react";
 import manifest from "../public/world-scan/v1/manifest.json";
 import { signed } from "./stress-format";
 import { TemperatureChart } from "./temperature-chart";
-import { drawGeography, loadGeography, loadPaths, loadRegionalLines, pointerPoint, resolvePlace } from "./scan-geography";
+import { drawGeography, loadGeography, loadPaths, loadRegionalLines, pointerPoint, resolvePlace, searchedPlaceLabel } from "./scan-geography";
 import type { Geography, Place, PlaceContext, Point } from "./scan-geography";
 import { PlaceSearch, placeDetail, placeTitle } from "./scan-place-search";
 
@@ -43,7 +43,7 @@ export function WorldScan() {
   const [geoFailed, setGeoFailed] = useState(false);
   const [regionPath, setRegionPath] = useState<Path2D | null>(null);
   const [showLabels, setShowLabels] = useState(true);
-  const [selection, setSelection] = useState<{ point: Point; source: string }>({ point: [66.9881, 24.8719], source: "Initial place" });
+  const [selection, setSelection] = useState<{ point: Point; source: string; searchedPlace?: Place }>({ point: [66.9881, 24.8719], source: "Initial place" });
   const [place, setPlace] = useState<{ point: Point; context: PlaceContext } | null>(null);
   const [lookupFailed, setLookupFailed] = useState(false);
   const [labelScale, setLabelScale] = useState(1);
@@ -162,7 +162,7 @@ export function WorldScan() {
       context.drawImage(image, left, top, columns * factor, rows * factor);
       if (coast && !geo?.paths[2]) context.drawImage(coast, left, top, columns * factor, rows * factor);
     }
-    if (geo) drawGeography(context, regionPath ? { ...geo, paths: [geo.paths[0], geo.paths[1], geo.paths[2], regionPath] } : geo, view, labelScale, showLabels, place?.point === selection.point ? place.context.city?.[0] : undefined);
+    if (geo) drawGeography(context, regionPath ? { ...geo, paths: [geo.paths[0], geo.paths[1], geo.paths[2], regionPath] } : geo, view, labelScale, showLabels, selection.searchedPlace && ["city", "capital"].includes(selection.searchedPlace[1]) ? selection.searchedPlace[0] : place?.point === selection.point ? place.context.city?.[0] : undefined);
     context.strokeStyle = "#fff";
     context.lineWidth = 1.7 * labelScale;
     for (const offset of [0, columns]) {
@@ -183,8 +183,8 @@ export function WorldScan() {
     }
   }, [cell, coast, geo, grid, labelScale, place, regionPath, selection.point, showLabels, view]);
 
-  function select(next: Cell, center = false, point: Point = [manifest.first_longitude + next.column * step, manifest.first_latitude - next.row * step], source = "Keyboard selection") {
-    setSelection({ point, source });
+  function select(next: Cell, center = false, point: Point = [manifest.first_longitude + next.column * step, manifest.first_latitude - next.row * step], source = "Keyboard selection", searchedPlace?: Place) {
+    setSelection({ point, source, searchedPlace });
     setLookupFailed(false);
     if (next.row !== cell.row) setDetailError(false);
     setCell(next);
@@ -217,7 +217,7 @@ export function WorldScan() {
     clearHover();
     const point: Point = [place[5], place[6]];
     const zoom = place[1] === "country" || place[1] === "marine" ? 2 : 4;
-    select(toCell(point[1], point[0]), false, point, "Search location");
+    select(toCell(point[1], point[0]), false, point, "Search location", place);
     position((point[0] + 180) / step - columns / zoom / 2, (90 - point[1]) / step - rows / zoom / 2, zoom);
   }
 
@@ -264,6 +264,16 @@ export function WorldScan() {
   }
 
   const geographic = place?.point === selection.point ? place.context : null;
+  const searchedPlace = selection.searchedPlace;
+  const unmatchedSearch = searchedPlace && searchedPlace[1] !== "marine" && geographic
+    && geographic.country?.[2] !== searchedPlace[2];
+  const geographicTitle = searchedPlace ? searchedPlaceLabel(searchedPlace)
+    : geographic ? placeTitle(geographic)
+      : geoFailed || lookupFailed ? "Geographic reference unavailable" : "Locating selected point…";
+  const geographicDetail = geographic?.ambiguous ? placeDetail(geographic)
+    : unmatchedSearch || (searchedPlace && lookupFailed)
+      ? "Natural Earth search result. The boundary lookup could not confirm this point."
+      : geographic ? placeDetail(geographic) : null;
   const clicked = textCoordinate(Number(selection.point[1].toFixed(3)), "S", "N") + " · " + textCoordinate(Number(selection.point[0].toFixed(3)), "W", "E");
   const record = detail?.row === cell.row ? detail.values[cell.column] : null;
   const [rate, intercept, annual] = record ?? [null, null, []];
@@ -344,8 +354,8 @@ export function WorldScan() {
     </figure>
     <aside className="panel location-card scan-cell" aria-labelledby="scan-cell-title">
       <p className="eyebrow">Geographic context</p>
-      <h3 id="scan-cell-title" aria-live="polite">{geographic ? placeTitle(geographic) : geoFailed || lookupFailed ? "Geographic reference unavailable" : "Locating selected point…"}</h3>
-      {geographic && <p className="scan-geographic-detail">{placeDetail(geographic)}</p>}
+      <h3 id="scan-cell-title" aria-live="polite">{geographicTitle}</h3>
+      {geographicDetail && <p className="scan-geographic-detail">{geographicDetail}</p>}
       <dl className="selected-meta">
         <div><dt>{selection.source}</dt><dd>{clicked}</dd></div>
         <div><dt>NASA grid-cell center</dt><dd data-testid="scan-center">{caption}</dd></div>
