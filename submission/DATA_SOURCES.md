@@ -4,8 +4,10 @@
 - **NASA Global Modeling and Assimilation Office MERRA-2.** Underlying gridded atmospheric reanalysis. [MERRA-2 documentation](https://gmao.gsfc.nasa.gov/gmao-products/merra-2/).
 - **Pakistan Meteorological Department, Regional Meteorological Centre Sindh.** Geographic reference for seven of the request coordinates. The temperatures in the app come from NASA POWER. [PMD Sindh network](https://rmcsindh.pmd.gov.pk/Network.html).
 
-## Challenge resource status
+## Challenge resource use
 
-NASA GES DISC Giovanni appears on the [official challenge Resources tab](https://www.spaceappschallenge.org/2026/challenges/earth-system-trend-detective/?tab=resources). POWER and MERRA-2 are absent by name from that list. An anonymous classic Giovanni job completed a two-month visualization, while export required Earthdata Login. The current release contains no Giovanni measurements. Use of a listed NASA source is unresolved and the organizers determine eligibility. [Global Organizing Team guidance](https://github.com/nasa/spaceapps/discussions/1827).
+NASA GES DISC Giovanni is listed in the [official challenge Resources tab](https://www.spaceappschallenge.org/2026/challenges/earth-system-trend-detective/?tab=resources). Verdict Earth uses its Area-Averaged Time Series export of monthly **MERRA-2 M2TMNXSLV v5.12.4 T2M** to compare against POWER at the same native Karachi cell (25° N, 66.875° E) for 1981–2025. [Dataset DOI](https://doi.org/10.5067/AP1B0BA5PD2K) · [Exact Giovanni query](https://giovanni.gsfc.nasa.gov/giovanni/#service=ArAvTs&starttime=1981-01-01T00:00:00Z&endtime=2025-12-31T23:59:59Z&bbox=66.81,24.94,66.94,25.06&data=M2TMNXSLV_5_12_4_T2M&portal=GIOVANNI&format=json).
 
-The prepared comparison targets the Giovanni export of MERRA-2 monthly M2TMNXSLV v5.12.4 T2M, DOI [10.5067/AP1B0BA5PD2K](https://doi.org/10.5067/AP1B0BA5PD2K). With verified exports, comparison measures consistency within MERRA-2, subject to spatial selection, monthly processing, time conventions, and rounding.
+The classic Giovanni CSV was downloaded on 2026-11-14 UTC. Its [unedited bytes](../data/raw/giovanni-karachi-1981-01--2025-12-ae3dccd6669e.csv) and [comparison record](../data/results/giovanni-karachi.v1.json) preserve the query, bounds and SHA-256 checksum. NASA documents native T2M in kelvin. We subtract 273.15 to obtain degrees Celsius and compare the 540 matching months and 45 shared complete calendar years.
+
+This is a consistency check within MERRA-2. Differences can arise from monthly processing, time standards, and rounding. The incorporation supports the listed-resource requirement. The organizers determine final eligibility. [Global Organizing Team guidance](https://github.com/nasa/spaceapps/discussions/1827).

@@ -6,8 +6,10 @@ import hashlib
 import io
 import math
 import re
+from calendar import monthrange
 from datetime import date
 from pathlib import Path
+from urllib.parse import parse_qs, urlsplit
 
 import pandas as pd
 
@@ -80,6 +82,54 @@ def parse_export(raw: bytes, units: str) -> dict:
     return values
 
 
+
+def export_metadata(raw: bytes) -> dict:
+    """Validate the actual download query and sampled grid cell."""
+    rows = csv.reader(io.StringIO(raw.decode("utf-8-sig")))
+    fields = {}
+    for row in rows:
+        if row and row[0].strip().lower() == "time":
+            break
+        if len(row) == 2:
+            fields[row[0].strip().rstrip(":")] = row[1].strip()
+
+    def bounds(field):
+        return [float(value) for value in fields.get(field, "").split(",") if value]
+
+    requested = bounds("User Bounding Box")
+    sampled = bounds("Data Bounding Box")
+    if requested != BOUNDS or sampled != [66.875, 25.0, 66.875, 25.0]:
+        raise ValueError("Giovanni export does not identify the expected Karachi grid cell.")
+
+    url = fields.get("URL to Reproduce Results", "")
+    query = urlsplit(url)
+    params = parse_qs(query.fragment)
+    start = fields.get("User Start Date", "")
+    end = fields.get("User End Date", "")
+    if (
+        (query.scheme, query.netloc, query.path) !=
+        ("https", "giovanni.gsfc.nasa.gov", "/giovanni/")
+        or params.get("service") != ["ArAvTs"]
+        or params.get("data") != [VARIABLE]
+        or params.get("starttime") != [start]
+        or params.get("endtime") != [end]
+        or params.get("bbox") != [fields["User Bounding Box"]]
+    ):
+        raise ValueError("Giovanni reproduction URL does not match the export metadata.")
+    start_day, end_day = date.fromisoformat(start[:10]), date.fromisoformat(end[:10])
+    if (
+        not date(START_YEAR, 1, 1) <= start_day <= end_day <= date(END_YEAR, 12, 31)
+        or start_day.day != 1 or end_day.day != monthrange(end_day.year, end_day.month)[1]
+        or start[10:] != "T00:00:00Z" or end[10:] != "T23:59:59Z"
+    ):
+        raise ValueError("Giovanni request must cover whole months in the supported period.")
+
+    return {
+        "reproduction_url": url, "request_start_utc": start, "request_end_utc": end,
+        "requested_bounds_wsen": requested, "sampled_bounds_wsen": sampled,
+    }
+
+
 def build_comparison(months: dict, power: pd.Series, provenance: dict) -> dict:
     index = pd.period_range(f"{START_YEAR}-01", f"{END_YEAR}-12", freq="M")
     giovanni = pd.Series(months, dtype=float).reindex(index)
@@ -90,6 +140,8 @@ def build_comparison(months: dict, power: pd.Series, provenance: dict) -> dict:
         raise ValueError(f"Need at least {MIN_YEARS} common complete years; found {len(shared)}.")
     annual = annual.loc[shared]
     reference = reference.loc[shared]
+    paired = pd.concat([giovanni, power], axis=1).dropna()
+    difference = paired.iloc[:, 0] - paired.iloc[:, 1]
     return {
         "schema_version": 1,
         "status": "incorporated",
@@ -99,11 +151,14 @@ def build_comparison(months: dict, power: pd.Series, provenance: dict) -> dict:
         "units": "°C",
         "bounds_wsen": BOUNDS,
         "nominal_grid_center": {"latitude": 25.0, "longitude": 66.875},
-        "source_url": QUERY,
+        "source_url": provenance.get("source_url", QUERY),
         "product_doi": "https://doi.org/10.5067/AP1B0BA5PD2K",
         "method": "Giovanni Area-Averaged Time Series with a tight box around the POWER native cell.",
         "valid_months": int(giovanni.count()),
         "monthly_coverage": {"start": str(min(months)), "end": str(max(months))},
+        "matched_months": len(paired),
+        "monthly_mean_difference_c": float(difference.mean()),
+        "monthly_mean_absolute_difference_c": float(difference.abs().mean()),
         "shared_complete_years": [int(year) for year in shared],
         "annual_comparison": [
             {"year": int(year), "giovanni_c": float(annual.loc[year]), "power_c": float(reference.loc[year])}
@@ -130,27 +185,35 @@ def main():
         values = {}
         for source in args.csv:
             raw = source.read_bytes()
+            metadata = export_metadata(raw)
             data = parse_export(raw, args.units)
+            start = pd.Period(metadata["request_start_utc"][:7], freq="M")
+            end = pd.Period(metadata["request_end_utc"][:7], freq="M")
+            if min(data) < start or max(data) > end:
+                raise ValueError("CSV has monthly rows outside its stated request.")
             if values.keys() & data.keys():
                 raise ValueError("Giovanni CSV time ranges overlap.")
             values.update(data)
             checksum = hashlib.sha256(raw).hexdigest()
             name = f"giovanni-karachi-{min(data)}--{max(data)}-{checksum[:12]}.csv"
-            originals.append((name, raw, checksum))
+            originals.append((name, raw, checksum, source.name, metadata))
         power, provenance, _ = load_monthly(ARCHIVE)
         comparison = build_comparison(values, power, {
-            "source_url": QUERY,
+            "source_url": originals[0][4]["reproduction_url"] if len(originals) == 1 else QUERY,
             "retrieval_date_utc": args.retrieved_date.isoformat(),
             "retrieval_method": "Manual export from the classic NASA Giovanni interface.",
             "original_units": args.units,
             "files": [
-                {"path": f"data/raw/{name}", "sha256": checksum}
-                for name, _, checksum in originals
+                {
+                    "path": f"data/raw/{name}", "original_filename": original_name,
+                    "sha256": checksum, **metadata,
+                }
+                for name, _, checksum, original_name, metadata in originals
             ],
             "power_source_url": provenance["source_url"],
             "power_sha256": provenance["sha256"],
         })
-        for name, raw, _ in originals:
+        for name, raw, _, _, _ in originals:
             atomic_write(ARCHIVE / name, raw)
         atomic_write(OUTPUT, json_bytes(comparison))
     except (OSError, UnicodeError, ValueError, csv.Error) as error:

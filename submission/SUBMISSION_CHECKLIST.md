@@ -6,7 +6,7 @@ Target **Sunday, November 15, 2026, noon PKT**. This is the team’s conservativ
 
 - [x] Confirm both Milestone 2 commits are in the current history.
 - [x] Recompute eight POWER series and four windows for each site. Verify source checksums and reproduce Karachi’s baseline.
-- [ ] If a genuine Giovanni export arrives, verify the original bytes, coverage, units, and grid point. Import, rebuild, and update the app, README, and submission sources. Leave the requirement explicitly unresolved while there are no incorporated Giovanni values.
+- [x] Verify and archive the original Giovanni CSV and compare its 45 complete years with POWER. Include the verified Giovanni comparison and citation in the project submission.
 - [x] Pass the clean npm install, scientific tests, offline data regeneration, and production build.
 - [x] Verify both routes, mobile and desktop interactions, and the downloaded JSON against the release artifacts.
 - [x] Document software license status. The repository has no project-wide license grant.

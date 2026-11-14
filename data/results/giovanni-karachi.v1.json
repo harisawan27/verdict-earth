@@ -1,6 +1,392 @@
 {
   "schema_version": 1,
-  "status": "blocked",
-  "reason": "Giovanni in the Cloud returned HTTP 403 with a missing-token message. Classic Giovanni finished a two-month visualization, but the CSV returned HTTP 401 and the NetCDF redirected to Earthdata Login. The unsigned full-period and five-year jobs failed during the data search.",
-  "source_url": "https://giovanni.gsfc.nasa.gov/giovanni/#service=ArAvTs&starttime=1981-01-01T00:00:00Z&endtime=2025-12-31T23:59:59Z&bbox=66.81,24.94,66.94,25.06&data=M2TMNXSLV_5_12_4_T2M"
+  "status": "incorporated",
+  "source": "NASA GES DISC Giovanni",
+  "dataset": "M2TMNXSLV v5.12.4",
+  "variable": "2-meter air temperature (T2M)",
+  "units": "°C",
+  "bounds_wsen": [
+    66.81,
+    24.94,
+    66.94,
+    25.06
+  ],
+  "nominal_grid_center": {
+    "latitude": 25.0,
+    "longitude": 66.875
+  },
+  "source_url": "https://giovanni.gsfc.nasa.gov/giovanni/#service=ArAvTs&starttime=1981-01-01T00:00:00Z&endtime=2025-12-31T23:59:59Z&bbox=66.81,24.94,66.94,25.06&data=M2TMNXSLV_5_12_4_T2M&portal=GIOVANNI&format=json",
+  "product_doi": "https://doi.org/10.5067/AP1B0BA5PD2K",
+  "method": "Giovanni Area-Averaged Time Series with a tight box around the POWER native cell.",
+  "valid_months": 540,
+  "monthly_coverage": {
+    "start": "1981-01",
+    "end": "2025-12"
+  },
+  "matched_months": 540,
+  "monthly_mean_difference_c": 0.00021434629631983434,
+  "monthly_mean_absolute_difference_c": 0.012258516666667194,
+  "shared_complete_years": [
+    1981,
+    1982,
+    1983,
+    1984,
+    1985,
+    1986,
+    1987,
+    1988,
+    1989,
+    1990,
+    1991,
+    1992,
+    1993,
+    1994,
+    1995,
+    1996,
+    1997,
+    1998,
+    1999,
+    2000,
+    2001,
+    2002,
+    2003,
+    2004,
+    2005,
+    2006,
+    2007,
+    2008,
+    2009,
+    2010,
+    2011,
+    2012,
+    2013,
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025
+  ],
+  "annual_comparison": [
+    {
+      "year": 1981,
+      "giovanni_c": 25.92762616986304,
+      "power_c": 25.927150684931508
+    },
+    {
+      "year": 1982,
+      "giovanni_c": 25.92592569863016,
+      "power_c": 25.92632876712329
+    },
+    {
+      "year": 1983,
+      "giovanni_c": 25.519712315068528,
+      "power_c": 25.522109589041094
+    },
+    {
+      "year": 1984,
+      "giovanni_c": 25.531996685792365,
+      "power_c": 25.532049180327867
+    },
+    {
+      "year": 1985,
+      "giovanni_c": 25.55149065205482,
+      "power_c": 25.55164383561644
+    },
+    {
+      "year": 1986,
+      "giovanni_c": 25.398406591780837,
+      "power_c": 25.3992602739726
+    },
+    {
+      "year": 1987,
+      "giovanni_c": 25.917720463013715,
+      "power_c": 25.918246575342465
+    },
+    {
+      "year": 1988,
+      "giovanni_c": 26.602911540983623,
+      "power_c": 26.60418032786885
+    },
+    {
+      "year": 1989,
+      "giovanni_c": 25.898969728767142,
+      "power_c": 25.9
+    },
+    {
+      "year": 1990,
+      "giovanni_c": 26.075635536986326,
+      "power_c": 26.07509589041096
+    },
+    {
+      "year": 1991,
+      "giovanni_c": 25.753436484931534,
+      "power_c": 25.75290410958904
+    },
+    {
+      "year": 1992,
+      "giovanni_c": 25.905371674863414,
+      "power_c": 25.902213114754097
+    },
+    {
+      "year": 1993,
+      "giovanni_c": 26.43724465479454,
+      "power_c": 26.438273972602737
+    },
+    {
+      "year": 1994,
+      "giovanni_c": 26.12365321643838,
+      "power_c": 26.12383561643836
+    },
+    {
+      "year": 1995,
+      "giovanni_c": 26.032853720547966,
+      "power_c": 26.03386301369863
+    },
+    {
+      "year": 1996,
+      "giovanni_c": 25.737161595628432,
+      "power_c": 25.73715846994536
+    },
+    {
+      "year": 1997,
+      "giovanni_c": 25.691575594520575,
+      "power_c": 25.692876712328765
+    },
+    {
+      "year": 1998,
+      "giovanni_c": 26.702452095890425,
+      "power_c": 26.70032876712329
+    },
+    {
+      "year": 1999,
+      "giovanni_c": 26.457598350684965,
+      "power_c": 26.458547945205478
+    },
+    {
+      "year": 2000,
+      "giovanni_c": 26.093695551912585,
+      "power_c": 26.09428961748634
+    },
+    {
+      "year": 2001,
+      "giovanni_c": 26.26220653972605,
+      "power_c": 26.260301369863015
+    },
+    {
+      "year": 2002,
+      "giovanni_c": 25.979745978082224,
+      "power_c": 25.97928767123288
+    },
+    {
+      "year": 2003,
+      "giovanni_c": 26.147749849315083,
+      "power_c": 26.14739726027397
+    },
+    {
+      "year": 2004,
+      "giovanni_c": 26.246322210382537,
+      "power_c": 26.248715846994536
+    },
+    {
+      "year": 2005,
+      "giovanni_c": 25.969297657534266,
+      "power_c": 25.965917808219178
+    },
+    {
+      "year": 2006,
+      "giovanni_c": 25.83049321643837,
+      "power_c": 25.828684931506846
+    },
+    {
+      "year": 2007,
+      "giovanni_c": 26.254480904109613,
+      "power_c": 26.257068493150683
+    },
+    {
+      "year": 2008,
+      "giovanni_c": 25.64761884426233,
+      "power_c": 25.646502732240435
+    },
+    {
+      "year": 2009,
+      "giovanni_c": 26.408017476712356,
+      "power_c": 26.409561643835616
+    },
+    {
+      "year": 2010,
+      "giovanni_c": 26.32845620273975,
+      "power_c": 26.32791780821918
+    },
+    {
+      "year": 2011,
+      "giovanni_c": 26.01919842191783,
+      "power_c": 26.01953424657534
+    },
+    {
+      "year": 2012,
+      "giovanni_c": 25.68372325409837,
+      "power_c": 25.68327868852459
+    },
+    {
+      "year": 2013,
+      "giovanni_c": 26.13767691780825,
+      "power_c": 26.138356164383563
+    },
+    {
+      "year": 2014,
+      "giovanni_c": 26.114220830137008,
+      "power_c": 26.114712328767126
+    },
+    {
+      "year": 2015,
+      "giovanni_c": 26.500990813698653,
+      "power_c": 26.497972602739726
+    },
+    {
+      "year": 2016,
+      "giovanni_c": 26.523160131147566,
+      "power_c": 26.522786885245903
+    },
+    {
+      "year": 2017,
+      "giovanni_c": 26.130591558904133,
+      "power_c": 26.12945205479452
+    },
+    {
+      "year": 2018,
+      "giovanni_c": 26.556276756164408,
+      "power_c": 26.555890410958902
+    },
+    {
+      "year": 2019,
+      "giovanni_c": 25.922767008219214,
+      "power_c": 25.924630136986302
+    },
+    {
+      "year": 2020,
+      "giovanni_c": 25.871467155737726,
+      "power_c": 25.872841530054643
+    },
+    {
+      "year": 2021,
+      "giovanni_c": 26.41595912054797,
+      "power_c": 26.413342465753423
+    },
+    {
+      "year": 2022,
+      "giovanni_c": 25.980310868493177,
+      "power_c": 25.978438356164386
+    },
+    {
+      "year": 2023,
+      "giovanni_c": 26.397965194520573,
+      "power_c": 26.39676712328767
+    },
+    {
+      "year": 2024,
+      "giovanni_c": 26.60109854371588,
+      "power_c": 26.600327868852457
+    },
+    {
+      "year": 2025,
+      "giovanni_c": 26.33920721917811,
+      "power_c": 26.339041095890412
+    }
+  ],
+  "giovanni_trend": {
+    "model": "Ordinary least squares with intercept",
+    "slope_c_per_decade": 0.11436967378455672,
+    "intercept_c": 25.82737429537943,
+    "reference_year": 1981,
+    "degrees_of_freedom": 43,
+    "confidence_level": 0.95,
+    "conventional": {
+      "standard_error": 0.03388855224679282,
+      "confidence_interval": [
+        0.0460268948253251,
+        0.18271245274378833
+      ],
+      "p_value": 0.0015743673447925557
+    },
+    "hac": {
+      "standard_error": 0.03532079393984855,
+      "confidence_interval": [
+        0.04313850417553075,
+        0.18560084339358268
+      ],
+      "p_value": 0.0023217262794143706,
+      "kernel": "Bartlett",
+      "max_lag_years": 3,
+      "bandwidth_rule": "floor(4 × (n / 100)^(2/9))",
+      "small_sample_correction": "n / (n − 2)",
+      "reference_distribution": "Student t (n − 2 degrees of freedom, approximate)"
+    }
+  },
+  "power_trend": {
+    "model": "Ordinary least squares with intercept",
+    "slope_c_per_decade": 0.11410459618199352,
+    "intercept_c": 25.827838421473455,
+    "reference_year": 1981,
+    "degrees_of_freedom": 43,
+    "confidence_level": 0.95,
+    "conventional": {
+      "standard_error": 0.03387901487499514,
+      "confidence_interval": [
+        0.04578105116606741,
+        0.1824281411979196
+      ],
+      "p_value": 0.0016056741930916929
+    },
+    "hac": {
+      "standard_error": 0.03527452868568529,
+      "confidence_interval": [
+        0.04296672935013389,
+        0.18524246301385316
+      ],
+      "p_value": 0.0023431450399796464,
+      "kernel": "Bartlett",
+      "max_lag_years": 3,
+      "bandwidth_rule": "floor(4 × (n / 100)^(2/9))",
+      "small_sample_correction": "n / (n − 2)",
+      "reference_distribution": "Student t (n − 2 degrees of freedom, approximate)"
+    }
+  },
+  "provenance": {
+    "source_url": "https://giovanni.gsfc.nasa.gov/giovanni/#service=ArAvTs&starttime=1981-01-01T00:00:00Z&endtime=2025-12-31T23:59:59Z&bbox=66.81,24.94,66.94,25.06&data=M2TMNXSLV_5_12_4_T2M&portal=GIOVANNI&format=json",
+    "retrieval_date_utc": "2026-11-14",
+    "retrieval_method": "Manual export from the classic NASA Giovanni interface.",
+    "original_units": "K",
+    "files": [
+      {
+        "path": "data/raw/giovanni-karachi-1981-01--2025-12-ae3dccd6669e.csv",
+        "original_filename": "g4.areaAvgTimeSeries.M2TMNXSLV_5_12_4_T2M.19810101-20251231.66E_24N_66E_25N.csv",
+        "sha256": "ae3dccd6669eb090054125884af8640ea5e132a9095f89bb0eb12f5b51c3abb8",
+        "reproduction_url": "https://giovanni.gsfc.nasa.gov/giovanni/#service=ArAvTs&starttime=1981-01-01T00:00:00Z&endtime=2025-12-31T23:59:59Z&bbox=66.81,24.94,66.94,25.06&data=M2TMNXSLV_5_12_4_T2M&portal=GIOVANNI&format=json",
+        "request_start_utc": "1981-01-01T00:00:00Z",
+        "request_end_utc": "2025-12-31T23:59:59Z",
+        "requested_bounds_wsen": [
+          66.81,
+          24.94,
+          66.94,
+          25.06
+        ],
+        "sampled_bounds_wsen": [
+          66.875,
+          25.0,
+          66.875,
+          25.0
+        ]
+      }
+    ],
+    "power_source_url": "https://power.larc.nasa.gov/api/temporal/monthly/point?parameters=T2M&community=SB&latitude=24.9&longitude=67.0&start=1981&end=2025&format=JSON",
+    "power_sha256": "cda9698f6dc9bd8682fef52372f7a174dee59e6af2c1c052bb81ca8461990fb9"
+  },
+  "limitations": "Cross-product consistency check within MERRA-2. Differences can reflect monthly aggregation, spatial sampling, time conventions, rounding and processing."
 }

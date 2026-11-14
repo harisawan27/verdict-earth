@@ -25,4 +25,4 @@ npm ci
 npm run build
 ```
 
-See [the README](../README.md) for the signed-in Giovanni workflow.
+For the Giovanni consistency check, convert native T2M from kelvin to Celsius, match the 540 available calendar months to POWER and fit both series on the same 45 complete years. The matched monthly values differ by 0.0123 °C on average in absolute terms. See [the README](../README.md) for offline reproduction from the archived CSV.

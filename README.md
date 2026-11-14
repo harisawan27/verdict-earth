@@ -42,7 +42,7 @@ The NASA response reports coverage from January 1, 1981 to December 31, 2025, un
 
 **Attribution.** NASA Langley Research Center POWER Project, using [NASA GMAO MERRA-2](https://power.larc.nasa.gov/docs/methodology/data/sources_meteorology/). T2M is a gridded atmospheric reanalysis estimate. The coastal grid footprint can blend land and sea.
 
-**Challenge eligibility, unconfirmed.** The official [Resources tab](https://www.spaceappschallenge.org/2026/challenges/earth-system-trend-detective/?tab=resources) lists Giovanni, Hydrology Time Series, AppEEARS, Climate Data Online, and a SeaWiFS time-series article in its NASA resources section. It does not list NASA POWER or MERRA-2 by name. MERRA-2 appears in the challenge background. Treat the current POWER-only investigation as lacking confirmed Global Awards eligibility. The [Global Organizing Team guidance](https://github.com/nasa/spaceapps/discussions/1827) requires use of at least one NASA data source listed in the challenge resources. See the Giovanni instructions below for the remaining integration step.
+**Challenge resource use.** The Karachi comparison incorporates an original NASA GES DISC Giovanni export. Giovanni is listed in the [official Resources tab](https://www.spaceappschallenge.org/2026/challenges/earth-system-trend-detective/?tab=resources). This supports the resource requirement. The organizers determine final eligibility. [Global Organizing Team guidance](https://github.com/nasa/spaceapps/discussions/1827).
 
 If the point service becomes unavailable, the [NASA POWER archive on AWS](https://registry.opendata.aws/nasa-power/) is a documented distribution alternative. Validate its spatial selection, native units, conversion, and overlap against the point response before integrating it.
 
@@ -69,7 +69,7 @@ In the seeded zero-trend AR(1) test (400 series of 100 years, lag-one correlatio
 
 ## Import a signed-in Giovanni export
 
-Anonymous access checked November 14, 2026. Giovanni in the Cloud returned HTTP 403 and a missing-token message. Classic Giovanni completed a two-month visualization at 25° N, 66.875° E, the same native cell as POWER. Its CSV endpoint returned HTTP 401 and its NetCDF endpoint redirected to Earthdata Login. The unsigned 1981–2025 and five-year workflows failed during the data search. The current analysis uses POWER alone.
+The committed export covers 540 months and 45 complete years (1981–2025) at 25° N, 66.875° E. The fitted Giovanni and POWER slopes are +0.11437 and +0.11410 °C per decade. The mean absolute difference in the matched monthly values is 0.0123 °C. See [source and provenance](submission/DATA_SOURCES.md). The signed-in steps below are needed only to obtain a fresh export.
 
 1. Open [Giovanni](https://giovanni.gsfc.nasa.gov/giovanni/#dataKeyword=M2TMNXSLV) and sign into NASA Earthdata in your browser. Keep credentials and tokens outside the repository.
 2. Choose **Time Series → Area-Averaged**. Search **M2TMNXSLV** and select **2-meter air temperature, monthly, M2TMNXSLV v5.12.4** (`M2TMNXSLV_5_12_4_T2M`, normally kelvin). [NASA product DOI](https://doi.org/10.5067/AP1B0BA5PD2K).
@@ -81,7 +81,13 @@ Anonymous access checked November 14, 2026. Giovanni in the Cloud returned HTTP 
 .\.venv\Scripts\python.exe -m science.giovanni --retrieved-date YYYY-MM-DD --units K "C:\path\to\original.csv"
 ```
 
-Pass multiple CSV paths if you used batches. The importer checks the dataset, variable, dates, and unit consistency, converts kelvin to Celsius, preserves the original files with SHA-256 checksums, and writes `data/results/giovanni-karachi.v1.json`. Trend comparison requires at least five common complete calendar years. Rebuild the app to display the comparison. The importer has fixture coverage. A signed-in export remains untested in this environment.
+Pass multiple CSV paths if you used batches. The importer checks the dataset, variable, dates, and unit consistency, converts kelvin to Celsius, preserves the original files with SHA-256 checksums, and writes `data/results/giovanni-karachi.v1.json`. Trend comparison requires at least five common complete calendar years. Rebuild the app to display the comparison. The archived original can reproduce the comparison offline with the command below.
+
+From the repository root with your Python environment active:
+
+```sh
+python -m science.giovanni --retrieved-date 2026-11-14 --units K data/raw/giovanni-karachi-1981-01--2025-12-ae3dccd6669e.csv
+```
 
 This compares two products derived from MERRA-2. Spatial sampling, time basis, monthly averaging, rounding, and processing can affect agreement.
 

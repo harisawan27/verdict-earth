@@ -1,4 +1,4 @@
-"""Controlled CSV fixtures only. A live Earthdata export requires user sign-in."""
+"""Validate controlled CSV fixtures and the archived NASA Giovanni export."""
 
 import pandas as pd
 import pytest
@@ -46,3 +46,38 @@ def test_comparison_rejects_fewer_than_five_common_years():
     index = pd.period_range("1981-01", "1984-12", freq="M")
     with pytest.raises(ValueError, match="5 common complete years"):
         build_comparison(parse_export(fixture(index), "K"), pd.Series(25.0, index=index), {})
+
+
+def test_saved_giovanni_export_matches_the_checked_in_comparison():
+    import hashlib
+    import json
+
+    from science.generate import ROOT
+    from science.giovanni import export_metadata
+    from science.power import load_monthly
+
+    saved = json.loads((ROOT / "data/results/giovanni-karachi.v1.json").read_bytes())
+    file = saved["provenance"]["files"][0]
+    raw = (ROOT / file["path"]).read_bytes()
+    assert hashlib.sha256(raw).hexdigest() == file["sha256"]
+    metadata = export_metadata(raw)
+    assert metadata["sampled_bounds_wsen"] == [66.875, 25, 66.875, 25]
+    assert metadata["reproduction_url"] == file["reproduction_url"]
+    with pytest.raises(ValueError, match="expected Karachi grid cell"):
+        export_metadata(raw.replace(b'66.875,25,66.875,25', b'67.5,25,67.5,25'))
+
+    power, _, _ = load_monthly(ROOT / "data/raw")
+    months = parse_export(raw, "K")
+    calculated = build_comparison(months, power, saved["provenance"])
+    assert calculated["valid_months"] == calculated["matched_months"] == 540
+    assert len(calculated["shared_complete_years"]) == 45
+    assert calculated["shared_complete_years"] == saved["shared_complete_years"]
+    for key in ("giovanni_trend", "power_trend"):
+        assert calculated[key]["slope_c_per_decade"] == pytest.approx(saved[key]["slope_c_per_decade"])
+        for method in ("conventional", "hac"):
+            assert calculated[key][method]["confidence_interval"] == pytest.approx(
+                saved[key][method]["confidence_interval"]
+            )
+    assert calculated["monthly_mean_absolute_difference_c"] == pytest.approx(
+        saved["monthly_mean_absolute_difference_c"]
+    )
