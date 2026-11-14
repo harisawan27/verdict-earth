@@ -1,0 +1,4333 @@
+{
+  "schema_version": 1,
+  "region": "Sindh, Pakistan",
+  "dataset": {
+    "provider": "NASA POWER",
+    "original_product": "NASA GMAO MERRA-2",
+    "variable": "T2M",
+    "name": "2-meter air temperature",
+    "units": "°C",
+    "spatial_resolution": "0.5° latitude × 0.625° longitude",
+    "temporal_resolution": "Monthly inputs · calendar-year means",
+    "data_type": "Gridded atmospheric reanalysis"
+  },
+  "requested_years": {
+    "start": 1981,
+    "end": 2025
+  },
+  "stations": [
+    {
+      "id": "karachi",
+      "latitude": 24.9,
+      "longitude": 67.0,
+      "coordinate_source": "Milestone 1 reference point",
+      "candidate_native_cells": [
+        [
+          25.0,
+          66.875
+        ]
+      ],
+      "native_cell": {
+        "latitude": 25.0,
+        "longitude": 66.875
+      },
+      "location": {
+        "city": "Karachi",
+        "country": "Pakistan",
+        "latitude": 24.9,
+        "longitude": 67.0
+      },
+      "annual_series": [
+        {
+          "year": 1981,
+          "temperature_c": 25.927150684931508
+        },
+        {
+          "year": 1982,
+          "temperature_c": 25.92632876712329
+        },
+        {
+          "year": 1983,
+          "temperature_c": 25.522109589041094
+        },
+        {
+          "year": 1984,
+          "temperature_c": 25.532049180327867
+        },
+        {
+          "year": 1985,
+          "temperature_c": 25.55164383561644
+        },
+        {
+          "year": 1986,
+          "temperature_c": 25.3992602739726
+        },
+        {
+          "year": 1987,
+          "temperature_c": 25.918246575342465
+        },
+        {
+          "year": 1988,
+          "temperature_c": 26.60418032786885
+        },
+        {
+          "year": 1989,
+          "temperature_c": 25.9
+        },
+        {
+          "year": 1990,
+          "temperature_c": 26.07509589041096
+        },
+        {
+          "year": 1991,
+          "temperature_c": 25.75290410958904
+        },
+        {
+          "year": 1992,
+          "temperature_c": 25.902213114754097
+        },
+        {
+          "year": 1993,
+          "temperature_c": 26.438273972602737
+        },
+        {
+          "year": 1994,
+          "temperature_c": 26.12383561643836
+        },
+        {
+          "year": 1995,
+          "temperature_c": 26.03386301369863
+        },
+        {
+          "year": 1996,
+          "temperature_c": 25.73715846994536
+        },
+        {
+          "year": 1997,
+          "temperature_c": 25.692876712328765
+        },
+        {
+          "year": 1998,
+          "temperature_c": 26.70032876712329
+        },
+        {
+          "year": 1999,
+          "temperature_c": 26.458547945205478
+        },
+        {
+          "year": 2000,
+          "temperature_c": 26.09428961748634
+        },
+        {
+          "year": 2001,
+          "temperature_c": 26.260301369863015
+        },
+        {
+          "year": 2002,
+          "temperature_c": 25.97928767123288
+        },
+        {
+          "year": 2003,
+          "temperature_c": 26.14739726027397
+        },
+        {
+          "year": 2004,
+          "temperature_c": 26.248715846994536
+        },
+        {
+          "year": 2005,
+          "temperature_c": 25.965917808219178
+        },
+        {
+          "year": 2006,
+          "temperature_c": 25.828684931506846
+        },
+        {
+          "year": 2007,
+          "temperature_c": 26.257068493150683
+        },
+        {
+          "year": 2008,
+          "temperature_c": 25.646502732240435
+        },
+        {
+          "year": 2009,
+          "temperature_c": 26.409561643835616
+        },
+        {
+          "year": 2010,
+          "temperature_c": 26.32791780821918
+        },
+        {
+          "year": 2011,
+          "temperature_c": 26.01953424657534
+        },
+        {
+          "year": 2012,
+          "temperature_c": 25.68327868852459
+        },
+        {
+          "year": 2013,
+          "temperature_c": 26.138356164383563
+        },
+        {
+          "year": 2014,
+          "temperature_c": 26.114712328767126
+        },
+        {
+          "year": 2015,
+          "temperature_c": 26.497972602739726
+        },
+        {
+          "year": 2016,
+          "temperature_c": 26.522786885245903
+        },
+        {
+          "year": 2017,
+          "temperature_c": 26.12945205479452
+        },
+        {
+          "year": 2018,
+          "temperature_c": 26.555890410958902
+        },
+        {
+          "year": 2019,
+          "temperature_c": 25.924630136986302
+        },
+        {
+          "year": 2020,
+          "temperature_c": 25.872841530054643
+        },
+        {
+          "year": 2021,
+          "temperature_c": 26.413342465753423
+        },
+        {
+          "year": 2022,
+          "temperature_c": 25.978438356164386
+        },
+        {
+          "year": 2023,
+          "temperature_c": 26.39676712328767
+        },
+        {
+          "year": 2024,
+          "temperature_c": 26.600327868852457
+        },
+        {
+          "year": 2025,
+          "temperature_c": 26.339041095890412
+        }
+      ],
+      "completeness": {
+        "requested_months": 540,
+        "returned_month_keys": 540,
+        "valid_months": 540,
+        "absent_months": [],
+        "fill_value_months": [],
+        "partial_months": [],
+        "ignored_annual_summaries": 45,
+        "complete_calendar_years": 45,
+        "excluded_calendar_years": []
+      },
+      "provenance": {
+        "source_url": "https://power.larc.nasa.gov/api/temporal/monthly/point?parameters=T2M&community=SB&latitude=24.9&longitude=67.0&start=1981&end=2025&format=JSON",
+        "retrieved_at_utc": "2026-11-14T15:03:32.333Z",
+        "sha256": "cda9698f6dc9bd8682fef52372f7a174dee59e6af2c1c052bb81ca8461990fb9",
+        "documentation_url": "https://power.larc.nasa.gov/docs/services/api/temporal/monthly/",
+        "source_documentation_url": "https://power.larc.nasa.gov/docs/methodology/data/sources_meteorology/",
+        "attribution": "NASA Langley Research Center POWER Project, using NASA GMAO MERRA-2.",
+        "community": "SB",
+        "header": {
+          "title": "NASA/POWER Source Native Resolution Monthly and Annual",
+          "api": {
+            "version": "v2.10.0",
+            "name": "POWER Monthly and Annual API"
+          },
+          "sources": [
+            "MERRA2"
+          ],
+          "fill_value": -999.0,
+          "time_standard": "LST",
+          "start": "19810101",
+          "end": "20251231"
+        },
+        "parameter": {
+          "units": "C",
+          "longname": "Temperature at 2 Meters"
+        },
+        "returned_coordinates": [
+          67.0,
+          24.9,
+          53.05
+        ],
+        "messages": []
+      },
+      "windows": [
+        {
+          "id": "1981-2025",
+          "start": 1981,
+          "end": 2025,
+          "valid_years": [
+            1981,
+            1982,
+            1983,
+            1984,
+            1985,
+            1986,
+            1987,
+            1988,
+            1989,
+            1990,
+            1991,
+            1992,
+            1993,
+            1994,
+            1995,
+            1996,
+            1997,
+            1998,
+            1999,
+            2000,
+            2001,
+            2002,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ],
+          "trend": {
+            "model": "Ordinary least squares with intercept",
+            "slope_c_per_decade": 0.11410459618199352,
+            "intercept_c": 25.827838421473455,
+            "reference_year": 1981,
+            "degrees_of_freedom": 43,
+            "confidence_level": 0.95,
+            "conventional": {
+              "standard_error": 0.03387901487499514,
+              "confidence_interval": [
+                0.04578105116606741,
+                0.1824281411979196
+              ],
+              "p_value": 0.0016056741930916929
+            },
+            "hac": {
+              "standard_error": 0.03527452868568529,
+              "confidence_interval": [
+                0.04296672935013389,
+                0.18524246301385316
+              ],
+              "p_value": 0.0023431450399796464,
+              "kernel": "Bartlett",
+              "max_lag_years": 3,
+              "bandwidth_rule": "floor(4 × (n / 100)^(2/9))",
+              "small_sample_correction": "n / (n − 2)",
+              "reference_distribution": "Student t (n − 2 degrees of freedom, approximate)"
+            }
+          }
+        },
+        {
+          "id": "1991-2025",
+          "start": 1991,
+          "end": 2025,
+          "valid_years": [
+            1991,
+            1992,
+            1993,
+            1994,
+            1995,
+            1996,
+            1997,
+            1998,
+            1999,
+            2000,
+            2001,
+            2002,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ],
+          "trend": {
+            "model": "Ordinary least squares with intercept",
+            "slope_c_per_decade": 0.07868221279079624,
+            "intercept_c": 26.014612205789565,
+            "reference_year": 1991,
+            "degrees_of_freedom": 33,
+            "confidence_level": 0.95,
+            "conventional": {
+              "standard_error": 0.04711595378807157,
+              "confidence_interval": [
+                -0.017175915944951478,
+                0.17454034152654396
+              ],
+              "p_value": 0.10438564682227192
+            },
+            "hac": {
+              "standard_error": 0.03874141961781101,
+              "confidence_interval": [
+                -0.00013779806654416749,
+                0.15750222364813665
+              ],
+              "p_value": 0.050379079270756744,
+              "kernel": "Bartlett",
+              "max_lag_years": 3,
+              "bandwidth_rule": "floor(4 × (n / 100)^(2/9))",
+              "small_sample_correction": "n / (n − 2)",
+              "reference_distribution": "Student t (n − 2 degrees of freedom, approximate)"
+            }
+          }
+        },
+        {
+          "id": "2001-2025",
+          "start": 2001,
+          "end": 2025,
+          "valid_years": [
+            2001,
+            2002,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ],
+          "trend": {
+            "model": "Ordinary least squares with intercept",
+            "slope_c_per_decade": 0.11639077717701513,
+            "intercept_c": 26.030680168368185,
+            "reference_year": 2001,
+            "degrees_of_freedom": 23,
+            "confidence_level": 0.95,
+            "conventional": {
+              "standard_error": 0.07206931035400277,
+              "confidence_interval": [
+                -0.03269595016444446,
+                0.26547750451847474
+              ],
+              "p_value": 0.11995054683870233
+            },
+            "hac": {
+              "standard_error": 0.052941115723083666,
+              "confidence_interval": [
+                0.006873735232382966,
+                0.22590781912164729
+              ],
+              "p_value": 0.03824117454756398,
+              "kernel": "Bartlett",
+              "max_lag_years": 2,
+              "bandwidth_rule": "floor(4 × (n / 100)^(2/9))",
+              "small_sample_correction": "n / (n − 2)",
+              "reference_distribution": "Student t (n − 2 degrees of freedom, approximate)"
+            }
+          }
+        },
+        {
+          "id": "1981-2015",
+          "start": 1981,
+          "end": 2015,
+          "valid_years": [
+            1981,
+            1982,
+            1983,
+            1984,
+            1985,
+            1986,
+            1987,
+            1988,
+            1989,
+            1990,
+            1991,
+            1992,
+            1993,
+            1994,
+            1995,
+            1996,
+            1997,
+            1998,
+            1999,
+            2000,
+            2001,
+            2002,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015
+          ],
+          "trend": {
+            "model": "Ordinary least squares with intercept",
+            "slope_c_per_decade": 0.11784955515254669,
+            "intercept_c": 25.822957643678773,
+            "reference_year": 1981,
+            "degrees_of_freedom": 33,
+            "confidence_level": 0.95,
+            "conventional": {
+              "standard_error": 0.0510838067254527,
+              "confidence_interval": [
+                0.013918768917667787,
+                0.22178034138742558
+              ],
+              "p_value": 0.0274712802201617
+            },
+            "hac": {
+              "standard_error": 0.051589049199255416,
+              "confidence_interval": [
+                0.012890845375795004,
+                0.2228082649292984
+              ],
+              "p_value": 0.028912658302868564,
+              "kernel": "Bartlett",
+              "max_lag_years": 3,
+              "bandwidth_rule": "floor(4 × (n / 100)^(2/9))",
+              "small_sample_correction": "n / (n − 2)",
+              "reference_distribution": "Student t (n − 2 degrees of freedom, approximate)"
+            }
+          }
+        }
+      ],
+      "shared_sample_flags": []
+    },
+    {
+      "id": "hyderabad",
+      "latitude": 25.3833,
+      "longitude": 68.4167,
+      "coordinate_source": "https://rmcsindh.pmd.gov.pk/Network.html",
+      "candidate_native_cells": [
+        [
+          25.5,
+          68.125
+        ]
+      ],
+      "native_cell": {
+        "latitude": 25.5,
+        "longitude": 68.125
+      },
+      "location": {
+        "city": "Hyderabad",
+        "country": "Pakistan",
+        "latitude": 25.3833,
+        "longitude": 68.4167
+      },
+      "annual_series": [
+        {
+          "year": 1981,
+          "temperature_c": 27.15205479452055
+        },
+        {
+          "year": 1982,
+          "temperature_c": 26.800082191780824
+        },
+        {
+          "year": 1983,
+          "temperature_c": 26.601506849315065
+        },
+        {
+          "year": 1984,
+          "temperature_c": 26.77601092896175
+        },
+        {
+          "year": 1985,
+          "temperature_c": 26.93819178082192
+        },
+        {
+          "year": 1986,
+          "temperature_c": 26.65227397260274
+        },
+        {
+          "year": 1987,
+          "temperature_c": 27.34495890410959
+        },
+        {
+          "year": 1988,
+          "temperature_c": 28.046748633879783
+        },
+        {
+          "year": 1989,
+          "temperature_c": 27.15317808219178
+        },
+        {
+          "year": 1990,
+          "temperature_c": 27.514575342465754
+        },
+        {
+          "year": 1991,
+          "temperature_c": 27.28739726027397
+        },
+        {
+          "year": 1992,
+          "temperature_c": 27.28863387978142
+        },
+        {
+          "year": 1993,
+          "temperature_c": 27.90131506849315
+        },
+        {
+          "year": 1994,
+          "temperature_c": 27.006164383561643
+        },
+        {
+          "year": 1995,
+          "temperature_c": 27.340164383561643
+        },
+        {
+          "year": 1996,
+          "temperature_c": 27.268196721311476
+        },
+        {
+          "year": 1997,
+          "temperature_c": 26.880657534246577
+        },
+        {
+          "year": 1998,
+          "temperature_c": 28.316219178082193
+        },
+        {
+          "year": 1999,
+          "temperature_c": 27.934986301369864
+        },
+        {
+          "year": 2000,
+          "temperature_c": 27.553797814207652
+        },
+        {
+          "year": 2001,
+          "temperature_c": 27.57043835616438
+        },
+        {
+          "year": 2002,
+          "temperature_c": 27.425616438356165
+        },
+        {
+          "year": 2003,
+          "temperature_c": 26.95572602739726
+        },
+        {
+          "year": 2004,
+          "temperature_c": 27.690792349726777
+        },
+        {
+          "year": 2005,
+          "temperature_c": 27.111041095890414
+        },
+        {
+          "year": 2006,
+          "temperature_c": 26.78484931506849
+        },
+        {
+          "year": 2007,
+          "temperature_c": 27.160465753424656
+        },
+        {
+          "year": 2008,
+          "temperature_c": 26.756857923497268
+        },
+        {
+          "year": 2009,
+          "temperature_c": 27.302657534246574
+        },
+        {
+          "year": 2010,
+          "temperature_c": 27.394739726027396
+        },
+        {
+          "year": 2011,
+          "temperature_c": 26.690438356164385
+        },
+        {
+          "year": 2012,
+          "temperature_c": 26.699043715846994
+        },
+        {
+          "year": 2013,
+          "temperature_c": 27.314712328767122
+        },
+        {
+          "year": 2014,
+          "temperature_c": 27.16958904109589
+        },
+        {
+          "year": 2015,
+          "temperature_c": 27.472630136986304
+        },
+        {
+          "year": 2016,
+          "temperature_c": 27.92530054644809
+        },
+        {
+          "year": 2017,
+          "temperature_c": 27.4506301369863
+        },
+        {
+          "year": 2018,
+          "temperature_c": 28.060082191780822
+        },
+        {
+          "year": 2019,
+          "temperature_c": 26.815753424657533
+        },
+        {
+          "year": 2020,
+          "temperature_c": 26.401557377049183
+        },
+        {
+          "year": 2021,
+          "temperature_c": 27.41895890410959
+        },
+        {
+          "year": 2022,
+          "temperature_c": 26.63509589041096
+        },
+        {
+          "year": 2023,
+          "temperature_c": 27.199534246575343
+        },
+        {
+          "year": 2024,
+          "temperature_c": 27.627978142076504
+        },
+        {
+          "year": 2025,
+          "temperature_c": 27.274109589041093
+        }
+      ],
+      "completeness": {
+        "requested_months": 540,
+        "returned_month_keys": 540,
+        "valid_months": 540,
+        "absent_months": [],
+        "fill_value_months": [],
+        "partial_months": [],
+        "ignored_annual_summaries": 45,
+        "complete_calendar_years": 45,
+        "excluded_calendar_years": []
+      },
+      "provenance": {
+        "source_url": "https://power.larc.nasa.gov/api/temporal/monthly/point?parameters=T2M&community=SB&latitude=25.3833&longitude=68.4167&start=1981&end=2025&format=JSON",
+        "retrieved_at_utc": "2026-11-14T16:03:33.069Z",
+        "sha256": "af40de6994ca368e225bd08445eaf4dc686976e6335112403a60ad6f41109c21",
+        "documentation_url": "https://power.larc.nasa.gov/docs/services/api/temporal/monthly/",
+        "source_documentation_url": "https://power.larc.nasa.gov/docs/methodology/data/sources_meteorology/",
+        "attribution": "NASA Langley Research Center POWER Project, using NASA GMAO MERRA-2.",
+        "community": "SB",
+        "header": {
+          "title": "NASA/POWER Source Native Resolution Monthly and Annual",
+          "api": {
+            "version": "v2.10.0",
+            "name": "POWER Monthly and Annual API"
+          },
+          "sources": [
+            "MERRA2"
+          ],
+          "fill_value": -999.0,
+          "time_standard": "LST",
+          "start": "19810101",
+          "end": "20251231"
+        },
+        "parameter": {
+          "units": "C",
+          "longname": "Temperature at 2 Meters"
+        },
+        "returned_coordinates": [
+          68.417,
+          25.383,
+          92.45
+        ],
+        "messages": []
+      },
+      "windows": [
+        {
+          "id": "1981-2025",
+          "start": 1981,
+          "end": 2025,
+          "valid_years": [
+            1981,
+            1982,
+            1983,
+            1984,
+            1985,
+            1986,
+            1987,
+            1988,
+            1989,
+            1990,
+            1991,
+            1992,
+            1993,
+            1994,
+            1995,
+            1996,
+            1997,
+            1998,
+            1999,
+            2000,
+            2001,
+            2002,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ],
+          "trend": {
+            "model": "Ordinary least squares with intercept",
+            "slope_c_per_decade": 0.01532293674597417,
+            "intercept_c": 27.212194262566296,
+            "reference_year": 1981,
+            "degrees_of_freedom": 43,
+            "confidence_level": 0.95,
+            "conventional": {
+              "standard_error": 0.05121796839464499,
+              "confidence_interval": [
+                -0.08796794057580362,
+                0.11861381406775195
+              ],
+              "p_value": 0.7662507254488377
+            },
+            "hac": {
+              "standard_error": 0.06353055894732704,
+              "confidence_interval": [
+                -0.11279864589568371,
+                0.14344451938763206
+              ],
+              "p_value": 0.8105542576499355,
+              "kernel": "Bartlett",
+              "max_lag_years": 3,
+              "bandwidth_rule": "floor(4 × (n / 100)^(2/9))",
+              "small_sample_correction": "n / (n − 2)",
+              "reference_distribution": "Student t (n − 2 degrees of freedom, approximate)"
+            }
+          }
+        },
+        {
+          "id": "1991-2025",
+          "start": 1991,
+          "end": 2025,
+          "valid_years": [
+            1991,
+            1992,
+            1993,
+            1994,
+            1995,
+            1996,
+            1997,
+            1998,
+            1999,
+            2000,
+            2001,
+            2002,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ],
+          "trend": {
+            "model": "Ordinary least squares with intercept",
+            "slope_c_per_decade": -0.08080844835875967,
+            "intercept_c": 27.42554953571518,
+            "reference_year": 1991,
+            "degrees_of_freedom": 33,
+            "confidence_level": 0.95,
+            "conventional": {
+              "standard_error": 0.07290123088616872,
+              "confidence_interval": [
+                -0.2291271177995561,
+                0.06751022108203678
+              ],
+              "p_value": 0.27567468851263605
+            },
+            "hac": {
+              "standard_error": 0.06753496906403578,
+              "confidence_interval": [
+                -0.21820937603230828,
+                0.056592479314788946
+              ],
+              "p_value": 0.24001104821162725,
+              "kernel": "Bartlett",
+              "max_lag_years": 3,
+              "bandwidth_rule": "floor(4 × (n / 100)^(2/9))",
+              "small_sample_correction": "n / (n − 2)",
+              "reference_distribution": "Student t (n − 2 degrees of freedom, approximate)"
+            }
+          }
+        },
+        {
+          "id": "2001-2025",
+          "start": 2001,
+          "end": 2025,
+          "valid_years": [
+            2001,
+            2002,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ],
+          "trend": {
+            "model": "Ordinary least squares with intercept",
+            "slope_c_per_decade": 0.0004115047763860087,
+            "intercept_c": 27.211850136180153,
+            "reference_year": 2001,
+            "degrees_of_freedom": 23,
+            "confidence_level": 0.95,
+            "conventional": {
+              "standard_error": 0.11823731694590983,
+              "confidence_interval": [
+                -0.24418102075929854,
+                0.24500403031207058
+              ],
+              "p_value": 0.9972531157911109
+            },
+            "hac": {
+              "standard_error": 0.09799875249524535,
+              "confidence_interval": [
+                -0.20231436038447523,
+                0.20313736993724726
+              ],
+              "p_value": 0.9966858363113682,
+              "kernel": "Bartlett",
+              "max_lag_years": 2,
+              "bandwidth_rule": "floor(4 × (n / 100)^(2/9))",
+              "small_sample_correction": "n / (n − 2)",
+              "reference_distribution": "Student t (n − 2 degrees of freedom, approximate)"
+            }
+          }
+        },
+        {
+          "id": "1981-2015",
+          "start": 1981,
+          "end": 2015,
+          "valid_years": [
+            1981,
+            1982,
+            1983,
+            1984,
+            1985,
+            1986,
+            1987,
+            1988,
+            1989,
+            1990,
+            1991,
+            1992,
+            1993,
+            1994,
+            1995,
+            1996,
+            1997,
+            1998,
+            1999,
+            2000,
+            2001,
+            2002,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015
+          ],
+          "trend": {
+            "model": "Ordinary least squares with intercept",
+            "slope_c_per_decade": 0.022351423929098946,
+            "intercept_c": 27.197908639440506,
+            "reference_year": 1981,
+            "degrees_of_freedom": 33,
+            "confidence_level": 0.95,
+            "conventional": {
+              "standard_error": 0.07101789777792267,
+              "confidence_interval": [
+                -0.12213557549277809,
+                0.16683842335097598
+              ],
+              "p_value": 0.7549484981249726
+            },
+            "hac": {
+              "standard_error": 0.08719791753606972,
+              "confidence_interval": [
+                -0.1550540732037608,
+                0.1997569210619587
+              ],
+              "p_value": 0.7992874683907034,
+              "kernel": "Bartlett",
+              "max_lag_years": 3,
+              "bandwidth_rule": "floor(4 × (n / 100)^(2/9))",
+              "small_sample_correction": "n / (n − 2)",
+              "reference_distribution": "Student t (n − 2 degrees of freedom, approximate)"
+            }
+          }
+        }
+      ],
+      "shared_sample_flags": []
+    },
+    {
+      "id": "badin",
+      "latitude": 24.6333,
+      "longitude": 68.9,
+      "coordinate_source": "https://rmcsindh.pmd.gov.pk/Network.html",
+      "candidate_native_cells": [
+        [
+          24.5,
+          68.75
+        ]
+      ],
+      "native_cell": {
+        "latitude": 24.5,
+        "longitude": 68.75
+      },
+      "location": {
+        "city": "Badin",
+        "country": "Pakistan",
+        "latitude": 24.6333,
+        "longitude": 68.9
+      },
+      "annual_series": [
+        {
+          "year": 1981,
+          "temperature_c": 27.74013698630137
+        },
+        {
+          "year": 1982,
+          "temperature_c": 27.68819178082192
+        },
+        {
+          "year": 1983,
+          "temperature_c": 27.373890410958907
+        },
+        {
+          "year": 1984,
+          "temperature_c": 27.40814207650273
+        },
+        {
+          "year": 1985,
+          "temperature_c": 27.57912328767123
+        },
+        {
+          "year": 1986,
+          "temperature_c": 27.30641095890411
+        },
+        {
+          "year": 1987,
+          "temperature_c": 28.106219178082192
+        },
+        {
+          "year": 1988,
+          "temperature_c": 28.527158469945356
+        },
+        {
+          "year": 1989,
+          "temperature_c": 27.727205479452056
+        },
+        {
+          "year": 1990,
+          "temperature_c": 28.086657534246573
+        },
+        {
+          "year": 1991,
+          "temperature_c": 28.052739726027397
+        },
+        {
+          "year": 1992,
+          "temperature_c": 27.7346174863388
+        },
+        {
+          "year": 1993,
+          "temperature_c": 28.50178082191781
+        },
+        {
+          "year": 1994,
+          "temperature_c": 27.516794520547943
+        },
+        {
+          "year": 1995,
+          "temperature_c": 28.09
+        },
+        {
+          "year": 1996,
+          "temperature_c": 27.933743169398905
+        },
+        {
+          "year": 1997,
+          "temperature_c": 27.64
+        },
+        {
+          "year": 1998,
+          "temperature_c": 28.7498904109589
+        },
+        {
+          "year": 1999,
+          "temperature_c": 28.55158904109589
+        },
+        {
+          "year": 2000,
+          "temperature_c": 28.1244262295082
+        },
+        {
+          "year": 2001,
+          "temperature_c": 28.126136986301372
+        },
+        {
+          "year": 2002,
+          "temperature_c": 28.16421917808219
+        },
+        {
+          "year": 2003,
+          "temperature_c": 27.45832876712329
+        },
+        {
+          "year": 2004,
+          "temperature_c": 28.173224043715845
+        },
+        {
+          "year": 2005,
+          "temperature_c": 27.764109589041094
+        },
+        {
+          "year": 2006,
+          "temperature_c": 27.40545205479452
+        },
+        {
+          "year": 2007,
+          "temperature_c": 28.080465753424654
+        },
+        {
+          "year": 2008,
+          "temperature_c": 27.457650273224044
+        },
+        {
+          "year": 2009,
+          "temperature_c": 28.071095890410962
+        },
+        {
+          "year": 2010,
+          "temperature_c": 27.9333698630137
+        },
+        {
+          "year": 2011,
+          "temperature_c": 27.32441095890411
+        },
+        {
+          "year": 2012,
+          "temperature_c": 27.33505464480874
+        },
+        {
+          "year": 2013,
+          "temperature_c": 27.94380821917808
+        },
+        {
+          "year": 2014,
+          "temperature_c": 27.827780821917806
+        },
+        {
+          "year": 2015,
+          "temperature_c": 28.142082191780823
+        },
+        {
+          "year": 2016,
+          "temperature_c": 28.37191256830601
+        },
+        {
+          "year": 2017,
+          "temperature_c": 27.65767123287671
+        },
+        {
+          "year": 2018,
+          "temperature_c": 28.61695890410959
+        },
+        {
+          "year": 2019,
+          "temperature_c": 27.59268493150685
+        },
+        {
+          "year": 2020,
+          "temperature_c": 27.16964480874317
+        },
+        {
+          "year": 2021,
+          "temperature_c": 27.716657534246576
+        },
+        {
+          "year": 2022,
+          "temperature_c": 27.361342465753424
+        },
+        {
+          "year": 2023,
+          "temperature_c": 27.534082191780822
+        },
+        {
+          "year": 2024,
+          "temperature_c": 28.059043715846997
+        },
+        {
+          "year": 2025,
+          "temperature_c": 27.917041095890408
+        }
+      ],
+      "completeness": {
+        "requested_months": 540,
+        "returned_month_keys": 540,
+        "valid_months": 540,
+        "absent_months": [],
+        "fill_value_months": [],
+        "partial_months": [],
+        "ignored_annual_summaries": 45,
+        "complete_calendar_years": 45,
+        "excluded_calendar_years": []
+      },
+      "provenance": {
+        "source_url": "https://power.larc.nasa.gov/api/temporal/monthly/point?parameters=T2M&community=SB&latitude=24.6333&longitude=68.9&start=1981&end=2025&format=JSON",
+        "retrieved_at_utc": "2026-11-14T16:03:32.952Z",
+        "sha256": "3f9a3c1f8b36dfa8342b4e14a40cedc2f5a34a50e99a781d36a87770f304a957",
+        "documentation_url": "https://power.larc.nasa.gov/docs/services/api/temporal/monthly/",
+        "source_documentation_url": "https://power.larc.nasa.gov/docs/methodology/data/sources_meteorology/",
+        "attribution": "NASA Langley Research Center POWER Project, using NASA GMAO MERRA-2.",
+        "community": "SB",
+        "header": {
+          "title": "NASA/POWER Source Native Resolution Monthly and Annual",
+          "api": {
+            "version": "v2.10.0",
+            "name": "POWER Monthly and Annual API"
+          },
+          "sources": [
+            "MERRA2"
+          ],
+          "fill_value": -999.0,
+          "time_standard": "LST",
+          "start": "19810101",
+          "end": "20251231"
+        },
+        "parameter": {
+          "units": "C",
+          "longname": "Temperature at 2 Meters"
+        },
+        "returned_coordinates": [
+          68.9,
+          24.633,
+          6.15
+        ],
+        "messages": []
+      },
+      "windows": [
+        {
+          "id": "1981-2025",
+          "start": 1981,
+          "end": 2025,
+          "valid_years": [
+            1981,
+            1982,
+            1983,
+            1984,
+            1985,
+            1986,
+            1987,
+            1988,
+            1989,
+            1990,
+            1991,
+            1992,
+            1993,
+            1994,
+            1995,
+            1996,
+            1997,
+            1998,
+            1999,
+            2000,
+            2001,
+            2002,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ],
+          "trend": {
+            "model": "Ordinary least squares with intercept",
+            "slope_c_per_decade": -0.012999452634707033,
+            "intercept_c": 27.887330934762186,
+            "reference_year": 1981,
+            "degrees_of_freedom": 43,
+            "confidence_level": 0.95,
+            "conventional": {
+              "standard_error": 0.045821192942052016,
+              "confidence_interval": [
+                -0.10540669500025636,
+                0.0794077897308423
+              ],
+              "p_value": 0.7780021754658217
+            },
+            "hac": {
+              "standard_error": 0.05638697776889796,
+              "confidence_interval": [
+                -0.12671463083927628,
+                0.1007157255698622
+              ],
+              "p_value": 0.818765545563446,
+              "kernel": "Bartlett",
+              "max_lag_years": 3,
+              "bandwidth_rule": "floor(4 × (n / 100)^(2/9))",
+              "small_sample_correction": "n / (n − 2)",
+              "reference_distribution": "Student t (n − 2 degrees of freedom, approximate)"
+            }
+          }
+        },
+        {
+          "id": "1991-2025",
+          "start": 1991,
+          "end": 2025,
+          "valid_years": [
+            1991,
+            1992,
+            1993,
+            1994,
+            1995,
+            1996,
+            1997,
+            1998,
+            1999,
+            2000,
+            2001,
+            2002,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ],
+          "trend": {
+            "model": "Ordinary least squares with intercept",
+            "slope_c_per_decade": -0.10882513220873768,
+            "intercept_c": 28.07356872734272,
+            "reference_year": 1991,
+            "degrees_of_freedom": 33,
+            "confidence_level": 0.95,
+            "conventional": {
+              "standard_error": 0.06494794017833302,
+              "confidence_interval": [
+                -0.24096271003938072,
+                0.023312445621905348
+              ],
+              "p_value": 0.10327303735935363
+            },
+            "hac": {
+              "standard_error": 0.059947680732462316,
+              "confidence_interval": [
+                -0.23078960570554122,
+                0.013139341288065848
+              ],
+              "p_value": 0.07856970497862027,
+              "kernel": "Bartlett",
+              "max_lag_years": 3,
+              "bandwidth_rule": "floor(4 × (n / 100)^(2/9))",
+              "small_sample_correction": "n / (n − 2)",
+              "reference_distribution": "Student t (n − 2 degrees of freedom, approximate)"
+            }
+          }
+        },
+        {
+          "id": "2001-2025",
+          "start": 2001,
+          "end": 2025,
+          "valid_years": [
+            2001,
+            2002,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ],
+          "trend": {
+            "model": "Ordinary least squares with intercept",
+            "slope_c_per_decade": -0.05835301179843854,
+            "intercept_c": 27.878192761549386,
+            "reference_year": 2001,
+            "degrees_of_freedom": 23,
+            "confidence_level": 0.95,
+            "conventional": {
+              "standard_error": 0.10473771177365798,
+              "confidence_interval": [
+                -0.27501947635689206,
+                0.158313452760015
+              ],
+              "p_value": 0.5828171368384283
+            },
+            "hac": {
+              "standard_error": 0.0825610857953816,
+              "confidence_interval": [
+                -0.22914363025351406,
+                0.11243760665663696
+              ],
+              "p_value": 0.4867990142702239,
+              "kernel": "Bartlett",
+              "max_lag_years": 2,
+              "bandwidth_rule": "floor(4 × (n / 100)^(2/9))",
+              "small_sample_correction": "n / (n − 2)",
+              "reference_distribution": "Student t (n − 2 degrees of freedom, approximate)"
+            }
+          }
+        },
+        {
+          "id": "1981-2015",
+          "start": 1981,
+          "end": 2015,
+          "valid_years": [
+            1981,
+            1982,
+            1983,
+            1984,
+            1985,
+            1986,
+            1987,
+            1988,
+            1989,
+            1990,
+            1991,
+            1992,
+            1993,
+            1994,
+            1995,
+            1996,
+            1997,
+            1998,
+            1999,
+            2000,
+            2001,
+            2002,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015
+          ],
+          "trend": {
+            "model": "Ordinary least squares with intercept",
+            "slope_c_per_decade": 0.019152874414230414,
+            "intercept_c": 27.843037450764427,
+            "reference_year": 1981,
+            "degrees_of_freedom": 33,
+            "confidence_level": 0.95,
+            "conventional": {
+              "standard_error": 0.06515582308233367,
+              "confidence_interval": [
+                -0.11340764436468015,
+                0.15171339319314098
+              ],
+              "p_value": 0.7706333717194265
+            },
+            "hac": {
+              "standard_error": 0.07485589970269164,
+              "confidence_interval": [
+                -0.13314259863522912,
+                0.17144834746368995
+              ],
+              "p_value": 0.7996446368962432,
+              "kernel": "Bartlett",
+              "max_lag_years": 3,
+              "bandwidth_rule": "floor(4 × (n / 100)^(2/9))",
+              "small_sample_correction": "n / (n − 2)",
+              "reference_distribution": "Student t (n − 2 degrees of freedom, approximate)"
+            }
+          }
+        }
+      ],
+      "shared_sample_flags": []
+    },
+    {
+      "id": "thatta",
+      "latitude": 24.75,
+      "longitude": 67.9,
+      "coordinate_source": "https://rmcsindh.pmd.gov.pk/Network.html",
+      "candidate_native_cells": [
+        [
+          24.5,
+          68.125
+        ],
+        [
+          25.0,
+          68.125
+        ]
+      ],
+      "native_cell": {
+        "latitude": 25.0,
+        "longitude": 68.125
+      },
+      "location": {
+        "city": "Thatta",
+        "country": "Pakistan",
+        "latitude": 24.75,
+        "longitude": 67.9
+      },
+      "annual_series": [
+        {
+          "year": 1981,
+          "temperature_c": 27.195342465753424
+        },
+        {
+          "year": 1982,
+          "temperature_c": 27.01931506849315
+        },
+        {
+          "year": 1983,
+          "temperature_c": 26.72605479452055
+        },
+        {
+          "year": 1984,
+          "temperature_c": 26.8401912568306
+        },
+        {
+          "year": 1985,
+          "temperature_c": 26.976630136986298
+        },
+        {
+          "year": 1986,
+          "temperature_c": 26.68841095890411
+        },
+        {
+          "year": 1987,
+          "temperature_c": 27.413479452054794
+        },
+        {
+          "year": 1988,
+          "temperature_c": 28.094754098360657
+        },
+        {
+          "year": 1989,
+          "temperature_c": 27.273835616438358
+        },
+        {
+          "year": 1990,
+          "temperature_c": 27.53723287671233
+        },
+        {
+          "year": 1991,
+          "temperature_c": 27.34846575342466
+        },
+        {
+          "year": 1992,
+          "temperature_c": 27.299863387978142
+        },
+        {
+          "year": 1993,
+          "temperature_c": 27.925205479452057
+        },
+        {
+          "year": 1994,
+          "temperature_c": 27.155397260273972
+        },
+        {
+          "year": 1995,
+          "temperature_c": 27.46668493150685
+        },
+        {
+          "year": 1996,
+          "temperature_c": 27.309590163934423
+        },
+        {
+          "year": 1997,
+          "temperature_c": 26.98613698630137
+        },
+        {
+          "year": 1998,
+          "temperature_c": 28.32224657534247
+        },
+        {
+          "year": 1999,
+          "temperature_c": 28.021205479452053
+        },
+        {
+          "year": 2000,
+          "temperature_c": 27.62090163934426
+        },
+        {
+          "year": 2001,
+          "temperature_c": 27.55380821917808
+        },
+        {
+          "year": 2002,
+          "temperature_c": 27.465479452054794
+        },
+        {
+          "year": 2003,
+          "temperature_c": 27.08958904109589
+        },
+        {
+          "year": 2004,
+          "temperature_c": 27.679972677595632
+        },
+        {
+          "year": 2005,
+          "temperature_c": 27.199342465753425
+        },
+        {
+          "year": 2006,
+          "temperature_c": 26.82564383561644
+        },
+        {
+          "year": 2007,
+          "temperature_c": 27.386794520547944
+        },
+        {
+          "year": 2008,
+          "temperature_c": 26.86811475409836
+        },
+        {
+          "year": 2009,
+          "temperature_c": 27.440027397260277
+        },
+        {
+          "year": 2010,
+          "temperature_c": 27.488054794520547
+        },
+        {
+          "year": 2011,
+          "temperature_c": 26.885013698630132
+        },
+        {
+          "year": 2012,
+          "temperature_c": 26.785601092896176
+        },
+        {
+          "year": 2013,
+          "temperature_c": 27.462219178082194
+        },
+        {
+          "year": 2014,
+          "temperature_c": 27.290712328767125
+        },
+        {
+          "year": 2015,
+          "temperature_c": 27.614739726027395
+        },
+        {
+          "year": 2016,
+          "temperature_c": 27.92308743169399
+        },
+        {
+          "year": 2017,
+          "temperature_c": 27.362547945205478
+        },
+        {
+          "year": 2018,
+          "temperature_c": 28.065972602739727
+        },
+        {
+          "year": 2019,
+          "temperature_c": 27.08608219178082
+        },
+        {
+          "year": 2020,
+          "temperature_c": 26.70035519125683
+        },
+        {
+          "year": 2021,
+          "temperature_c": 27.388904109589042
+        },
+        {
+          "year": 2022,
+          "temperature_c": 26.93542465753425
+        },
+        {
+          "year": 2023,
+          "temperature_c": 27.2366301369863
+        },
+        {
+          "year": 2024,
+          "temperature_c": 27.70549180327869
+        },
+        {
+          "year": 2025,
+          "temperature_c": 27.44931506849315
+        }
+      ],
+      "completeness": {
+        "requested_months": 540,
+        "returned_month_keys": 540,
+        "valid_months": 540,
+        "absent_months": [],
+        "fill_value_months": [],
+        "partial_months": [],
+        "ignored_annual_summaries": 45,
+        "complete_calendar_years": 45,
+        "excluded_calendar_years": []
+      },
+      "provenance": {
+        "source_url": "https://power.larc.nasa.gov/api/temporal/monthly/point?parameters=T2M&community=SB&latitude=24.75&longitude=67.9&start=1981&end=2025&format=JSON",
+        "retrieved_at_utc": "2026-11-14T16:03:33.019Z",
+        "sha256": "b84c71115c6635f964b5d5c3209d30907bcf069363734fd37305c79665a38c0f",
+        "documentation_url": "https://power.larc.nasa.gov/docs/services/api/temporal/monthly/",
+        "source_documentation_url": "https://power.larc.nasa.gov/docs/methodology/data/sources_meteorology/",
+        "attribution": "NASA Langley Research Center POWER Project, using NASA GMAO MERRA-2.",
+        "community": "SB",
+        "header": {
+          "title": "NASA/POWER Source Native Resolution Monthly and Annual",
+          "api": {
+            "version": "v2.10.0",
+            "name": "POWER Monthly and Annual API"
+          },
+          "sources": [
+            "MERRA2"
+          ],
+          "fill_value": -999.0,
+          "time_standard": "LST",
+          "start": "19810101",
+          "end": "20251231"
+        },
+        "parameter": {
+          "units": "C",
+          "longname": "Temperature at 2 Meters"
+        },
+        "returned_coordinates": [
+          67.9,
+          24.75,
+          33.89
+        ],
+        "messages": []
+      },
+      "windows": [
+        {
+          "id": "1981-2025",
+          "start": 1981,
+          "end": 2025,
+          "valid_years": [
+            1981,
+            1982,
+            1983,
+            1984,
+            1985,
+            1986,
+            1987,
+            1988,
+            1989,
+            1990,
+            1991,
+            1992,
+            1993,
+            1994,
+            1995,
+            1996,
+            1997,
+            1998,
+            1999,
+            2000,
+            2001,
+            2002,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ],
+          "trend": {
+            "model": "Ordinary least squares with intercept",
+            "slope_c_per_decade": 0.028982008842463738,
+            "intercept_c": 27.27201444060763,
+            "reference_year": 1981,
+            "degrees_of_freedom": 43,
+            "confidence_level": 0.95,
+            "conventional": {
+              "standard_error": 0.04611515358046594,
+              "confidence_interval": [
+                -0.06401806164945498,
+                0.12198207933438246
+              ],
+              "p_value": 0.5330200669490296
+            },
+            "hac": {
+              "standard_error": 0.05651723639201834,
+              "confidence_interval": [
+                -0.08499586091123452,
+                0.142959878596162
+              ],
+              "p_value": 0.6107160319604299,
+              "kernel": "Bartlett",
+              "max_lag_years": 3,
+              "bandwidth_rule": "floor(4 × (n / 100)^(2/9))",
+              "small_sample_correction": "n / (n − 2)",
+              "reference_distribution": "Student t (n − 2 degrees of freedom, approximate)"
+            }
+          }
+        },
+        {
+          "id": "1991-2025",
+          "start": 1991,
+          "end": 2025,
+          "valid_years": [
+            1991,
+            1992,
+            1993,
+            1994,
+            1995,
+            1996,
+            1997,
+            1998,
+            1999,
+            2000,
+            2001,
+            2002,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ],
+          "trend": {
+            "model": "Ordinary least squares with intercept",
+            "slope_c_per_decade": -0.05714523030561525,
+            "intercept_c": 27.4784218051679,
+            "reference_year": 1991,
+            "degrees_of_freedom": 33,
+            "confidence_level": 0.95,
+            "conventional": {
+              "standard_error": 0.06451530820440386,
+              "confidence_interval": [
+                -0.18840261176713372,
+                0.07411215115590322
+              ],
+              "p_value": 0.38215487580930785
+            },
+            "hac": {
+              "standard_error": 0.05858666494690763,
+              "confidence_interval": [
+                -0.17634069636663774,
+                0.06205023575540726
+              ],
+              "p_value": 0.3364599510154036,
+              "kernel": "Bartlett",
+              "max_lag_years": 3,
+              "bandwidth_rule": "floor(4 × (n / 100)^(2/9))",
+              "small_sample_correction": "n / (n − 2)",
+              "reference_distribution": "Student t (n − 2 degrees of freedom, approximate)"
+            }
+          }
+        },
+        {
+          "id": "2001-2025",
+          "start": 2001,
+          "end": 2025,
+          "valid_years": [
+            2001,
+            2002,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ],
+          "trend": {
+            "model": "Ordinary least squares with intercept",
+            "slope_c_per_decade": 0.030307139525647092,
+            "intercept_c": 27.27918840539652,
+            "reference_year": 2001,
+            "degrees_of_freedom": 23,
+            "confidence_level": 0.95,
+            "conventional": {
+              "standard_error": 0.10057815499167318,
+              "confidence_interval": [
+                -0.17775462623978344,
+                0.23836890529107763
+              ],
+              "p_value": 0.7658709182720463
+            },
+            "hac": {
+              "standard_error": 0.08195498583401396,
+              "confidence_interval": [
+                -0.13922966563167055,
+                0.19984394468296474
+              ],
+              "p_value": 0.7149130891333673,
+              "kernel": "Bartlett",
+              "max_lag_years": 2,
+              "bandwidth_rule": "floor(4 × (n / 100)^(2/9))",
+              "small_sample_correction": "n / (n − 2)",
+              "reference_distribution": "Student t (n − 2 degrees of freedom, approximate)"
+            }
+          }
+        },
+        {
+          "id": "1981-2015",
+          "start": 1981,
+          "end": 2015,
+          "valid_years": [
+            1981,
+            1982,
+            1983,
+            1984,
+            1985,
+            1986,
+            1987,
+            1988,
+            1989,
+            1990,
+            1991,
+            1992,
+            1993,
+            1994,
+            1995,
+            1996,
+            1997,
+            1998,
+            1999,
+            2000,
+            2001,
+            2002,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015
+          ],
+          "trend": {
+            "model": "Ordinary least squares with intercept",
+            "slope_c_per_decade": 0.038438873236243065,
+            "intercept_c": 27.256255560189487,
+            "reference_year": 1981,
+            "degrees_of_freedom": 33,
+            "confidence_level": 0.95,
+            "conventional": {
+              "standard_error": 0.06692793961642428,
+              "confidence_interval": [
+                -0.09772704374013774,
+                0.17460479021262387
+              ],
+              "p_value": 0.5696376456071783
+            },
+            "hac": {
+              "standard_error": 0.07968820638235137,
+              "confidence_interval": [
+                -0.12368800167495078,
+                0.2005657481474369
+              ],
+              "p_value": 0.6327302933821164,
+              "kernel": "Bartlett",
+              "max_lag_years": 3,
+              "bandwidth_rule": "floor(4 × (n / 100)^(2/9))",
+              "small_sample_correction": "n / (n − 2)",
+              "reference_distribution": "Student t (n − 2 degrees of freedom, approximate)"
+            }
+          }
+        }
+      ],
+      "shared_sample_flags": []
+    },
+    {
+      "id": "nawabshah",
+      "latitude": 26.25,
+      "longitude": 68.3667,
+      "coordinate_source": "https://rmcsindh.pmd.gov.pk/Network.html",
+      "candidate_native_cells": [
+        [
+          26.0,
+          68.125
+        ],
+        [
+          26.5,
+          68.125
+        ]
+      ],
+      "native_cell": {
+        "latitude": 26.5,
+        "longitude": 68.125
+      },
+      "location": {
+        "city": "Nawabshah",
+        "country": "Pakistan",
+        "latitude": 26.25,
+        "longitude": 68.3667
+      },
+      "annual_series": [
+        {
+          "year": 1981,
+          "temperature_c": 28.654684931506853
+        },
+        {
+          "year": 1982,
+          "temperature_c": 28.038000000000004
+        },
+        {
+          "year": 1983,
+          "temperature_c": 28.01378082191781
+        },
+        {
+          "year": 1984,
+          "temperature_c": 28.256721311475406
+        },
+        {
+          "year": 1985,
+          "temperature_c": 28.550191780821915
+        },
+        {
+          "year": 1986,
+          "temperature_c": 28.134575342465755
+        },
+        {
+          "year": 1987,
+          "temperature_c": 28.979369863013698
+        },
+        {
+          "year": 1988,
+          "temperature_c": 29.57338797814208
+        },
+        {
+          "year": 1989,
+          "temperature_c": 28.41578082191781
+        },
+        {
+          "year": 1990,
+          "temperature_c": 29.162301369863012
+        },
+        {
+          "year": 1991,
+          "temperature_c": 28.74421917808219
+        },
+        {
+          "year": 1992,
+          "temperature_c": 28.595573770491804
+        },
+        {
+          "year": 1993,
+          "temperature_c": 29.397013698630136
+        },
+        {
+          "year": 1994,
+          "temperature_c": 28.215671232876712
+        },
+        {
+          "year": 1995,
+          "temperature_c": 28.610164383561642
+        },
+        {
+          "year": 1996,
+          "temperature_c": 28.708442622950823
+        },
+        {
+          "year": 1997,
+          "temperature_c": 28.408794520547943
+        },
+        {
+          "year": 1998,
+          "temperature_c": 29.719561643835615
+        },
+        {
+          "year": 1999,
+          "temperature_c": 29.44649315068493
+        },
+        {
+          "year": 2000,
+          "temperature_c": 29.13174863387978
+        },
+        {
+          "year": 2001,
+          "temperature_c": 29.267123287671232
+        },
+        {
+          "year": 2002,
+          "temperature_c": 29.09841095890411
+        },
+        {
+          "year": 2003,
+          "temperature_c": 28.531479452054793
+        },
+        {
+          "year": 2004,
+          "temperature_c": 29.275546448087432
+        },
+        {
+          "year": 2005,
+          "temperature_c": 28.651205479452056
+        },
+        {
+          "year": 2006,
+          "temperature_c": 29.00904109589041
+        },
+        {
+          "year": 2007,
+          "temperature_c": 28.678849315068494
+        },
+        {
+          "year": 2008,
+          "temperature_c": 28.403333333333336
+        },
+        {
+          "year": 2009,
+          "temperature_c": 29.0313698630137
+        },
+        {
+          "year": 2010,
+          "temperature_c": 29.024794520547943
+        },
+        {
+          "year": 2011,
+          "temperature_c": 28.114821917808218
+        },
+        {
+          "year": 2012,
+          "temperature_c": 28.18587431693989
+        },
+        {
+          "year": 2013,
+          "temperature_c": 28.654849315068493
+        },
+        {
+          "year": 2014,
+          "temperature_c": 28.626246575342467
+        },
+        {
+          "year": 2015,
+          "temperature_c": 28.958136986301373
+        },
+        {
+          "year": 2016,
+          "temperature_c": 29.63879781420765
+        },
+        {
+          "year": 2017,
+          "temperature_c": 29.14854794520548
+        },
+        {
+          "year": 2018,
+          "temperature_c": 29.55868493150685
+        },
+        {
+          "year": 2019,
+          "temperature_c": 28.145232876712328
+        },
+        {
+          "year": 2020,
+          "temperature_c": 27.462677595628417
+        },
+        {
+          "year": 2021,
+          "temperature_c": 29.172602739726027
+        },
+        {
+          "year": 2022,
+          "temperature_c": 27.558109589041095
+        },
+        {
+          "year": 2023,
+          "temperature_c": 28.61435616438356
+        },
+        {
+          "year": 2024,
+          "temperature_c": 28.770765027322405
+        },
+        {
+          "year": 2025,
+          "temperature_c": 28.879753424657537
+        }
+      ],
+      "completeness": {
+        "requested_months": 540,
+        "returned_month_keys": 540,
+        "valid_months": 540,
+        "absent_months": [],
+        "fill_value_months": [],
+        "partial_months": [],
+        "ignored_annual_summaries": 45,
+        "complete_calendar_years": 45,
+        "excluded_calendar_years": []
+      },
+      "provenance": {
+        "source_url": "https://power.larc.nasa.gov/api/temporal/monthly/point?parameters=T2M&community=SB&latitude=26.25&longitude=68.3667&start=1981&end=2025&format=JSON",
+        "retrieved_at_utc": "2026-11-14T16:03:33.068Z",
+        "sha256": "7e4a2c42c0fec9d88ee4e97bc8419820b87c640423398fa7f1e1d72d921dc697",
+        "documentation_url": "https://power.larc.nasa.gov/docs/services/api/temporal/monthly/",
+        "source_documentation_url": "https://power.larc.nasa.gov/docs/methodology/data/sources_meteorology/",
+        "attribution": "NASA Langley Research Center POWER Project, using NASA GMAO MERRA-2.",
+        "community": "SB",
+        "header": {
+          "title": "NASA/POWER Source Native Resolution Monthly and Annual",
+          "api": {
+            "version": "v2.10.0",
+            "name": "POWER Monthly and Annual API"
+          },
+          "sources": [
+            "MERRA2"
+          ],
+          "fill_value": -999.0,
+          "time_standard": "LST",
+          "start": "19810101",
+          "end": "20251231"
+        },
+        "parameter": {
+          "units": "C",
+          "longname": "Temperature at 2 Meters"
+        },
+        "returned_coordinates": [
+          68.367,
+          26.25,
+          43.94
+        ],
+        "messages": []
+      },
+      "windows": [
+        {
+          "id": "1981-2025",
+          "start": 1981,
+          "end": 2025,
+          "valid_years": [
+            1981,
+            1982,
+            1983,
+            1984,
+            1985,
+            1986,
+            1987,
+            1988,
+            1989,
+            1990,
+            1991,
+            1992,
+            1993,
+            1994,
+            1995,
+            1996,
+            1997,
+            1998,
+            1999,
+            2000,
+            2001,
+            2002,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ],
+          "trend": {
+            "model": "Ordinary least squares with intercept",
+            "slope_c_per_decade": 0.010371913808998413,
+            "intercept_c": 28.71533930141001,
+            "reference_year": 1981,
+            "degrees_of_freedom": 43,
+            "confidence_level": 0.95,
+            "conventional": {
+              "standard_error": 0.061324900235244034,
+              "confidence_interval": [
+                -0.11330153411384278,
+                0.1340453617318396
+              ],
+              "p_value": 0.8664870905408817
+            },
+            "hac": {
+              "standard_error": 0.07967969944942103,
+              "confidence_interval": [
+                -0.15031751450746653,
+                0.17106134212546334
+              ],
+              "p_value": 0.89703890749768,
+              "kernel": "Bartlett",
+              "max_lag_years": 3,
+              "bandwidth_rule": "floor(4 × (n / 100)^(2/9))",
+              "small_sample_correction": "n / (n − 2)",
+              "reference_distribution": "Student t (n − 2 degrees of freedom, approximate)"
+            }
+          }
+        },
+        {
+          "id": "1991-2025",
+          "start": 1991,
+          "end": 2025,
+          "valid_years": [
+            1991,
+            1992,
+            1993,
+            1994,
+            1995,
+            1996,
+            1997,
+            1998,
+            1999,
+            2000,
+            2001,
+            2002,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ],
+          "trend": {
+            "model": "Ordinary least squares with intercept",
+            "slope_c_per_decade": -0.10244251244925318,
+            "intercept_c": 28.958103522861347,
+            "reference_year": 1991,
+            "degrees_of_freedom": 33,
+            "confidence_level": 0.95,
+            "conventional": {
+              "standard_error": 0.08808626660964439,
+              "confidence_interval": [
+                -0.28165536936177554,
+                0.07677034446326919
+              ],
+              "p_value": 0.25317891492258837
+            },
+            "hac": {
+              "standard_error": 0.09444503363052457,
+              "confidence_interval": [
+                -0.2945923781386727,
+                0.0897073532401663
+              ],
+              "p_value": 0.2859250038635518,
+              "kernel": "Bartlett",
+              "max_lag_years": 3,
+              "bandwidth_rule": "floor(4 × (n / 100)^(2/9))",
+              "small_sample_correction": "n / (n − 2)",
+              "reference_distribution": "Student t (n − 2 degrees of freedom, approximate)"
+            }
+          }
+        },
+        {
+          "id": "2001-2025",
+          "start": 2001,
+          "end": 2025,
+          "valid_years": [
+            2001,
+            2002,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ],
+          "trend": {
+            "model": "Ordinary least squares with intercept",
+            "slope_c_per_decade": -0.17324069742668147,
+            "intercept_c": 28.946313275867023,
+            "reference_year": 2001,
+            "degrees_of_freedom": 23,
+            "confidence_level": 0.95,
+            "conventional": {
+              "standard_error": 0.14998313128579027,
+              "confidence_interval": [
+                -0.48350444339550963,
+                0.1370230485421467
+              ],
+              "p_value": 0.25992228162055
+            },
+            "hac": {
+              "standard_error": 0.11667175281114436,
+              "confidence_interval": [
+                -0.41459460680038435,
+                0.06811321194702141
+              ],
+              "p_value": 0.15115972607423372,
+              "kernel": "Bartlett",
+              "max_lag_years": 2,
+              "bandwidth_rule": "floor(4 × (n / 100)^(2/9))",
+              "small_sample_correction": "n / (n − 2)",
+              "reference_distribution": "Student t (n − 2 degrees of freedom, approximate)"
+            }
+          }
+        },
+        {
+          "id": "1981-2015",
+          "start": 1981,
+          "end": 2015,
+          "valid_years": [
+            1981,
+            1982,
+            1983,
+            1984,
+            1985,
+            1986,
+            1987,
+            1988,
+            1989,
+            1990,
+            1991,
+            1992,
+            1993,
+            1994,
+            1995,
+            1996,
+            1997,
+            1998,
+            1999,
+            2000,
+            2001,
+            2002,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015
+          ],
+          "trend": {
+            "model": "Ordinary least squares with intercept",
+            "slope_c_per_decade": 0.06923760374723731,
+            "intercept_c": 28.632797785691114,
+            "reference_year": 1981,
+            "degrees_of_freedom": 33,
+            "confidence_level": 0.95,
+            "conventional": {
+              "standard_error": 0.07628973317103635,
+              "confidence_interval": [
+                -0.08597502542756436,
+                0.22445023292203897
+              ],
+              "p_value": 0.37069018344164195
+            },
+            "hac": {
+              "standard_error": 0.09524899260012129,
+              "confidence_interval": [
+                -0.12454792876434828,
+                0.2630231362588229
+              ],
+              "p_value": 0.47240553406730756,
+              "kernel": "Bartlett",
+              "max_lag_years": 3,
+              "bandwidth_rule": "floor(4 × (n / 100)^(2/9))",
+              "small_sample_correction": "n / (n − 2)",
+              "reference_distribution": "Student t (n − 2 degrees of freedom, approximate)"
+            }
+          }
+        }
+      ],
+      "shared_sample_flags": []
+    },
+    {
+      "id": "sukkur",
+      "latitude": 27.7,
+      "longitude": 68.8667,
+      "coordinate_source": "https://rmcsindh.pmd.gov.pk/Network.html",
+      "candidate_native_cells": [
+        [
+          27.5,
+          68.75
+        ]
+      ],
+      "native_cell": {
+        "latitude": 27.5,
+        "longitude": 68.75
+      },
+      "location": {
+        "city": "Sukkur",
+        "country": "Pakistan",
+        "latitude": 27.7,
+        "longitude": 68.8667
+      },
+      "annual_series": [
+        {
+          "year": 1981,
+          "temperature_c": 28.691287671232875
+        },
+        {
+          "year": 1982,
+          "temperature_c": 27.943753424657533
+        },
+        {
+          "year": 1983,
+          "temperature_c": 28.133890410958905
+        },
+        {
+          "year": 1984,
+          "temperature_c": 28.288661202185793
+        },
+        {
+          "year": 1985,
+          "temperature_c": 28.66539726027397
+        },
+        {
+          "year": 1986,
+          "temperature_c": 28.26150684931507
+        },
+        {
+          "year": 1987,
+          "temperature_c": 29.122219178082194
+        },
+        {
+          "year": 1988,
+          "temperature_c": 29.691366120218575
+        },
+        {
+          "year": 1989,
+          "temperature_c": 28.45465753424658
+        },
+        {
+          "year": 1990,
+          "temperature_c": 29.238054794520547
+        },
+        {
+          "year": 1991,
+          "temperature_c": 28.87882191780822
+        },
+        {
+          "year": 1992,
+          "temperature_c": 28.53639344262295
+        },
+        {
+          "year": 1993,
+          "temperature_c": 29.312438356164385
+        },
+        {
+          "year": 1994,
+          "temperature_c": 28.44698630136987
+        },
+        {
+          "year": 1995,
+          "temperature_c": 28.537205479452055
+        },
+        {
+          "year": 1996,
+          "temperature_c": 28.664672131147544
+        },
+        {
+          "year": 1997,
+          "temperature_c": 28.113205479452056
+        },
+        {
+          "year": 1998,
+          "temperature_c": 29.668547945205482
+        },
+        {
+          "year": 1999,
+          "temperature_c": 29.459123287671233
+        },
+        {
+          "year": 2000,
+          "temperature_c": 29.140409836065572
+        },
+        {
+          "year": 2001,
+          "temperature_c": 29.299780821917807
+        },
+        {
+          "year": 2002,
+          "temperature_c": 29.287123287671232
+        },
+        {
+          "year": 2003,
+          "temperature_c": 28.614136986301368
+        },
+        {
+          "year": 2004,
+          "temperature_c": 29.373005464480876
+        },
+        {
+          "year": 2005,
+          "temperature_c": 28.70249315068493
+        },
+        {
+          "year": 2006,
+          "temperature_c": 29.269835616438357
+        },
+        {
+          "year": 2007,
+          "temperature_c": 29.015808219178084
+        },
+        {
+          "year": 2008,
+          "temperature_c": 28.628278688524592
+        },
+        {
+          "year": 2009,
+          "temperature_c": 29.110958904109587
+        },
+        {
+          "year": 2010,
+          "temperature_c": 29.348657534246577
+        },
+        {
+          "year": 2011,
+          "temperature_c": 28.697917808219177
+        },
+        {
+          "year": 2012,
+          "temperature_c": 28.071939890710382
+        },
+        {
+          "year": 2013,
+          "temperature_c": 28.709123287671233
+        },
+        {
+          "year": 2014,
+          "temperature_c": 28.688246575342465
+        },
+        {
+          "year": 2015,
+          "temperature_c": 28.686109589041095
+        },
+        {
+          "year": 2016,
+          "temperature_c": 29.709426229508196
+        },
+        {
+          "year": 2017,
+          "temperature_c": 29.192712328767122
+        },
+        {
+          "year": 2018,
+          "temperature_c": 29.573123287671233
+        },
+        {
+          "year": 2019,
+          "temperature_c": 28.303945205479454
+        },
+        {
+          "year": 2020,
+          "temperature_c": 27.324344262295085
+        },
+        {
+          "year": 2021,
+          "temperature_c": 29.289890410958908
+        },
+        {
+          "year": 2022,
+          "temperature_c": 27.51394520547945
+        },
+        {
+          "year": 2023,
+          "temperature_c": 28.348383561643836
+        },
+        {
+          "year": 2024,
+          "temperature_c": 28.609426229508195
+        },
+        {
+          "year": 2025,
+          "temperature_c": 29.2178904109589
+        }
+      ],
+      "completeness": {
+        "requested_months": 540,
+        "returned_month_keys": 540,
+        "valid_months": 540,
+        "absent_months": [],
+        "fill_value_months": [],
+        "partial_months": [],
+        "ignored_annual_summaries": 45,
+        "complete_calendar_years": 45,
+        "excluded_calendar_years": []
+      },
+      "provenance": {
+        "source_url": "https://power.larc.nasa.gov/api/temporal/monthly/point?parameters=T2M&community=SB&latitude=27.7&longitude=68.8667&start=1981&end=2025&format=JSON",
+        "retrieved_at_utc": "2026-11-14T16:03:32.696Z",
+        "sha256": "137543aaa3e7ed7240619e526e5c44b8a1fe1abff9b51ae865af07976ef91804",
+        "documentation_url": "https://power.larc.nasa.gov/docs/services/api/temporal/monthly/",
+        "source_documentation_url": "https://power.larc.nasa.gov/docs/methodology/data/sources_meteorology/",
+        "attribution": "NASA Langley Research Center POWER Project, using NASA GMAO MERRA-2.",
+        "community": "SB",
+        "header": {
+          "title": "NASA/POWER Source Native Resolution Monthly and Annual",
+          "api": {
+            "version": "v2.10.0",
+            "name": "POWER Monthly and Annual API"
+          },
+          "sources": [
+            "MERRA2"
+          ],
+          "fill_value": -999.0,
+          "time_standard": "LST",
+          "start": "19810101",
+          "end": "20251231"
+        },
+        "parameter": {
+          "units": "C",
+          "longname": "Temperature at 2 Meters"
+        },
+        "returned_coordinates": [
+          68.867,
+          27.7,
+          62.79
+        ],
+        "messages": []
+      },
+      "windows": [
+        {
+          "id": "1981-2025",
+          "start": 1981,
+          "end": 2025,
+          "valid_years": [
+            1981,
+            1982,
+            1983,
+            1984,
+            1985,
+            1986,
+            1987,
+            1988,
+            1989,
+            1990,
+            1991,
+            1992,
+            1993,
+            1994,
+            1995,
+            1996,
+            1997,
+            1998,
+            1999,
+            2000,
+            2001,
+            2002,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ],
+          "trend": {
+            "model": "Ordinary least squares with intercept",
+            "slope_c_per_decade": 0.008369820112093015,
+            "intercept_c": 28.777921986408057,
+            "reference_year": 1981,
+            "degrees_of_freedom": 43,
+            "confidence_level": 0.95,
+            "conventional": {
+              "standard_error": 0.06485614336227734,
+              "confidence_interval": [
+                -0.1224250582786131,
+                0.1391646985027991
+              ],
+              "p_value": 0.8979181938584346
+            },
+            "hac": {
+              "standard_error": 0.08627273455383397,
+              "confidence_interval": [
+                -0.1656157306686767,
+                0.18235537089286274
+              ],
+              "p_value": 0.923164616629152,
+              "kernel": "Bartlett",
+              "max_lag_years": 3,
+              "bandwidth_rule": "floor(4 × (n / 100)^(2/9))",
+              "small_sample_correction": "n / (n − 2)",
+              "reference_distribution": "Student t (n − 2 degrees of freedom, approximate)"
+            }
+          }
+        },
+        {
+          "id": "1991-2025",
+          "start": 1991,
+          "end": 2025,
+          "valid_years": [
+            1991,
+            1992,
+            1993,
+            1994,
+            1995,
+            1996,
+            1997,
+            1998,
+            1999,
+            2000,
+            2001,
+            2002,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ],
+          "trend": {
+            "model": "Ordinary least squares with intercept",
+            "slope_c_per_decade": -0.10075808648184648,
+            "intercept_c": 29.009697522269633,
+            "reference_year": 1991,
+            "degrees_of_freedom": 33,
+            "confidence_level": 0.95,
+            "conventional": {
+              "standard_error": 0.09374037452705625,
+              "confidence_interval": [
+                -0.2914743124457727,
+                0.08995813948207976
+              ],
+              "p_value": 0.29023240206092377
+            },
+            "hac": {
+              "standard_error": 0.10514620727068746,
+              "confidence_interval": [
+                -0.31467965364283895,
+                0.113163480679146
+              ],
+              "p_value": 0.34489687555215975,
+              "kernel": "Bartlett",
+              "max_lag_years": 3,
+              "bandwidth_rule": "floor(4 × (n / 100)^(2/9))",
+              "small_sample_correction": "n / (n − 2)",
+              "reference_distribution": "Student t (n − 2 degrees of freedom, approximate)"
+            }
+          }
+        },
+        {
+          "id": "2001-2025",
+          "start": 2001,
+          "end": 2025,
+          "valid_years": [
+            2001,
+            2002,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ],
+          "trend": {
+            "model": "Ordinary least squares with intercept",
+            "slope_c_per_decade": -0.2637741200112835,
+            "intercept_c": 29.13998906228586,
+            "reference_year": 2001,
+            "degrees_of_freedom": 23,
+            "confidence_level": 0.95,
+            "conventional": {
+              "standard_error": 0.15860391095856521,
+              "confidence_interval": [
+                -0.5918713074579434,
+                0.06432306743537636
+              ],
+              "p_value": 0.10986128649472938
+            },
+            "hac": {
+              "standard_error": 0.13235541331204584,
+              "confidence_interval": [
+                -0.5375721530394046,
+                0.010023913016837749
+              ],
+              "p_value": 0.05826524885776246,
+              "kernel": "Bartlett",
+              "max_lag_years": 2,
+              "bandwidth_rule": "floor(4 × (n / 100)^(2/9))",
+              "small_sample_correction": "n / (n − 2)",
+              "reference_distribution": "Student t (n − 2 degrees of freedom, approximate)"
+            }
+          }
+        },
+        {
+          "id": "1981-2015",
+          "start": 1981,
+          "end": 2015,
+          "valid_years": [
+            1981,
+            1982,
+            1983,
+            1984,
+            1985,
+            1986,
+            1987,
+            1988,
+            1989,
+            1990,
+            1991,
+            1992,
+            1993,
+            1994,
+            1995,
+            1996,
+            1997,
+            1998,
+            1999,
+            2000,
+            2001,
+            2002,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015
+          ],
+          "trend": {
+            "model": "Ordinary least squares with intercept",
+            "slope_c_per_decade": 0.09433117551234593,
+            "intercept_c": 28.661123128691543,
+            "reference_year": 1981,
+            "degrees_of_freedom": 33,
+            "confidence_level": 0.95,
+            "conventional": {
+              "standard_error": 0.07757020882681727,
+              "confidence_interval": [
+                -0.0634866009721535,
+                0.2521489519968454
+              ],
+              "p_value": 0.232583913884958
+            },
+            "hac": {
+              "standard_error": 0.09902255601912836,
+              "confidence_interval": [
+                -0.10713172950110478,
+                0.29579408052579664
+              ],
+              "p_value": 0.34770701491553524,
+              "kernel": "Bartlett",
+              "max_lag_years": 3,
+              "bandwidth_rule": "floor(4 × (n / 100)^(2/9))",
+              "small_sample_correction": "n / (n − 2)",
+              "reference_distribution": "Student t (n − 2 degrees of freedom, approximate)"
+            }
+          }
+        }
+      ],
+      "shared_sample_flags": []
+    },
+    {
+      "id": "larkana",
+      "latitude": 27.5333,
+      "longitude": 68.2,
+      "coordinate_source": "https://rmcsindh.pmd.gov.pk/Network.html",
+      "candidate_native_cells": [
+        [
+          27.5,
+          68.125
+        ]
+      ],
+      "native_cell": {
+        "latitude": 27.5,
+        "longitude": 68.125
+      },
+      "location": {
+        "city": "Larkana",
+        "country": "Pakistan",
+        "latitude": 27.5333,
+        "longitude": 68.2
+      },
+      "annual_series": [
+        {
+          "year": 1981,
+          "temperature_c": 29.054027397260278
+        },
+        {
+          "year": 1982,
+          "temperature_c": 28.220054794520546
+        },
+        {
+          "year": 1983,
+          "temperature_c": 28.36123287671233
+        },
+        {
+          "year": 1984,
+          "temperature_c": 28.661311475409832
+        },
+        {
+          "year": 1985,
+          "temperature_c": 29.029534246575338
+        },
+        {
+          "year": 1986,
+          "temperature_c": 28.534794520547948
+        },
+        {
+          "year": 1987,
+          "temperature_c": 29.453095890410957
+        },
+        {
+          "year": 1988,
+          "temperature_c": 29.98245901639344
+        },
+        {
+          "year": 1989,
+          "temperature_c": 28.6978904109589
+        },
+        {
+          "year": 1990,
+          "temperature_c": 29.5926301369863
+        },
+        {
+          "year": 1991,
+          "temperature_c": 29.201205479452057
+        },
+        {
+          "year": 1992,
+          "temperature_c": 28.61016393442623
+        },
+        {
+          "year": 1993,
+          "temperature_c": 29.671260273972603
+        },
+        {
+          "year": 1994,
+          "temperature_c": 28.58654794520548
+        },
+        {
+          "year": 1995,
+          "temperature_c": 28.879835616438356
+        },
+        {
+          "year": 1996,
+          "temperature_c": 29.018715846994535
+        },
+        {
+          "year": 1997,
+          "temperature_c": 28.471150684931505
+        },
+        {
+          "year": 1998,
+          "temperature_c": 30.089506849315068
+        },
+        {
+          "year": 1999,
+          "temperature_c": 29.909780821917806
+        },
+        {
+          "year": 2000,
+          "temperature_c": 29.636612021857925
+        },
+        {
+          "year": 2001,
+          "temperature_c": 29.702520547945205
+        },
+        {
+          "year": 2002,
+          "temperature_c": 29.622000000000003
+        },
+        {
+          "year": 2003,
+          "temperature_c": 28.91460273972603
+        },
+        {
+          "year": 2004,
+          "temperature_c": 29.659344262295086
+        },
+        {
+          "year": 2005,
+          "temperature_c": 28.89331506849315
+        },
+        {
+          "year": 2006,
+          "temperature_c": 29.675205479452053
+        },
+        {
+          "year": 2007,
+          "temperature_c": 29.09567123287671
+        },
+        {
+          "year": 2008,
+          "temperature_c": 28.899808743169398
+        },
+        {
+          "year": 2009,
+          "temperature_c": 29.266657534246576
+        },
+        {
+          "year": 2010,
+          "temperature_c": 29.64339726027397
+        },
+        {
+          "year": 2011,
+          "temperature_c": 28.910876712328772
+        },
+        {
+          "year": 2012,
+          "temperature_c": 28.296939890710384
+        },
+        {
+          "year": 2013,
+          "temperature_c": 28.944301369863012
+        },
+        {
+          "year": 2014,
+          "temperature_c": 29.041890410958906
+        },
+        {
+          "year": 2015,
+          "temperature_c": 29.09295890410959
+        },
+        {
+          "year": 2016,
+          "temperature_c": 29.981639344262298
+        },
+        {
+          "year": 2017,
+          "temperature_c": 29.52191780821918
+        },
+        {
+          "year": 2018,
+          "temperature_c": 29.952794520547947
+        },
+        {
+          "year": 2019,
+          "temperature_c": 28.646712328767123
+        },
+        {
+          "year": 2020,
+          "temperature_c": 27.573497267759564
+        },
+        {
+          "year": 2021,
+          "temperature_c": 29.660356164383565
+        },
+        {
+          "year": 2022,
+          "temperature_c": 27.690493150684933
+        },
+        {
+          "year": 2023,
+          "temperature_c": 28.758520547945206
+        },
+        {
+          "year": 2024,
+          "temperature_c": 28.811174863387976
+        },
+        {
+          "year": 2025,
+          "temperature_c": 29.58684931506849
+        }
+      ],
+      "completeness": {
+        "requested_months": 540,
+        "returned_month_keys": 540,
+        "valid_months": 540,
+        "absent_months": [],
+        "fill_value_months": [],
+        "partial_months": [],
+        "ignored_annual_summaries": 45,
+        "complete_calendar_years": 45,
+        "excluded_calendar_years": []
+      },
+      "provenance": {
+        "source_url": "https://power.larc.nasa.gov/api/temporal/monthly/point?parameters=T2M&community=SB&latitude=27.5333&longitude=68.2&start=1981&end=2025&format=JSON",
+        "retrieved_at_utc": "2026-11-14T16:03:32.892Z",
+        "sha256": "72b0954c67a9bd369cab1f2b651df25fd57af2e06a9e99c788b7f1cac667c746",
+        "documentation_url": "https://power.larc.nasa.gov/docs/services/api/temporal/monthly/",
+        "source_documentation_url": "https://power.larc.nasa.gov/docs/methodology/data/sources_meteorology/",
+        "attribution": "NASA Langley Research Center POWER Project, using NASA GMAO MERRA-2.",
+        "community": "SB",
+        "header": {
+          "title": "NASA/POWER Source Native Resolution Monthly and Annual",
+          "api": {
+            "version": "v2.10.0",
+            "name": "POWER Monthly and Annual API"
+          },
+          "sources": [
+            "MERRA2"
+          ],
+          "fill_value": -999.0,
+          "time_standard": "LST",
+          "start": "19810101",
+          "end": "20251231"
+        },
+        "parameter": {
+          "units": "C",
+          "longname": "Temperature at 2 Meters"
+        },
+        "returned_coordinates": [
+          68.2,
+          27.533,
+          52.74
+        ],
+        "messages": []
+      },
+      "windows": [
+        {
+          "id": "1981-2025",
+          "start": 1981,
+          "end": 2025,
+          "valid_years": [
+            1981,
+            1982,
+            1983,
+            1984,
+            1985,
+            1986,
+            1987,
+            1988,
+            1989,
+            1990,
+            1991,
+            1992,
+            1993,
+            1994,
+            1995,
+            1996,
+            1997,
+            1998,
+            1999,
+            2000,
+            2001,
+            2002,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ],
+          "trend": {
+            "model": "Ordinary least squares with intercept",
+            "slope_c_per_decade": 0.00552416903784297,
+            "intercept_c": 29.087963621622585,
+            "reference_year": 1981,
+            "degrees_of_freedom": 43,
+            "confidence_level": 0.95,
+            "conventional": {
+              "standard_error": 0.06945011752938102,
+              "confidence_interval": [
+                -0.13453534121911528,
+                0.14558367929480123
+              ],
+              "p_value": 0.9369709276854978
+            },
+            "hac": {
+              "standard_error": 0.08756997328798893,
+              "confidence_interval": [
+                -0.17107751297863322,
+                0.18212585105431917
+              ],
+              "p_value": 0.9499928147427611,
+              "kernel": "Bartlett",
+              "max_lag_years": 3,
+              "bandwidth_rule": "floor(4 × (n / 100)^(2/9))",
+              "small_sample_correction": "n / (n − 2)",
+              "reference_distribution": "Student t (n − 2 degrees of freedom, approximate)"
+            }
+          }
+        },
+        {
+          "id": "1991-2025",
+          "start": 1991,
+          "end": 2025,
+          "valid_years": [
+            1991,
+            1992,
+            1993,
+            1994,
+            1995,
+            1996,
+            1997,
+            1998,
+            1999,
+            2000,
+            2001,
+            2002,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ],
+          "trend": {
+            "model": "Ordinary least squares with intercept",
+            "slope_c_per_decade": -0.10284244006758181,
+            "intercept_c": 29.31535286074307,
+            "reference_year": 1991,
+            "degrees_of_freedom": 33,
+            "confidence_level": 0.95,
+            "conventional": {
+              "standard_error": 0.10160531419508208,
+              "confidence_interval": [
+                -0.3095600060996227,
+                0.10387512596445908
+              ],
+              "p_value": 0.3188182410783223
+            },
+            "hac": {
+              "standard_error": 0.11479480901355718,
+              "confidence_interval": [
+                -0.3363942350734391,
+                0.13070935493827546
+              ],
+              "p_value": 0.3768053602166591,
+              "kernel": "Bartlett",
+              "max_lag_years": 3,
+              "bandwidth_rule": "floor(4 × (n / 100)^(2/9))",
+              "small_sample_correction": "n / (n − 2)",
+              "reference_distribution": "Student t (n − 2 degrees of freedom, approximate)"
+            }
+          }
+        },
+        {
+          "id": "2001-2025",
+          "start": 2001,
+          "end": 2025,
+          "valid_years": [
+            2001,
+            2002,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ],
+          "trend": {
+            "model": "Ordinary least squares with intercept",
+            "slope_c_per_decade": -0.24959372477211852,
+            "intercept_c": 29.41325028842554,
+            "reference_year": 2001,
+            "degrees_of_freedom": 23,
+            "confidence_level": 0.95,
+            "conventional": {
+              "standard_error": 0.169291718696997,
+              "confidence_interval": [
+                -0.5998003270355807,
+                0.1006128774913437
+              ],
+              "p_value": 0.15394694945531667
+            },
+            "hac": {
+              "standard_error": 0.14169130635765723,
+              "confidence_interval": [
+                -0.542704523999102,
+                0.043517074454864885
+              ],
+              "p_value": 0.09143794313575762,
+              "kernel": "Bartlett",
+              "max_lag_years": 2,
+              "bandwidth_rule": "floor(4 × (n / 100)^(2/9))",
+              "small_sample_correction": "n / (n − 2)",
+              "reference_distribution": "Student t (n − 2 degrees of freedom, approximate)"
+            }
+          }
+        },
+        {
+          "id": "1981-2015",
+          "start": 1981,
+          "end": 2015,
+          "valid_years": [
+            1981,
+            1982,
+            1983,
+            1984,
+            1985,
+            1986,
+            1987,
+            1988,
+            1989,
+            1990,
+            1991,
+            1992,
+            1993,
+            1994,
+            1995,
+            1996,
+            1997,
+            1998,
+            1999,
+            2000,
+            2001,
+            2002,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015
+          ],
+          "trend": {
+            "model": "Ordinary least squares with intercept",
+            "slope_c_per_decade": 0.08465229139787889,
+            "intercept_c": 28.979556830244636,
+            "reference_year": 1981,
+            "degrees_of_freedom": 33,
+            "confidence_level": 0.95,
+            "conventional": {
+              "standard_error": 0.08500654362803792,
+              "confidence_interval": [
+                -0.08829482199665883,
+                0.2575994047924166
+              ],
+              "p_value": 0.3265778472916836
+            },
+            "hac": {
+              "standard_error": 0.09990526403079694,
+              "confidence_interval": [
+                -0.11860649656849265,
+                0.2879110793642504
+              ],
+              "p_value": 0.4029172704455378,
+              "kernel": "Bartlett",
+              "max_lag_years": 3,
+              "bandwidth_rule": "floor(4 × (n / 100)^(2/9))",
+              "small_sample_correction": "n / (n − 2)",
+              "reference_distribution": "Student t (n − 2 degrees of freedom, approximate)"
+            }
+          }
+        }
+      ],
+      "shared_sample_flags": []
+    },
+    {
+      "id": "mithi",
+      "latitude": 24.75,
+      "longitude": 69.8,
+      "coordinate_source": "https://rmcsindh.pmd.gov.pk/Network.html",
+      "candidate_native_cells": [
+        [
+          24.5,
+          70.0
+        ],
+        [
+          25.0,
+          70.0
+        ]
+      ],
+      "native_cell": {
+        "latitude": 25.0,
+        "longitude": 70.0
+      },
+      "location": {
+        "city": "Mithi",
+        "country": "Pakistan",
+        "latitude": 24.75,
+        "longitude": 69.8
+      },
+      "annual_series": [
+        {
+          "year": 1981,
+          "temperature_c": 27.916027397260276
+        },
+        {
+          "year": 1982,
+          "temperature_c": 27.727342465753424
+        },
+        {
+          "year": 1983,
+          "temperature_c": 27.57542465753425
+        },
+        {
+          "year": 1984,
+          "temperature_c": 27.556393442622948
+        },
+        {
+          "year": 1985,
+          "temperature_c": 27.839068493150684
+        },
+        {
+          "year": 1986,
+          "temperature_c": 27.686082191780823
+        },
+        {
+          "year": 1987,
+          "temperature_c": 28.679315068493153
+        },
+        {
+          "year": 1988,
+          "temperature_c": 28.848934426229512
+        },
+        {
+          "year": 1989,
+          "temperature_c": 27.90106849315068
+        },
+        {
+          "year": 1990,
+          "temperature_c": 28.38041095890411
+        },
+        {
+          "year": 1991,
+          "temperature_c": 28.41441095890411
+        },
+        {
+          "year": 1992,
+          "temperature_c": 27.845573770491804
+        },
+        {
+          "year": 1993,
+          "temperature_c": 28.657287671232876
+        },
+        {
+          "year": 1994,
+          "temperature_c": 27.753835616438355
+        },
+        {
+          "year": 1995,
+          "temperature_c": 28.225205479452057
+        },
+        {
+          "year": 1996,
+          "temperature_c": 28.29133879781421
+        },
+        {
+          "year": 1997,
+          "temperature_c": 27.87087671232877
+        },
+        {
+          "year": 1998,
+          "temperature_c": 28.836136986301373
+        },
+        {
+          "year": 1999,
+          "temperature_c": 28.72309589041096
+        },
+        {
+          "year": 2000,
+          "temperature_c": 28.441803278688525
+        },
+        {
+          "year": 2001,
+          "temperature_c": 28.377260273972606
+        },
+        {
+          "year": 2002,
+          "temperature_c": 28.584410958904108
+        },
+        {
+          "year": 2003,
+          "temperature_c": 27.39958904109589
+        },
+        {
+          "year": 2004,
+          "temperature_c": 28.452978142076507
+        },
+        {
+          "year": 2005,
+          "temperature_c": 27.987095890410963
+        },
+        {
+          "year": 2006,
+          "temperature_c": 27.62890410958904
+        },
+        {
+          "year": 2007,
+          "temperature_c": 28.19068493150685
+        },
+        {
+          "year": 2008,
+          "temperature_c": 27.885273224043715
+        },
+        {
+          "year": 2009,
+          "temperature_c": 28.378191780821922
+        },
+        {
+          "year": 2010,
+          "temperature_c": 28.17139726027397
+        },
+        {
+          "year": 2011,
+          "temperature_c": 27.566821917808216
+        },
+        {
+          "year": 2012,
+          "temperature_c": 27.376530054644807
+        },
+        {
+          "year": 2013,
+          "temperature_c": 27.92454794520548
+        },
+        {
+          "year": 2014,
+          "temperature_c": 27.98268493150685
+        },
+        {
+          "year": 2015,
+          "temperature_c": 28.029616438356165
+        },
+        {
+          "year": 2016,
+          "temperature_c": 28.5777868852459
+        },
+        {
+          "year": 2017,
+          "temperature_c": 27.88786301369863
+        },
+        {
+          "year": 2018,
+          "temperature_c": 28.696328767123287
+        },
+        {
+          "year": 2019,
+          "temperature_c": 27.92150684931507
+        },
+        {
+          "year": 2020,
+          "temperature_c": 27.354125683060104
+        },
+        {
+          "year": 2021,
+          "temperature_c": 27.93246575342466
+        },
+        {
+          "year": 2022,
+          "temperature_c": 27.449506849315068
+        },
+        {
+          "year": 2023,
+          "temperature_c": 27.501260273972605
+        },
+        {
+          "year": 2024,
+          "temperature_c": 28.051448087431694
+        },
+        {
+          "year": 2025,
+          "temperature_c": 28.071835616438353
+        }
+      ],
+      "completeness": {
+        "requested_months": 540,
+        "returned_month_keys": 540,
+        "valid_months": 540,
+        "absent_months": [],
+        "fill_value_months": [],
+        "partial_months": [],
+        "ignored_annual_summaries": 45,
+        "complete_calendar_years": 45,
+        "excluded_calendar_years": []
+      },
+      "provenance": {
+        "source_url": "https://power.larc.nasa.gov/api/temporal/monthly/point?parameters=T2M&community=SB&latitude=24.75&longitude=69.8&start=1981&end=2025&format=JSON",
+        "retrieved_at_utc": "2026-11-14T16:03:32.549Z",
+        "sha256": "dfb2d13ffc07ff6034295abc5c0b21e779827b036552dea0ec12589a745e2ba6",
+        "documentation_url": "https://power.larc.nasa.gov/docs/services/api/temporal/monthly/",
+        "source_documentation_url": "https://power.larc.nasa.gov/docs/methodology/data/sources_meteorology/",
+        "attribution": "NASA Langley Research Center POWER Project, using NASA GMAO MERRA-2.",
+        "community": "SB",
+        "header": {
+          "title": "NASA/POWER Source Native Resolution Monthly and Annual",
+          "api": {
+            "version": "v2.10.0",
+            "name": "POWER Monthly and Annual API"
+          },
+          "sources": [
+            "MERRA2"
+          ],
+          "fill_value": -999.0,
+          "time_standard": "LST",
+          "start": "19810101",
+          "end": "20251231"
+        },
+        "parameter": {
+          "units": "C",
+          "longname": "Temperature at 2 Meters"
+        },
+        "returned_coordinates": [
+          69.8,
+          24.75,
+          60.06
+        ],
+        "messages": []
+      },
+      "windows": [
+        {
+          "id": "1981-2025",
+          "start": 1981,
+          "end": 2025,
+          "valid_years": [
+            1981,
+            1982,
+            1983,
+            1984,
+            1985,
+            1986,
+            1987,
+            1988,
+            1989,
+            1990,
+            1991,
+            1992,
+            1993,
+            1994,
+            1995,
+            1996,
+            1997,
+            1998,
+            1999,
+            2000,
+            2001,
+            2002,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ],
+          "trend": {
+            "model": "Ordinary least squares with intercept",
+            "slope_c_per_decade": -0.04796429442493208,
+            "intercept_c": 28.162182501872312,
+            "reference_year": 1981,
+            "degrees_of_freedom": 43,
+            "confidence_level": 0.95,
+            "conventional": {
+              "standard_error": 0.04847603595089431,
+              "confidence_interval": [
+                -0.1457255379765882,
+                0.04979694912672403
+              ],
+              "p_value": 0.3279814882222034
+            },
+            "hac": {
+              "standard_error": 0.06455279716359485,
+              "confidence_interval": [
+                -0.17814741690308983,
+                0.08221882805322567
+              ],
+              "p_value": 0.4615073250962882,
+              "kernel": "Bartlett",
+              "max_lag_years": 3,
+              "bandwidth_rule": "floor(4 × (n / 100)^(2/9))",
+              "small_sample_correction": "n / (n − 2)",
+              "reference_distribution": "Student t (n − 2 degrees of freedom, approximate)"
+            }
+          }
+        },
+        {
+          "id": "1991-2025",
+          "start": 1991,
+          "end": 2025,
+          "valid_years": [
+            1991,
+            1992,
+            1993,
+            1994,
+            1995,
+            1996,
+            1997,
+            1998,
+            1999,
+            2000,
+            2001,
+            2002,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ],
+          "trend": {
+            "model": "Ordinary least squares with intercept",
+            "slope_c_per_decade": -0.15172702128235782,
+            "intercept_c": 28.32764107450301,
+            "reference_year": 1991,
+            "degrees_of_freedom": 33,
+            "confidence_level": 0.95,
+            "conventional": {
+              "standard_error": 0.06564716429538213,
+              "confidence_interval": [
+                -0.2852871812754828,
+                -0.018166861289232866
+              ],
+              "p_value": 0.02720654046584493
+            },
+            "hac": {
+              "standard_error": 0.06091457012758428,
+              "confidence_interval": [
+                -0.27565864604447854,
+                -0.027795396520237117
+              ],
+              "p_value": 0.017951755727592597,
+              "kernel": "Bartlett",
+              "max_lag_years": 3,
+              "bandwidth_rule": "floor(4 × (n / 100)^(2/9))",
+              "small_sample_correction": "n / (n − 2)",
+              "reference_distribution": "Student t (n − 2 degrees of freedom, approximate)"
+            }
+          }
+        },
+        {
+          "id": "2001-2025",
+          "start": 2001,
+          "end": 2025,
+          "valid_years": [
+            2001,
+            2002,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ],
+          "trend": {
+            "model": "Ordinary least squares with intercept",
+            "slope_c_per_decade": -0.12825307628967922,
+            "intercept_c": 28.129108278717304,
+            "reference_year": 2001,
+            "degrees_of_freedom": 23,
+            "confidence_level": 0.95,
+            "conventional": {
+              "standard_error": 0.10945482722908723,
+              "confidence_interval": [
+                -0.35467763763423177,
+                0.0981714850548733
+              ],
+              "p_value": 0.2532952053562037
+            },
+            "hac": {
+              "standard_error": 0.08627533932959751,
+              "confidence_interval": [
+                -0.3067272135853363,
+                0.05022106100597784
+              ],
+              "p_value": 0.15071297631709354,
+              "kernel": "Bartlett",
+              "max_lag_years": 2,
+              "bandwidth_rule": "floor(4 × (n / 100)^(2/9))",
+              "small_sample_correction": "n / (n − 2)",
+              "reference_distribution": "Student t (n − 2 degrees of freedom, approximate)"
+            }
+          }
+        },
+        {
+          "id": "1981-2015",
+          "start": 1981,
+          "end": 2015,
+          "valid_years": [
+            1981,
+            1982,
+            1983,
+            1984,
+            1985,
+            1986,
+            1987,
+            1988,
+            1989,
+            1990,
+            1991,
+            1992,
+            1993,
+            1994,
+            1995,
+            1996,
+            1997,
+            1998,
+            1999,
+            2000,
+            2001,
+            2002,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015
+          ],
+          "trend": {
+            "model": "Ordinary least squares with intercept",
+            "slope_c_per_decade": -0.016914014471725913,
+            "intercept_c": 28.117485814806496,
+            "reference_year": 1981,
+            "degrees_of_freedom": 33,
+            "confidence_level": 0.95,
+            "conventional": {
+              "standard_error": 0.07067168064356319,
+              "confidence_interval": [
+                -0.1606966298375095,
+                0.1268686008940577
+              ],
+              "p_value": 0.8123282052590652
+            },
+            "hac": {
+              "standard_error": 0.0907325466518428,
+              "confidence_interval": [
+                -0.20151076861143583,
+                0.167682739667984
+              ],
+              "p_value": 0.853259680643837,
+              "kernel": "Bartlett",
+              "max_lag_years": 3,
+              "bandwidth_rule": "floor(4 × (n / 100)^(2/9))",
+              "small_sample_correction": "n / (n − 2)",
+              "reference_distribution": "Student t (n − 2 degrees of freedom, approximate)"
+            }
+          }
+        }
+      ],
+      "shared_sample_flags": []
+    }
+  ],
+  "duplicate_pairs": [],
+  "grid_verification": {
+    "source_url": "https://power.larc.nasa.gov/api/temporal/monthly/regional?parameters=T2M&community=SB&latitude-min=24&latitude-max=28&longitude-min=66&longitude-max=71&start=2023&end=2023&format=JSON",
+    "retrieved_at_utc": "2026-11-14T16:05:31.266Z",
+    "sha256": "37033c66ffa1ab6fca86f91cf0c9625afa9a7d78c9e70ad4d0f0b7a5886ae128",
+    "comparison_year": 2023
+  },
+  "methods": {
+    "annual_aggregation": "Weight each month by its calendar days. Require 12 valid months per year.",
+    "regression": "Ordinary least squares with intercept, using calendar decades.",
+    "conventional": "Student t inference assumes independent, constant-variance errors.",
+    "hac": "Newey–West HAC uses Bartlett weights, floor(4 × (n/100)^(2/9)) calendar-year lags, and n/(n−2) covariance correction. The Student t reference is approximate.",
+    "grid_check": "Identify a unique native grid cell by an exact match of all 12 calendar-month values against the NASA POWER regional 2023 response. Nominal nearest centers, record identity and request proximity provide additional duplicate screening."
+  },
+  "limitations": [
+    "Grid estimates can combine land and sea and can miss neighborhood-scale conditions.",
+    "Locations may have spatially correlated errors, even when their series differ.",
+    "A linear fit can miss changes in rate, extremes, and seasonal patterns. Shorter windows typically have less statistical power.",
+    "The displayed inference is conditional on each period and method. The related windows are descriptive sensitivity checks and are not adjusted for multiple comparisons.",
+    "Intervals represent regression uncertainty and exclude reanalysis uncertainty. The analysis cannot establish what caused the change."
+  ]
+}

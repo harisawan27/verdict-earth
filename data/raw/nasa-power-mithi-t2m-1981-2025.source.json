@@ -1,0 +1,5 @@
+{
+  "source_url": "https://power.larc.nasa.gov/api/temporal/monthly/point?parameters=T2M&community=SB&latitude=24.75&longitude=69.8&start=1981&end=2025&format=JSON",
+  "retrieved_at_utc": "2026-11-14T16:03:32.549Z",
+  "sha256": "dfb2d13ffc07ff6034295abc5c0b21e779827b036552dea0ec12589a745e2ba6"
+}

@@ -1,4 +1,4 @@
-"""Fetch and validate the fixed NASA POWER investigation input."""
+"""Fetch and validate the NASA POWER monthly point responses."""
 
 import hashlib
 import json
@@ -15,17 +15,24 @@ import pandas as pd
 
 START_YEAR, END_YEAR = 1981, 2025
 LATITUDE, LONGITUDE = 24.9, 67.0
-REQUEST_URL = "https://power.larc.nasa.gov/api/temporal/monthly/point?" + urlencode(
-    {
-        "parameters": "T2M",
-        "community": "SB",
-        "latitude": LATITUDE,
-        "longitude": LONGITUDE,
-        "start": START_YEAR,
-        "end": END_YEAR,
-        "format": "JSON",
-    }
-)
+API_URL = "https://power.larc.nasa.gov/api/temporal/monthly/point"
+
+
+def point_url(latitude: float, longitude: float) -> str:
+    return API_URL + "?" + urlencode(
+        {
+            "parameters": "T2M",
+            "community": "SB",
+            "latitude": latitude,
+            "longitude": longitude,
+            "start": START_YEAR,
+            "end": END_YEAR,
+            "format": "JSON",
+        }
+    )
+
+
+REQUEST_URL = point_url(LATITUDE, LONGITUDE)
 DOCS_URL = "https://power.larc.nasa.gov/docs/services/api/temporal/monthly/"
 SOURCE_DOCS_URL = "https://power.larc.nasa.gov/docs/methodology/data/sources_meteorology/"
 CACHE_STEM = f"nasa-power-karachi-t2m-{START_YEAR}-{END_YEAR}"
@@ -62,10 +69,12 @@ def parse_nasa_date(value: str) -> date:
     return datetime.strptime(value, "%Y%m%d").date()
 
 
-def validate_response(body: bytes, receipt: dict) -> tuple[pd.Series, dict, dict]:
+def validate_response(
+    body: bytes, receipt: dict, latitude: float = LATITUDE, longitude: float = LONGITUDE,
+) -> tuple[pd.Series, dict, dict]:
     """Return a complete requested monthly index, provenance, and coverage counts."""
     digest = hashlib.sha256(body).hexdigest()
-    if receipt["sha256"] != digest or receipt["source_url"] != REQUEST_URL:
+    if receipt["sha256"] != digest or receipt["source_url"] != point_url(latitude, longitude):
         raise ValueError("Cached payload does not match its SHA-256 or the configured NASA request.")
     retrieved = datetime.fromisoformat(receipt["retrieved_at_utc"])
     if retrieved.tzinfo is None or retrieved.utcoffset().total_seconds() != 0:
@@ -78,7 +87,9 @@ def validate_response(body: bytes, receipt: dict) -> tuple[pd.Series, dict, dict
     if (
         payload["type"] != "Feature"
         or geometry["type"] != "Point"
-        or response_coords[:2] != [LONGITUDE, LATITUDE]
+        or len(response_coords) < 2
+        or any(abs(actual - requested) > 0.000500001
+               for actual, requested in zip(response_coords[:2], [longitude, latitude]))
     ):
         raise ValueError(f"Unexpected NASA point coordinates: {response_coords!r}")
     api = header["api"]
@@ -155,15 +166,22 @@ def validate_response(body: bytes, receipt: dict) -> tuple[pd.Series, dict, dict
     return series, provenance, coverage
 
 
-def load_monthly(cache: Path, refresh: bool = False) -> tuple[pd.Series, dict, dict]:
-    body_path = cache / f"{CACHE_STEM}.json"
-    receipt_path = cache / f"{CACHE_STEM}.source.json"
+def load_monthly(
+    cache: Path, refresh: bool = False, *, slug: str = "karachi",
+    latitude: float = LATITUDE, longitude: float = LONGITUDE,
+) -> tuple[pd.Series, dict, dict]:
+    stem = f"nasa-power-{slug}-t2m-{START_YEAR}-{END_YEAR}"
+    source = point_url(latitude, longitude)
+    body_path = cache / f"{stem}.json"
+    receipt_path = cache / f"{stem}.source.json"
     if not refresh and body_path.exists() and receipt_path.exists():
-        return validate_response(body_path.read_bytes(), json.loads(receipt_path.read_bytes()))
+        return validate_response(
+            body_path.read_bytes(), json.loads(receipt_path.read_bytes()), latitude, longitude,
+        )
     if not refresh and (body_path.exists() or receipt_path.exists()):
         raise ValueError("NASA cache is incomplete. Use --refresh to recreate both files.")
 
-    request = Request(REQUEST_URL, headers={"User-Agent": "VerdictEarth/0.1"})
+    request = Request(source, headers={"User-Agent": "VerdictEarth/0.1"})
     try:
         with urlopen(request, timeout=45) as response:
             body = response.read()
@@ -171,11 +189,11 @@ def load_monthly(cache: Path, refresh: bool = False) -> tuple[pd.Series, dict, d
         detail = error.read(1500).decode("utf-8", errors="replace")
         raise ValueError(f"NASA POWER HTTP {error.code}: {detail}") from error
     receipt = {
-        "source_url": REQUEST_URL,
+        "source_url": source,
         "retrieved_at_utc": datetime.now(timezone.utc).isoformat(),
         "sha256": hashlib.sha256(body).hexdigest(),
     }
-    validated = validate_response(body, receipt)
+    validated = validate_response(body, receipt, latitude, longitude)
     atomic_write(body_path, body)
     atomic_write(receipt_path, json_bytes(receipt))
     return validated

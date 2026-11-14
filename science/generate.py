@@ -15,14 +15,17 @@ ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "data" / "results" / "karachi-t2m.v1.json"
 
 
-def build_result(monthly: pd.Series, provenance: dict, coverage: dict) -> dict:
+def build_result(
+    monthly: pd.Series, provenance: dict, coverage: dict, *,
+    city: str = "Karachi", latitude: float = LATITUDE, longitude: float = LONGITUDE,
+) -> dict:
     annual = annual_means(monthly)
     fit = fit_trend(annual)
     valid_years = set(annual.index)
     return {
         "schema_version": 1,
-        "location": {"city": "Karachi", "country": "Pakistan",
-                     "latitude": LATITUDE, "longitude": LONGITUDE},
+        "location": {"city": city, "country": "Pakistan",
+                     "latitude": latitude, "longitude": longitude},
         "dataset": {
             "name": "NASA POWER Monthly and Annual · MERRA-2",
             "variable": "T2M",
