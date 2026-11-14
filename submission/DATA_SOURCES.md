@@ -23,3 +23,5 @@ This is a consistency check within MERRA-2. Differences can arise from monthly p
 ### World Scan geographic reference
 
 Natural Earth public-domain WGS 84 data provide 1:50m Admin-0 polygons, international and disputed boundary lines, coastlines, populated places, marine polygons and selected Admin-1 areas. The 1:10m country layer adds coastal detail around New York, Fiji and Istanbul. The 1:10m Admin-1 layer adds selected countries, including Pakistan, Japan and the United Kingdom. The [geographic manifest](../public/world-scan/geo-v1/manifest.json) records exact archive URLs, versions and SHA-256 hashes. [Natural Earth cultural layers](https://www.naturalearthdata.com/downloads/50m-cultural-vectors/) · [Terms of use](https://www.naturalearthdata.com/about/terms-of-use/). The boundaries depict Natural Earth’s de facto view and do not express a NASA position.
+
+At closer zooms, World Scan loads tiled 1:10m Natural Earth coastline, lake and river lines. It keeps the 2° NASA GISTEMP trend layer separate and offers a geographic view with trend colors turned off.

@@ -4,8 +4,11 @@ export type PlaceKind = "country" | "region" | "city" | "capital" | "marine" | "
 export type Place = [name: string, kind: PlaceKind, code: string, context: string, group: string,
   longitude: number, latitude: number, rank: number, population: number, aliases: string[], label: Point | null];
 export type Shape = [id: number, rings: Point[][]];
-type View = { x: number; y: number; zoom: number };
-export type Geography = { places: Place[]; keys: Set<string>; paths: (Path2D | undefined)[] };
+export type View = { x: number; y: number; zoom: number };
+export type Geography = { places: Place[]; keys: Set<string>; detailKeys: Set<string>; paths: (Path2D | undefined)[] };
+export type DetailTile = { column: number; row: number; paths: Path2D[] };
+export const detailZoom = 8;
+const detailSize = 30;
 export type PlaceContext = { country?: Place; region?: Place; city?: Place; distance?: number; marine?: Place; disputed?: Place; ambiguous?: boolean };
 
 const tiles = new Map<string, Promise<Shape[]>>();
@@ -18,8 +21,8 @@ async function file<T>(name: string): Promise<T> {
   return response.json();
 }
 export function loadGeography() {
-  return geography ??= Promise.all([file<Place[]>("places.json"), file<{tile_keys: string[]}>("manifest.json")])
-    .then(([places, meta]) => ({ places, keys: new Set(meta.tile_keys), paths: [] }))
+  return geography ??= Promise.all([file<Place[]>("places.json"), file<{tile_keys: string[]; detail_keys?: string[]}>("manifest.json")])
+    .then(([places, meta]) => ({ places, keys: new Set(meta.tile_keys), detailKeys: new Set(meta.detail_keys ?? []), paths: [] }))
     .catch(error => { geography = undefined; throw error; });
 }
 let boundaries: Promise<Path2D[]> | undefined;
@@ -32,6 +35,31 @@ export function loadRegionalLines() {
   return regionalLines ??= file<string>("region-lines.json").then(data => new Path2D(data))
     .catch(error => { regionalLines = undefined; throw error; });
 }
+export function visibleDetailKeys(view: View) {
+  const keys = [];
+  const top = Math.floor(view.y * 2 / detailSize);
+  const bottom = Math.min(5, Math.ceil((view.y * 2 + 180 / view.zoom) / detailSize) - 1);
+  const left = Math.floor(view.x * 2 / detailSize);
+  const right = Math.ceil((view.x * 2 + 360 / view.zoom) / detailSize) - 1;
+  for (let row = top; row <= bottom; row++) {
+    for (let column = left; column <= right; column++) keys.push(wrap(column, 12) + "-" + row);
+  }
+  return keys;
+}
+
+const detailTiles = new Map<string, Promise<DetailTile>>();
+export function loadDetailTile(key: string) {
+  const stored = detailTiles.get(key);
+  if (stored) return stored;
+  if (detailTiles.size >= 24) detailTiles.delete(detailTiles.keys().next().value!);
+  const [column, row] = key.split("-").map(Number);
+  const request = file<string[]>("detail-" + key + ".json")
+    .then(data => ({ column, row, paths: data.map(path => new Path2D(path)) }))
+    .catch(error => { detailTiles.delete(key); throw error; });
+  detailTiles.set(key, request);
+  return request;
+}
+
 export function pointerPoint(x: number, y: number, view: View): Point {
   return [wrap(view.x * 2 + x * 360 / view.zoom, 360) - 180,
     Math.max(-90, Math.min(90, 90 - view.y * 2 - y * 180 / view.zoom))];
@@ -78,19 +106,18 @@ export function identify(point: Point, places: Place[], shapes: Shape[]): PlaceC
     return { disputed, ambiguous: true };
   }
   const country = countries[0];
-  if (!country) return { marine };
-  const region = hits.find(place => place[1] === "region" && place[2] === country[2]);
+  const region = country && hits.find(place => place[1] === "region" && place[2] === country[2]);
   let city: Place | undefined;
-  let distance = 65;
+  let distance = country ? 65 : 12;
   for (const place of places) {
-    if ((place[1] !== "city" && place[1] !== "capital") || place[2] !== country[2]) continue;
+    if ((place[1] !== "city" && place[1] !== "capital") || (country && place[2] !== country[2])) continue;
     const km = distanceKm(query, place[5], place[6]);
     if (km <= distance) {
       city = place;
       distance = km;
     }
   }
-  return { country, region, city, distance: city ? distance : undefined };
+  return { country, region, marine: country ? undefined : marine, city, distance: city ? distance : undefined };
 }
 export async function resolvePlace(point: Point, geo: Geography) {
   const key = tileKey(point);
@@ -124,18 +151,43 @@ export function searchPlaces(places: Place[], query: string) {
     || b.place[8] - a.place[8] || a.place[0].localeCompare(b.place[0])).slice(0, 8);
 }
 
-export function drawGeography(ctx: CanvasRenderingContext2D, geo: Geography, view: View, labelScale: number, showLabels: boolean, selectedCity?: string) {
+export function drawGeography(ctx: CanvasRenderingContext2D, geo: Geography, view: View, labelScale: number, showLabels: boolean, selectedCity: Place | undefined, detail: DetailTile[], geographicOnly: boolean) {
   const factor = ctx.canvas.width / 360 * view.zoom;
-  const offsets = [0, 360];
+  const offsets = [-360, 0, 360];
+  const activeDetail = view.zoom >= detailZoom ? detail : [];
   ctx.save();
   for (const offset of offsets) {
     ctx.save();
     ctx.translate((offset - view.x * 2) * factor, -view.y * 2 * factor);
     ctx.scale(factor, factor);
     if (geo.paths[2]) {
-      ctx.strokeStyle = "rgba(20,38,50,.73)";
-      ctx.lineWidth = labelScale * 0.74 / factor;
+      ctx.save();
+      const mask = new Path2D();
+      mask.rect(0, 0, 360, 180);
+      for (const tile of activeDetail) mask.rect(tile.column * detailSize, tile.row * detailSize, detailSize, detailSize);
+      ctx.clip(mask, "evenodd");
+      ctx.strokeStyle = "#263e4d";
+      ctx.lineWidth = labelScale * 0.85 / factor;
       ctx.stroke(geo.paths[2]);
+      ctx.restore();
+    }
+    for (const tile of activeDetail) {
+      const [coast, lakes, rivers, land] = tile.paths;
+      if (geographicOnly && land) {
+        ctx.fillStyle = "#dceaf0";
+        ctx.fillRect(tile.column * detailSize, tile.row * detailSize, detailSize, detailSize);
+        ctx.fillStyle = "#eff1e7";
+        ctx.fill(land, "evenodd");
+      }
+      ctx.strokeStyle = "#263e4d";
+      ctx.lineWidth = labelScale * .85 / factor;
+      ctx.stroke(coast);
+      ctx.strokeStyle = geographicOnly ? "#6ba5c9" : "#436881";
+      ctx.lineWidth = labelScale * .75 / factor;
+      ctx.stroke(lakes);
+      ctx.globalAlpha = .78;
+      ctx.stroke(rivers);
+      ctx.globalAlpha = 1;
     }
     if (view.zoom >= 4 && geo.paths[3]) {
       ctx.strokeStyle = "rgba(35,51,64,.54)";
@@ -156,10 +208,10 @@ export function drawGeography(ctx: CanvasRenderingContext2D, geo: Geography, vie
     const visible: { place: Place; x: number; y: number; priority: number }[] = [];
     for (const place of geo.places) {
       const [, kind, , category, , longitude, latitude, rank, population, , anchor] = place;
-      const selected = place[0] === selectedCity && (kind === "city" || kind === "capital");
+      const selected = place === selectedCity;
       if (!selected && (kind === "disputed" || (kind === "region" && view.zoom < 4)
           || (kind === "country" && rank > (view.zoom === 1 ? 2 : view.zoom < 4 ? 4 : 9))
-          || (kind === "city" && population < (view.zoom === 1 ? Infinity : view.zoom < 4 ? 1200000 : view.zoom < 8 ? 270000 : 50000))
+          || (kind === "city" && population < (view.zoom === 1 ? Infinity : view.zoom < 4 ? 1200000 : view.zoom < 8 ? 270000 : view.zoom < 16 ? 50000 : 0))
           || (kind === "capital" && population < (view.zoom === 1 ? 1400000 : view.zoom < 4 ? 300000 : 0))
           || (kind === "marine" && category !== "ocean" && (view.zoom < 4 || rank > 3)))) continue;
       const [lon, lat] = anchor ?? [longitude, latitude];
@@ -180,11 +232,11 @@ export function drawGeography(ctx: CanvasRenderingContext2D, geo: Geography, vie
     for (const { place, x, y } of visible) {
       const [name, kind] = place;
       const dot = kind === "city" || kind === "capital";
-      const size = labelScale * (kind === "country" ? 11.5 : 10);
+      const size = labelScale * (kind === "country" ? 12 : 11);
       ctx.font = (kind === "country" ? "700 " : kind === "marine" ? "italic 600 " : "600 ") + size + "px system-ui";
       const width = ctx.measureText(name).width;
-      const left = dot ? x + 4 * labelScale : x - width / 2;
-      const box: [number, number, number, number] = [left - (dot ? 9 : 3) * labelScale, y - size * .72, left + width + 4 * labelScale, y + size * .72];
+      const left = dot ? (x + width + 9 * labelScale > ctx.canvas.width ? x - width - 5 * labelScale : x + 5 * labelScale) : x - width / 2;
+      const box: [number, number, number, number] = [Math.min(left - 3 * labelScale, dot ? x - 4 * labelScale : left), y - size * .72, Math.max(left + width + 4 * labelScale, dot ? x + 4 * labelScale : left), y + size * .72];
       if (box[0] < 0 || box[2] > ctx.canvas.width
           || occupied.some(other => box[0] < other[2] && box[2] > other[0] && box[1] < other[3] && box[3] > other[1])) continue;
       occupied.push(box);

@@ -310,7 +310,7 @@ button.interval-row:hover { border-color: #67cbbb; }
 .scan-map figcaption p,.scan-map figcaption span,.scan-series > p,.scan-cell-status { color:var(--muted); font-size:.82rem; }
 .scan-map figcaption span { text-align:right; }
 .scan-viewport { position:relative; background:#182b38; border-block:1px solid var(--line); }
-.scan-viewport canvas { display:block; width:100%; height:auto; aspect-ratio:2; image-rendering:pixelated; cursor:crosshair; touch-action:pan-y; }
+.scan-viewport canvas { display:block; width:100%; height:auto; aspect-ratio:2; cursor:crosshair; touch-action:pan-y; }
 .scan-viewport canvas:not([data-zoom="1"]) { cursor:grab; touch-action:none; }
 .scan-viewport canvas:not([data-zoom="1"]):active { cursor:grabbing; }
 .scan-viewport canvas:focus-visible { outline:2px solid var(--accent); outline-offset:-3px; }
@@ -363,3 +363,6 @@ button.interval-row:hover { border-color: #67cbbb; }
 .scan-coordinate-form .scan-label-toggle { display:inline-flex; align-items:center; }
 .scan-coordinate-form .scan-label-toggle input { width:auto; }
 .scan-cell h3 { font-size:clamp(1.45rem, 2.5vw, 2.15rem); line-height:1.12; }
+
+.scan-layer-options { display:flex; flex-wrap:wrap; gap:.4rem 1rem; margin-inline-start:auto; }
+@media(max-width:480px) { .scan-layer-options { width:100%; margin-inline-start:0; } }

@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
-import { identify, pointerPoint, searchedPlaceLabel, searchPlaces, tileKey } from "../app/scan-geography.ts";
+import { identify, pointerPoint, searchedPlaceLabel, searchPlaces, tileKey, visibleDetailKeys } from "../app/scan-geography.ts";
 
 const assets = new URL("../public/world-scan/geo-v1/", import.meta.url);
 const read = async name => JSON.parse(await readFile(new URL(name, assets), "utf8"));
@@ -80,4 +80,19 @@ test("Istanbul retains its gazetteer name and matches the refined coast", async 
   assert.equal(resolved.city?.[0], "Istanbul");
   assert.equal(identify(point, places, []).country, undefined);
   assert.equal(searchedPlaceLabel(place), "Istanbul, Turkey");
+});
+
+test("nearby coastal place does not assign a country to water", () => {
+  const [{ place }] = searchPlaces(places, "Istanbul");
+  const point = [place[5], place[6]];
+  const context = identify(point, places, []);
+  assert.equal(context.country, undefined);
+  assert.equal(context.city?.[0], "Istanbul");
+  assert.ok(context.distance < 1);
+  assert.equal(identify([-142, 18], places, []).city, undefined);
+});
+
+test("detailed vector tiles follow the viewport across the dateline", () => {
+  assert.deepEqual(visibleDetailKeys({x: 179, y: 15, zoom: 16}), ["11-1", "0-1"]);
+  assert.deepEqual(visibleDetailKeys({x: 0, y: 84, zoom: 32}), ["0-5"]);
 });

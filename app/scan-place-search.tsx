@@ -7,11 +7,14 @@ import type { Geography, Place, PlaceContext } from "./scan-geography";
 export function placeTitle(context: PlaceContext) {
   if (context.ambiguous) return context.disputed?.[0] ?? "Boundary area";
   if (context.city && context.country) return `Near ${context.city[0]}, ${context.country[0]}`;
+  if (!context.country && context.city) return `Near ${context.city[0]}, ${context.city[3]}`;
   return context.country?.[0] ?? context.marine?.[0] ?? "Geographic area unresolved";
 }
 
 export function placeDetail(context: PlaceContext) {
   if (context.ambiguous) return "Natural Earth indicates disputed or ambiguous boundaries here.";
+  if (!context.country && context.city) return context.marine
+    ? `${context.marine[0]} · No land polygon at this point` : "Nearby place shown. No land polygon at this point.";
   if (!context.country) return context.marine ? "Marine geographic reference" : "The reference map has no land or named water match at this point.";
   const region = context.region?.[0] ?? context.city?.[4];
   const broaderArea = context.country[4] || context.country[3];

@@ -15,6 +15,10 @@ from shapely.geometry import Point, box, shape
 ROOT = Path(__file__).resolve().parents[1]
 BASE = "https://naturalearth.s3.amazonaws.com/"
 LAYERS = {
+    "detailLand": "10m_physical/ne_10m_land.zip",
+    "detailCoast": "10m_physical/ne_10m_coastline.zip",
+    "lakes": "10m_physical/ne_10m_lakes.zip",
+    "rivers": "10m_physical/ne_10m_rivers_lake_centerlines.zip",
     "coast": "50m_physical/ne_50m_coastline.zip",
     "coastal": "10m_cultural/ne_10m_admin_0_countries.zip",
     "countries": "50m_cultural/ne_50m_admin_0_countries.zip",
@@ -29,6 +33,7 @@ LAYERS = {
 }
 DETAIL_COUNTRIES = {"PAK", "JPN", "GBR", "NZL", "FRA", "DEU", "MEX", "ESP"}
 TILE = 15
+DETAIL_TILE = 30
 
 
 def write(path, data):
@@ -81,10 +86,10 @@ def rounded(point, digits=4):
     return [round(x, digits) for x in point]
 
 
-def path_data(parts):
+def path_data(parts, tolerance=0.045):
     lines = []
     for part in parts:
-        line = part.simplify(0.045)
+        line = part.simplify(tolerance)
         current = []
         for x, y in line.coords:
             if current and abs(x - current[-1][0]) > 180:
@@ -97,6 +102,44 @@ def path_data(parts):
                 for i, (x, y) in enumerate(line))
         for line in lines if len(line) >= 2
     )
+
+
+def detail_paths(data, output):
+    """Clip finer vector linework to viewport-sized tiles for lazy loading."""
+    from shapely.strtree import STRtree
+
+    coast = [line.simplify(0.007) for raw, _ in data["detailCoast"]
+             for line in pieces(shape(raw.__geo_interface__), "LineString")]
+    lakes = [edge.simplify(0.007) for raw, fields in data["lakes"]
+             if fields["scalerank"] <= 5
+             for part in pieces(polygon(raw), "Polygon")
+             for edge in pieces(part.boundary, "LineString")]
+    rivers = [line.simplify(0.012) for raw, fields in data["rivers"]
+              if fields["scalerank"] <= 5
+              for line in pieces(shape(raw.__geo_interface__), "LineString")]
+    groups = [(lines, STRtree(lines)) for lines in (coast, lakes, rivers)]
+    land = [part.simplify(0.007, preserve_topology=True) for raw, _ in data["detailLand"]
+            for part in pieces(polygon(raw), "Polygon")]
+    land_index = STRtree(land)
+    for row in range(6):
+        for column in range(12):
+            west, north = column * DETAIL_TILE - 180, 90 - row * DETAIL_TILE
+            tile = box(west, north - DETAIL_TILE, west + DETAIL_TILE, north)
+            paths = [
+                path_data((piece for index in sorted(indexed.query(tile, predicate="intersects"))
+                           for piece in pieces(lines[index].intersection(tile), "LineString")), 0)
+                for lines, indexed in groups
+            ]
+            land_path = "".join(
+                path_data([ring], 0) + "Z"
+                for index in sorted(land_index.query(tile, predicate="intersects"))
+                for part in pieces(land[index].intersection(tile), "Polygon")
+                for ring in [part.exterior, *part.interiors]
+            )
+            paths.append(land_path)
+            if any(paths):
+                write(output / f"detail-{column}-{row}.json", paths)
+            yield f"{column}-{row}", bool(any(paths))
 
 
 def generate(cache, output):
@@ -197,11 +240,12 @@ def generate(cache, output):
     write(output / "region-lines.json", path_data(region_lines))
     for (x, y), entries in sorted(tiles.items()):
         write(output / f"tile-{x}-{y}.json", entries)
-    write(output / "manifest.json", {"schema": 1, "tile_degrees": TILE, "tile_keys": sorted(
+    detail_keys = [key for key, available in detail_paths(data, output) if available]
+    write(output / "manifest.json", {"schema": 1, "tile_degrees": TILE, "detail_keys": detail_keys, "tile_keys": sorted(
         f"{x}-{y}" for x, y in tiles), "crs": "WGS 84", "attribution": "Natural Earth",
         "license": "Public domain", "sources": sources,
         "counts": {kind: sum(row[1] == kind for row in records) for kind in sorted({row[1] for row in records})}})
-    print(f"{len(records)} gazetteer records · {len(tiles)} tiles")
+    print(f"{len(records)} gazetteer records, {len(tiles)} lookup tiles, {len(detail_keys)} detail tiles")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)

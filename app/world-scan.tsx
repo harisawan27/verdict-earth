@@ -5,8 +5,8 @@ import type { KeyboardEvent, PointerEvent } from "react";
 import manifest from "../public/world-scan/v1/manifest.json";
 import { signed } from "./stress-format";
 import { TemperatureChart } from "./temperature-chart";
-import { drawGeography, loadGeography, loadPaths, loadRegionalLines, pointerPoint, resolvePlace, searchedPlaceLabel } from "./scan-geography";
-import type { Geography, Place, PlaceContext, Point } from "./scan-geography";
+import { detailZoom, drawGeography, loadDetailTile, loadGeography, loadPaths, loadRegionalLines, pointerPoint, resolvePlace, searchedPlaceLabel, visibleDetailKeys } from "./scan-geography";
+import type { DetailTile, Geography, Place, PlaceContext, Point } from "./scan-geography";
 import { PlaceSearch, placeDetail, placeTitle } from "./scan-place-search";
 
 const base = "/world-scan/v1";
@@ -21,6 +21,7 @@ const colors = [
   { edge: 0.7, fill: "#dc724f", label: "+0.4 to +0.7" },
   { edge: Infinity, fill: "#a9404c", label: "> +0.7" },
 ];
+const maxZoom = 32;
 const noData = "#20333e";
 const wrap = (position: number, width: number) => ((position % width) + width) % width;
 const clamp = (value: number, low: number, high: number) => Math.max(low, Math.min(high, value));
@@ -42,15 +43,20 @@ export function WorldScan() {
   const [geo, setGeo] = useState<Geography | null>(null);
   const [geoFailed, setGeoFailed] = useState(false);
   const [regionPath, setRegionPath] = useState<Path2D | null>(null);
+  const [detailedPaths, setDetailedPaths] = useState<{ key: string; tiles: DetailTile[] } | null>(null);
+  const [geographicOnly, setGeographicOnly] = useState(false);
   const [showLabels, setShowLabels] = useState(true);
   const [selection, setSelection] = useState<{ point: Point; source: string; searchedPlace?: Place }>({ point: [66.9881, 24.8719], source: "Initial place" });
   const [place, setPlace] = useState<{ point: Point; context: PlaceContext } | null>(null);
   const [lookupFailed, setLookupFailed] = useState(false);
-  const [labelScale, setLabelScale] = useState(1);
+  const [pixelWidth, setPixelWidth] = useState(1080);
+  const [cssWidth, setCssWidth] = useState(1080);
+  const labelScale = pixelWidth / cssWidth;
   const [hover, setHover] = useState("");
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const hoverTicket = useRef(0);
   const [grid, setGrid] = useState<Int16Array | null>(null);
+  const [land, setLand] = useState<HTMLImageElement | null>(null);
   const [coast, setCoast] = useState<HTMLImageElement | null>(null);
   const [mapError, setMapError] = useState(false);
   const [view, setView] = useState<View>({ x: 0, y: 0, zoom: 1 });
@@ -75,7 +81,9 @@ export function WorldScan() {
     }).catch(() => { if (active) setGeoFailed(true); });
     const node = canvas.current;
     const resize = new ResizeObserver(() => {
-      if (node?.clientWidth) setLabelScale(node.width / node.clientWidth);
+      if (!node?.clientWidth) return;
+      setCssWidth(node.clientWidth);
+      setPixelWidth(2 * Math.round(node.clientWidth * Math.min(window.devicePixelRatio || 1, 3) / 2));
     });
     if (node) resize.observe(node);
     return () => { active = false; resize.disconnect(); clearTimeout(hoverTimer.current); hoverTicket.current++; };
@@ -88,6 +96,21 @@ export function WorldScan() {
     return () => { active = false; };
   }, [view.zoom, regionPath]);
 
+  const detailKey = geo && view.zoom >= detailZoom
+    ? visibleDetailKeys(view).filter(key => geo.detailKeys.has(key)).join(",") : "";
+
+  useEffect(() => {
+    if (!detailKey) return;
+    let active = true;
+    const timer = setTimeout(() => {
+      Promise.allSettled(detailKey.split(",").map(loadDetailTile)).then(results => {
+        if (active) setDetailedPaths({ key: detailKey,
+          tiles: results.flatMap(result => result.status === "fulfilled" ? [result.value] : []) });
+      });
+    }, 90);
+    return () => { active = false; clearTimeout(timer); };
+  }, [detailKey]);
+
   useEffect(() => {
     if (!geo) return;
     let active = true;
@@ -96,6 +119,14 @@ export function WorldScan() {
     }).catch(() => { if (active) setLookupFailed(true); });
     return () => { active = false; };
   }, [geo, selection.point]);
+
+  useEffect(() => {
+    if (!geographicOnly || land) return;
+    const image = new Image();
+    image.onload = () => setLand(image);
+    image.src = "/world-scan/land-reference.svg";
+    return () => { image.onload = null; };
+  }, [geographicOnly, land]);
 
   useEffect(() => {
     const image = new Image();
@@ -156,16 +187,31 @@ export function WorldScan() {
     const factor = width / columns * view.zoom;
     context.imageSmoothingEnabled = false;
     context.clearRect(0, 0, width, height);
+    if (geographicOnly) {
+      context.fillStyle = "#dceaf0";
+      context.fillRect(0, 0, width, height);
+    }
     for (const offset of [-columns, 0, columns]) {
       const left = (offset - view.x) * factor;
       const top = -view.y * factor;
-      context.drawImage(image, left, top, columns * factor, rows * factor);
+      if (!geographicOnly) context.drawImage(image, left, top, columns * factor, rows * factor);
+      else if (land) {
+        context.imageSmoothingEnabled = true;
+        context.drawImage(land, left, top, columns * factor, rows * factor);
+        context.imageSmoothingEnabled = false;
+      }
       if (coast && !geo?.paths[2]) context.drawImage(coast, left, top, columns * factor, rows * factor);
     }
-    if (geo) drawGeography(context, regionPath ? { ...geo, paths: [geo.paths[0], geo.paths[1], geo.paths[2], regionPath] } : geo, view, labelScale, showLabels, selection.searchedPlace && ["city", "capital"].includes(selection.searchedPlace[1]) ? selection.searchedPlace[0] : place?.point === selection.point ? place.context.city?.[0] : undefined);
-    context.strokeStyle = "#fff";
+    const matchedCity = place?.point === selection.point ? place.context.city : undefined;
+    const searched = selection.searchedPlace;
+    const isSearchedCity = searched?.[1] === "city" || searched?.[1] === "capital";
+    if (geo) drawGeography(context,
+      regionPath ? { ...geo, paths: [geo.paths[0], geo.paths[1], geo.paths[2], regionPath] } : geo,
+      view, labelScale, showLabels, isSearchedCity ? searched : matchedCity,
+      detailedPaths?.key === detailKey ? detailedPaths.tiles : [], geographicOnly);
+    context.strokeStyle = geographicOnly ? "#17685d" : "#fff";
     context.lineWidth = 1.7 * labelScale;
-    for (const offset of [0, columns]) {
+    for (const offset of [-columns, 0, columns]) {
       const x = (cell.column + offset + 0.5 - view.x) * factor;
       const y = (cell.row + 0.5 - view.y) * factor;
       context.strokeRect(x - factor / 2, y - factor / 2, factor, factor);
@@ -176,12 +222,12 @@ export function WorldScan() {
       const [lon, lat] = selection.point;
       const pointX = (wrap((lon + 180) / step, columns) + offset - view.x) * factor;
       const pointY = ((90 - lat) / step - view.y) * factor;
-      context.fillStyle = "#b4fff0";
+      context.fillStyle = geographicOnly ? "#17685d" : "#b4fff0";
       context.beginPath();
       context.arc(pointX, pointY, 2 * labelScale, 0, 2 * Math.PI);
       context.fill();
     }
-  }, [cell, coast, geo, grid, labelScale, place, regionPath, selection.point, showLabels, view]);
+  }, [cell, coast, detailKey, detailedPaths, geo, geographicOnly, grid, labelScale, land, pixelWidth, place, regionPath, selection, showLabels, view]);
 
   function select(next: Cell, center = false, point: Point = [manifest.first_longitude + next.column * step, manifest.first_latitude - next.row * step], source = "Keyboard selection", searchedPlace?: Place) {
     setSelection({ point, source, searchedPlace });
@@ -202,7 +248,7 @@ export function WorldScan() {
   }
 
   function changeZoom(target: number) {
-    const zoom = clamp(target, 1, 8);
+    const zoom = clamp(target, 1, maxZoom);
     position(view.x + columns / view.zoom / 2 - columns / zoom / 2,
       view.y + rows / view.zoom / 2 - rows / zoom / 2, zoom);
   }
@@ -313,7 +359,8 @@ export function WorldScan() {
       <PlaceSearch geo={geo} failed={geoFailed} choose={choosePlace} />
       <div className="scan-viewport">
         <canvas aria-label="World Scan grid. Select a cell with the pointer or move the selection with the arrow keys." tabIndex={0}
-          ref={canvas} width={1080} height={540} data-zoom={view.zoom} data-map-ready={!!grid}
+          ref={canvas} width={pixelWidth} height={pixelWidth / 2} data-zoom={view.zoom} data-map-ready={!!grid}
+          data-detail-tiles={detailKey === detailedPaths?.key ? detailedPaths.tiles.length : 0}
           onKeyDown={stepCell} onPointerLeave={clearHover}
           onPointerDown={event => {
             if (!event.isPrimary || event.button !== 0) return;
@@ -326,15 +373,15 @@ export function WorldScan() {
         {!grid && <div className="scan-message" role="status">{mapError ? "The trend grid did not load." : "Loading NASA trend grid…"}</div>}
         {hover && <span className="scan-hover" aria-hidden="true">{hover}</span>}
         <div className="map-buttons">
-          <button type="button" disabled={view.zoom >= 8} aria-label="Zoom in" onClick={() => changeZoom(view.zoom * 2)}>+</button>
+          <button type="button" disabled={view.zoom >= maxZoom} aria-label="Zoom in" onClick={() => changeZoom(view.zoom * 2)}>+</button>
           <button type="button" disabled={view.zoom <= 1} aria-label="Zoom out" onClick={() => changeZoom(view.zoom / 2)}>−</button>
           <button type="button" onClick={() => setView({ x: 0, y: 0, zoom: 1 })}>Reset</button>
         </div>
       </div>
-      <div className="geo-legend scan-legend" aria-label="Trend classes in degrees Celsius per decade">
+      {!geographicOnly && <div className="geo-legend scan-legend" aria-label="Trend classes in degrees Celsius per decade">
         {colors.map(color => <span key={color.label}><i style={{background: color.fill}} />{color.label}</span>)}
         <span>°C/decade</span><span><i style={{background: noData}} />Insufficient data</span>
-      </div>
+      </div>}
       <form className="scan-coordinate-form" onSubmit={event => {
         event.preventDefault();
         const point: Point = [Number(input.longitude), Number(input.latitude)];
@@ -343,9 +390,12 @@ export function WorldScan() {
         <label>Latitude<input type="number" min="-90" max="90" step="any" required value={input.latitude} onChange={event => setInput({ ...input, latitude: event.target.value })} /></label>
         <label>Longitude<input type="number" min="-180" max="180" step="any" required value={input.longitude} onChange={event => setInput({ ...input, longitude: event.target.value })} /></label>
         <button type="submit">Go to cell</button>
-        <label className="scan-label-toggle"><input type="checkbox" checked={showLabels} onChange={event => setShowLabels(event.target.checked)} /> Place labels</label>
+        <div className="scan-layer-options">
+          <label className="scan-label-toggle"><input type="checkbox" checked={showLabels} onChange={event => setShowLabels(event.target.checked)} /> Place labels</label>
+          <label className="scan-label-toggle"><input type="checkbox" checked={!geographicOnly} onChange={event => setGeographicOnly(!event.target.checked)} /> NASA trend colors</label>
+        </div>
       </form>
-      <p className="scan-attribution">Geographic reference: Natural Earth. Climate data: NASA GISTEMP.</p>
+      <p className="scan-attribution">Geographic reference: Natural Earth. Climate data: NASA GISTEMP, 2° grid.</p>
       {(mapError || detailError) && <button className="scan-retry secondary-action" type="button" onClick={() => {
         setMapError(false);
         setDetailError(false);
