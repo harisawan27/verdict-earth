@@ -1,3 +1,4 @@
+import scan from "../public/world-scan/v1/manifest.json";
 import data from "../data/results/world-t2m.v1.json";
 import { Investigation } from "./investigation";
 
@@ -31,10 +32,10 @@ export default function Home() {
             </div>
           </div>
           <dl className="atlas-facts">
-            <div><dt>Sampled locations</dt><dd>{data.stations.length}</dd></div>
-            <div><dt>Continents</dt><dd>{continents}</dd></div>
+            <div><dt>Global GISTEMP cells</dt><dd>{scan.valid_cells.toLocaleString("en-US")}</dd></div>
+            <div><dt>Local POWER investigations</dt><dd>{data.stations.length} across {continents} continents</dd></div>
             <div><dt>Analysis period</dt><dd>{data.requested_years.start}–{data.requested_years.end}</dd></div>
-            <div><dt>Dataset</dt><dd>NASA POWER · MERRA-2</dd></div>
+            <div><dt>Dataset</dt><dd>NASA GISTEMP · NASA POWER</dd></div>
           </dl>
         </section>
         <Investigation data={data} worldwide />

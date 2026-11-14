@@ -42,3 +42,17 @@ The seeded calibration used 400 stationary Gaussian AR(1) series at each sample 
 | 100 | 4 | 265/400 | 337/400 |
 
 Positive residual dependence persists beyond the selected lag cutoff in this design. Bartlett weights also downweight lags inside the cutoff, and estimating the covariance after fitting a trend adds finite-sample uncertainty. The degrees-of-freedom correction and t cutoff improved the reference procedure without a guarantee of nominal coverage. The results illustrate this one simulation design.
+
+## World Scan · NASA GISTEMP v4
+
+World Scan uses NASA GISS Land-Ocean Temperature Index (LOTI), with NOAA ERSSTv5, 1,200 km smoothing and a nominal 2° × 2° global grid. The [official compressed NetCDF](https://data.giss.nasa.gov/pub/gistemp/gistemp1200_GHCNv4_ERSSTv5.nc.gz) was retrieved November 14, 2026 at 19:51:10 UTC. Its SHA-256 is `f7788db9044d0f0e3f9561ad5d0fd82e59cdfdb82ea8a10244f78f2cb032a3c7`. See the [retrieval receipt](../data/gistemp/source.v1.json) and [NASA product documentation](https://data.giss.nasa.gov/gistemp/data_v4.html).
+
+The snapshot spans January 1880 to October 2026. The 90 × 180 grid has centers from 89° S to 89° N and 179° W to 179° E. The source provides monthly anomalies relative to 1951–1980. The signed 16-bit `tempanomaly` stores a scale factor of 0.01 and fill value 32767. xarray decodes the CF packing and standard calendar with SciPy. Differences in kelvin and degrees Celsius have the same magnitude.
+
+The analysis uses January 1981 to December 2025. Each annual anomaly requires all 12 months weighted by calendar days. OLS uses an intercept and elapsed calendar decades on at least 40 complete years. The result is 15,875 analyzed cells, including 15,809 with all 45 complete years. The other 325 nominal grid cells have too few complete years for a mapped slope. The downloadable cell record includes the actual valid years, annual anomalies and slope. The map encodes slopes at 0.0001 °C/decade resolution.
+
+As a sanity check, the cosine-latitude-weighted diagnostic annual series across available grid cells had a correlation of 0.99983 with NASA's separate [published global LOTI table](https://data.giss.nasa.gov/gistemp/tabledata_v4/GLB.Ts%2BdSST.csv). Their 1981–2025 fitted slopes were +0.2152 and +0.2124 °C/decade respectively. The diagnostic uses its own explicit averaging and missing-cell treatment. NASA's published table remains the reference for the official global series.
+
+Smoothing makes neighboring cells spatially dependent. The nominal grid spacing does not measure local precision. World Scan shows descriptive slopes and omits cell-level confidence intervals and significance tests. It does not attribute causes. NASA POWER's MERRA-2-derived 2-meter air temperature and the Karachi Giovanni comparison remain in Local Investigations, with their own data and interpretation.
+
+Reproduce with `python -m science.gistemp`. The archived originals are in `data/gistemp/`. The browser uses versioned artifacts in `public/world-scan/v1/` and downloads only the necessary latitude rows.

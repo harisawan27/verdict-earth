@@ -298,3 +298,43 @@ button.interval-row:hover { border-color: #67cbbb; }
   .calendar-interaction p { grid-column: 1 / -1; }
   .featured-grid { grid-template-columns: 1fr; }
 }
+
+/* GISTEMP World Scan */
+.scan-mode { display:flex; flex-wrap:wrap; gap:0.35rem; width:fit-content; margin:0 0 1rem; border:1px solid var(--line); background:#091822; padding:.3rem; border-radius:.75rem; }
+.scan-mode button { cursor:pointer; padding:.5rem .8rem; color:var(--muted); border-radius:.5rem; font-size:.86rem; }
+.scan-mode button[aria-pressed="true"] { color:#081b21; background:var(--accent); font-weight:700; }
+.scan-layout { display:grid; grid-template-columns:minmax(0, 2.55fr) minmax(0, 1fr); gap:1rem; align-items:start; }
+.scan-map { overflow:hidden; }
+.scan-map figcaption { display:flex; justify-content:space-between; align-items:center; gap:1rem; padding:1rem 1.15rem; }
+.scan-map figcaption h3 { font-size:1.12rem; font-weight:675; letter-spacing:-.025em; }
+.scan-map figcaption p,.scan-map figcaption span,.scan-series > p,.scan-cell-status { color:var(--muted); font-size:.82rem; }
+.scan-map figcaption span { text-align:right; }
+.scan-viewport { position:relative; background:#182b38; border-block:1px solid var(--line); }
+.scan-viewport canvas { display:block; width:100%; height:auto; aspect-ratio:2; image-rendering:pixelated; cursor:crosshair; touch-action:pan-y; }
+.scan-viewport canvas:not([data-zoom="1"]) { cursor:grab; touch-action:none; }
+.scan-viewport canvas:not([data-zoom="1"]):active { cursor:grabbing; }
+.scan-viewport canvas:focus-visible { outline:2px solid var(--accent); outline-offset:-3px; }
+.scan-message { position:absolute; inset:0; display:grid; place-items:center; color:var(--muted); pointer-events:none; }
+.scan-legend { padding:.75rem 1.15rem 0; }
+.scan-legend i { border:1px solid #465861; }
+.scan-coordinate-form { display:flex; flex-wrap:wrap; align-items:end; gap:.6rem; padding:.9rem 1.15rem; }
+.scan-coordinate-form label { font-size:.76rem; display:grid; gap:.25rem; color:var(--muted); }
+.scan-coordinate-form input, .scan-coordinate-form button { font:inherit; color:var(--ink); padding:.42rem .55rem; background:#0d1a24; border:1px solid #3b535f; border-radius:.4rem; }
+.scan-coordinate-form input { width:6.2rem; }
+.scan-coordinate-form button { cursor:pointer; font-size:.8rem; }
+.scan-retry { margin:0 1.15rem 1rem; }
+.scan-cell-status { margin:.7rem 0 1rem; }
+.scan-cell button:disabled { opacity:.6; }
+.scan-series { grid-column:1; }
+.scan-series > p { margin-top:.55rem; }
+.scan-series .scan-no-series { padding:1rem 0; }
+.scan-source { grid-column:2; }
+@media(max-width:850px) {
+  .scan-layout { grid-template-columns:minmax(0,1fr); }
+  .scan-series,.scan-source { grid-column:auto; }
+}
+@media(max-width:480px) {
+  .scan-map figcaption,.scan-coordinate-form { padding-inline:.8rem; }
+  .scan-legend { padding-inline:.8rem; }
+  .scan-mode button { padding-inline:.6rem; font-size:.78rem; }
+}

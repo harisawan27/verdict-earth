@@ -6,6 +6,9 @@ import { TemperatureChart } from "./temperature-chart";
 import { compareIntervals, includesZero, interval, pValue, signed } from "./stress-format";
 import { GiovanniEvidence } from "./giovanni-evidence";
 import { WorldMap } from "./world-map";
+import dynamic from "next/dynamic";
+
+const WorldScan = dynamic(() => import("./world-scan").then(module => module.WorldScan));
 import { AnomalyCalendar, IntervalPlot } from "./evidence-visuals";
 
 type RegionalStation = (typeof region)["stations"][number];
@@ -62,6 +65,7 @@ function SitePlot({ stations, selected, select }: { stations: Station[]; selecte
 const period = (start: number, end: number) => `${start}–${end}`;
 
 export function Investigation({ data, worldwide = false }: { data: Region; worldwide?: boolean }) {
+  const [mode, setMode] = useState<"scan" | "local">("scan");
   const [siteId, setSiteId] = useState("karachi");
   const [windowId, setWindowId] = useState("1981-2025");
   const [method, setMethod] = useState<Method>("hac");
@@ -118,8 +122,12 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
   return (
     <>
       <section id="region" className="regional-section" aria-labelledby="regional-heading">
-        <div className="section-heading"><h2 id="regional-heading">{worldwide ? "Explore Earth" : "Sampling locations"}</h2><p>Select a point to investigate its temperature record.</p></div>
-        <div className="regional-grid">
+        <div className="section-heading"><h2 id="regional-heading">{worldwide ? "Explore Earth" : "Sampling locations"}</h2><p>{worldwide && mode === "scan" ? "Select a NASA GISTEMP grid cell to inspect its anomaly record." : "Select a point to investigate its NASA POWER temperature record."}</p></div>
+        {worldwide && <div className="scan-mode" role="group" aria-label="NASA dataset">
+          <button type="button" aria-pressed={mode === "scan"} onClick={() => setMode("scan")}>World Scan · GISTEMP</button>
+          <button type="button" aria-pressed={mode === "local"} onClick={() => setMode("local")}>Local Investigations · POWER</button>
+        </div>}
+        {worldwide && mode === "scan" ? <WorldScan /> : <div className="regional-grid">
           {worldwide ? <WorldMap stations={data.stations} selected={site.id} select={selectSite} /> : <figure className="panel geo-panel">
             <figcaption><strong>Sampling points in Sindh</strong><span>1981–2025 linear slope</span></figcaption>
             <SitePlot stations={data.stations} selected={site.id} select={selectSite} />
@@ -153,7 +161,7 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
             </label>
             {worldwide && <a className="secondary-action atlas-lab-link" href="#stress-test">Open Evidence Lab ↓</a>}
           </aside>
-        </div>
+        </div>}
       </section>
 
       <section id="stress-test" className="stress-section" aria-labelledby="stress-heading">
@@ -237,7 +245,7 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
             <p className="eyebrow">{focal.location.city}{other ? ` · ${other.location.city}` : ""}</p>
             <h3>{story.title}</h3>
             <p>{peerFit ? `Fitted 1981–2025 slopes: ${signed(fit.slope_c_per_decade)} and ${signed(peerFit.slope_c_per_decade)} °C per decade, respectively.` : `2001–2025: ${signed(fit.slope_c_per_decade)} °C per decade. ${compareIntervals(fit.conventional, fit.hac)}`}</p>
-            <a href="#stress-test" onClick={() => { setSiteId(story.id); setWindowId(story.window); setComparisonId(story.peer); }}>Open investigation ↗</a>
+            <a href="#stress-test" onClick={() => { setMode("local"); setSiteId(story.id); setWindowId(story.window); setComparisonId(story.peer); }}>Open investigation ↗</a>
           </article>;
         })}</div>
       </section>}

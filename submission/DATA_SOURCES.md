@@ -14,3 +14,8 @@ NASA GES DISC Giovanni is listed in the [official challenge Resources tab](https
 The classic Giovanni CSV was downloaded on 2026-11-14 UTC. Its [unedited bytes](../data/raw/giovanni-karachi-1981-01--2025-12-ae3dccd6669e.csv) and [comparison record](../data/results/giovanni-karachi.v1.json) preserve the query, bounds and SHA-256 checksum. NASA documents native T2M in kelvin. We subtract 273.15 to obtain degrees Celsius and compare the 540 matching months and 45 shared complete calendar years.
 
 This is a consistency check within MERRA-2. Differences can arise from monthly processing, time standards, and rounding. The incorporation supports the listed-resource requirement. The organizers determine final eligibility. [Global Organizing Team guidance](https://github.com/nasa/spaceapps/discussions/1827).
+
+## World Scan
+
+- **NASA Goddard Institute for Space Studies.** GISTEMP v4 Land-Ocean Temperature Index (LOTI), ERSSTv5, 1,200 km smoothing, 2° × 2° nominal grid, baseline 1951–1980. [NASA Data Downloads](https://data.giss.nasa.gov/gistemp/data_v4.html) · [Archived file receipt](../data/gistemp/source.v1.json). This data source is separate from POWER and from the Karachi Giovanni comparison.
+- **Natural Earth.** World Scan overlays a coastline from the same bundled land outlines for geographic context.

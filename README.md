@@ -4,7 +4,7 @@
 
 NASA Space Apps Challenge 2026 · Be An Earth System Trend Detective! · Sahiwal Virtual, Pakistan
 
-Verdict Earth explores 45 years of 2-meter air temperature at 31 sampled locations across six continents. The atlas combines a searchable world map, annual temperature series, monthly local anomalies, matched-year location comparisons, and an Evidence Lab for four historical windows and two uncertainty methods. The eight-location regional case study is at `/sindh` and the original baseline is at `/karachi-baseline`.
+Verdict Earth explores 45 years of NASA climate data. World Scan maps fitted surface temperature anomaly trends across 15,875 NASA GISTEMP v4 LOTI grid cells. Local Investigations uses NASA POWER 2-meter air temperature at 31 sampled locations across six continents. The atlas combines a searchable world map, annual temperature series, monthly local anomalies, matched-year location comparisons, and an Evidence Lab for four historical windows and two uncertainty methods. The eight-location regional case study is at `/sindh` and the original baseline is at `/karachi-baseline`.
 
 ## Run locally
 
@@ -103,3 +103,7 @@ This repository currently has no project-wide software license grant. Dependenci
 ### Worldwide atlas
 
 The world artifact is `data/results/world-t2m.v1.json`. Run `python -m science.world --offline` to rebuild from verified local snapshots or omit `--offline` to fetch missing snapshots. The atlas uses 31 NASA POWER grid-point records for January 1981 to December 2025, all complete. Coordinates were cross-checked with the [GeoNames populated-place dataset](https://download.geonames.org/export/dump/) except the original Karachi reference. The map uses land outlines derived from [Natural Earth via world-atlas 2.0.2](https://github.com/topojson/world-atlas). Only markers encode trends. Karachi has a verified native cell. Other worldwide grid centers are inferred from the nominal grid spacing. Monthly anomalies use the same month’s complete 1991–2020 average at the same grid cell.
+
+### World Scan
+
+Run `python -m science.gistemp` to regenerate the offline map and cell records. The pipeline validates the archived NetCDF and NASA global table against their retrieval receipts. See [GISTEMP source and methods](submission/SCIENTIFIC_METHODOLOGY.md#world-scan--nasa-gistemp-v4).

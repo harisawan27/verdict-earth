@@ -1,3 +1,7 @@
 /data/raw/nasa-power-karachi-t2m-1981-2025.json -text
 /data/raw/*.json -text
 /data/raw/giovanni-*.csv -text
+
+/data/gistemp/*.csv -text
+/data/gistemp/*.nc.gz -text
+/public/world-scan/**/*.bin -text

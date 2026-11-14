@@ -1,0 +1,14 @@
+{
+  "grid": {
+    "url": "https://data.giss.nasa.gov/pub/gistemp/gistemp1200_GHCNv4_ERSSTv5.nc.gz",
+    "retrieved_at_utc": "2026-11-14T19:51:10.407124+00:00",
+    "bytes": 25885943,
+    "sha256": "f7788db9044d0f0e3f9561ad5d0fd82e59cdfdb82ea8a10244f78f2cb032a3c7"
+  },
+  "global_table": {
+    "url": "https://data.giss.nasa.gov/gistemp/tabledata_v4/GLB.Ts%2BdSST.csv",
+    "retrieved_at_utc": "2026-11-14T19:50:23.569284+00:00",
+    "bytes": 12887,
+    "sha256": "a7b1939db2e7e484c798e925e0f07f8184356c52ac0e7ce264adcd0f25e81253"
+  }
+}
