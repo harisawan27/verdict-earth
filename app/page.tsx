@@ -15,7 +15,7 @@ export default function Home() {
           <nav aria-label="Investigation sections">
             <a href="#region">Explore Earth</a>
             <a href="#stress-test">Local lab</a>
-            <a href="#featured">Featured investigations</a>
+            <a href="#karachi-case">Guided case</a>
             <a href="#how-we-know">How We Know</a>
           </nav>
         </div>
@@ -28,7 +28,7 @@ export default function Home() {
             <p className="hero-mission">{years} years of NASA climate data. Explore temperature change around the world and test how much confidence the evidence deserves.</p>
             <div className="hero-actions">
               <a className="primary-action" href="#region">Explore Earth <span aria-hidden="true">↓</span></a>
-              <a className="secondary-action" href="#global-evidence">Compare places</a>
+              <a className="secondary-action" href="#global-stress">Test a global trend</a>
             </div>
           </div>
           <dl className="atlas-facts">

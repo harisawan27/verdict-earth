@@ -6,6 +6,9 @@ import manifest from "../public/world-scan/v1/manifest.json";
 import { signed } from "./stress-format";
 import { TemperatureChart } from "./temperature-chart";
 import { GlobalEvidence } from "./global-evidence";
+import { GlobalStress } from "./global-stress";
+import { compareWindows } from "./scan-comparison";
+import { descriptiveFit } from "./verdict";
 import type { ScanRecord } from "./global-evidence";
 import { detailZoom, drawGeography, loadDetailTile, loadGeography, loadPaths, loadRegionalLines, pointerPoint, resolvePlace, searchedPlaceLabel, visibleDetailKeys } from "./scan-geography";
 import type { DetailTile, Geography, Place, PlaceContext, Point } from "./scan-geography";
@@ -76,6 +79,8 @@ function sparkline(values: (number | null)[]) {
 }
 
 export function WorldScan() {
+  const [analysisWindow, setAnalysisWindow] = useState(0);
+  const [windowChecks, setWindowChecks] = useState(true);
   const [opacity, setOpacity] = useState(68);
   const [expanded, setExpanded] = useState(false);
   const [pin, setPin] = useState<Pinned | null>(null);
@@ -442,7 +447,10 @@ export function WorldScan() {
       : geographic ? placeDetail(geographic) : null;
   const clicked = textCoordinate(Number(selection.point[1].toFixed(3)), "S", "N") + " · " + textCoordinate(Number(selection.point[0].toFixed(3)), "W", "E");
   const record = detail?.row === cell.row ? detail.values[cell.column] : null;
-  const [rate, intercept, annual] = record ?? [null, null, []];
+  const [rate, , annual] = record ?? [null, null, []];
+  const fits = compareWindows.map(([start, end], index) => descriptiveFit(annual, firstYear, start, end,
+    index === 0 ? manifest.minimum_complete_years : Math.ceil((end - start + 1) * .8)));
+  const currentFit = fits[analysisWindow];
   const validYears = annual.flatMap((value, index) => value === null ? [] : [firstYear + index]);
   const complete = validYears.length;
   const firstValid = validYears[0];
@@ -450,20 +458,22 @@ export function WorldScan() {
   const chart = annual.map((value, index) => ({
     year: firstYear + index,
     temperature_c: value,
-    fitted_c: rate === null || intercept === null || lastValid === undefined || firstYear + index < firstValid || firstYear + index > lastValid
-      ? null : intercept + (rate * index) / 10,
+    fitted_c: currentFit.slope === null || currentFit.intercept === null
+      || firstYear + index < currentFit.years[0] || firstYear + index > currentFit.years[currentFit.years.length - 1]
+      ? null : currentFit.intercept + currentFit.slope * (firstYear + index - currentFit.start) / 10,
   }));
 
   function download() {
     if (!record) return;
+    const observations = annual.map((anomaly_c, index) => ({year: firstYear + index, anomaly_c}));
     const data = {
       schema_version: manifest.schema_version, dataset: manifest.dataset, source: manifest.source,
       first_source_month: manifest.metadata.source_coverage[0], last_source_month: manifest.metadata.source_coverage[1],
       baseline: manifest.baseline, period, latitude, longitude, annual_complete_years: complete,
       valid_years: validYears,
       smoothing_km: manifest.smoothing_km, resolution_degrees: step,
-      trend_method: manifest.trend_method, slope_c_per_decade: rate, intercept_c_at_period_start: intercept,
-      annual_anomalies: chart.map(point => ({ year: point.year, anomaly_c: point.temperature_c })),
+      trend_method: manifest.trend_method, slope_c_per_decade: rate, intercept_c_at_period_start: record[1],
+      annual_anomalies: observations,
     };
     const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2) + "\n"], { type: "application/json" }));
     const element = document.createElement("a");
@@ -572,7 +582,7 @@ export function WorldScan() {
       </svg>}
       <div className="scan-result-actions">
         <button className="primary-action" type="button" onClick={() => pinPoint(selection.point, selected.title)}>{pin ? "Use selection as A" : "Compare a place"}</button>
-        <a className="secondary-action" href="#global-evidence">View Global Lab ↓</a>
+        <a className="secondary-action" href="#global-stress">Investigate this cell ↓</a>
       </div>
       <details className="scan-methods"><summary>Data &amp; methods</summary>
       <dl className="selected-meta">
@@ -588,15 +598,18 @@ export function WorldScan() {
       <button className="secondary-action" type="button" disabled={!record} onClick={download}>Download cell data ↓</button>
       </details>
     </aside>
+    <GlobalStress name={selected.title} coordinates={{ latitude, longitude }} point={selection.point}
+      fit={currentFit} fits={fits} active={analysisWindow} setActive={setAnalysisWindow} annual={annual}
+      available={!!record} failed={detailError} checks={windowChecks} setChecks={setWindowChecks} />
     <GlobalEvidence first={pin && { title: pin.title, center: pin.center, record: pinDetail?.pin === pin ? pinDetail.record : null }}
       second={selected} sameCell={sameCell} waiting={!!pin && !sameCell && !pinError && !detailError && (!record || pinDetail?.pin !== pin)}
       error={!!pin && (pinError || detailError)} ready={!!geo}
       chooseFirst={() => pinPoint(selection.point, selected.title)} clear={() => { setPin(null); setPinDetail(null); setPinError(false); }} examples={loadExample} />
-    <figure className="panel chart-panel scan-series">
+    <figure id="scan-series" className="panel chart-panel scan-series">
       <figcaption className="panel-title"><div><p className="eyebrow muted">GISTEMP v4 LOTI · {caption}</p><h3>Annual surface temperature anomalies</h3></div><span className="unit-label">°C</span></figcaption>
       <p>Relative to the NASA 1951–1980 baseline. Each annual mean uses 12 months weighted by calendar days.</p>
-      {complete > 0 ? <TemperatureChart points={chart} anomaly /> : <p className="scan-no-series">{record ? "This cell has no complete calendar years in the analysis period." : "Annual series pending."}</p>}
-      {complete > 0 && <div className="legend"><span><i className="legend-line" />Annual anomaly</span>{rate !== null && <span><i className="legend-line legend-fit" />OLS fit</span>}</div>}
+      {complete > 0 ? <TemperatureChart points={chart} window={currentFit} anomaly /> : <p className="scan-no-series">{record ? "This cell has no complete calendar years in the analysis period." : "Annual series pending."}</p>}
+      {complete > 0 && <div className="legend"><span><i className="legend-line" />Annual anomaly</span>{currentFit.slope !== null && <span><i className="legend-line legend-fit" />{currentFit.start}–{currentFit.end} fit</span>}</div>}
     </figure>
     <div className="panel source-detail scan-source">
       <h3>Source and limits</h3>

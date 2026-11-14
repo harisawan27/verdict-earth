@@ -1,0 +1,1760 @@
+{
+  "schema_version": 1,
+  "synthetic": true,
+  "true_slope": 0,
+  "training_seed": 2026111501,
+  "validation_seed": 2026111502,
+  "training_processes": [
+    "iid",
+    "ar1:-.3",
+    "ar1:.3",
+    "ar1:.6",
+    "ma1:.5",
+    "variance_ramp"
+  ],
+  "validation_processes": [
+    "iid",
+    "ar1:-.3",
+    "ar1:.3",
+    "ar1:.6",
+    "ma1:.5",
+    "variance_ramp",
+    "ar1:.45",
+    "ar1:.8",
+    "ar1:.9",
+    "ma1:.75",
+    "ar2",
+    "heavy_tail_ar1"
+  ],
+  "lengths": [
+    25,
+    35,
+    45,
+    100
+  ],
+  "promotion_gate": "At least 93% empirical coverage in every declared holdout scenario. Diagnostic threshold, not proof of 95% coverage.",
+  "rows": [
+    {
+      "years": 25,
+      "process": "iid",
+      "seen_in_calibration": true,
+      "lags": 2,
+      "nominal_t_cutoff": 2.0686576104190406,
+      "calibrated_cutoff": 4.094762223677346,
+      "conventional": {
+        "covered": 4711,
+        "trials": 5000,
+        "fraction": 0.9422,
+        "monte_carlo_95_wilson": [
+          0.9353856748476456,
+          0.9483353695521458
+        ]
+      },
+      "hac": {
+        "covered": 4477,
+        "trials": 5000,
+        "fraction": 0.8954,
+        "monte_carlo_95_wilson": [
+          0.8866115101180085,
+          0.9035813911838402
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 4970,
+        "trials": 5000,
+        "fraction": 0.994,
+        "monte_carlo_95_wilson": [
+          0.9914476466387816,
+          0.9957938638395019
+        ]
+      }
+    },
+    {
+      "years": 25,
+      "process": "ar1:-.3",
+      "seen_in_calibration": true,
+      "lags": 2,
+      "nominal_t_cutoff": 2.0686576104190406,
+      "calibrated_cutoff": 4.094762223677346,
+      "conventional": {
+        "covered": 4940,
+        "trials": 5000,
+        "fraction": 0.988,
+        "monte_carlo_95_wilson": [
+          0.9845852581132372,
+          0.9906654647883871
+        ]
+      },
+      "hac": {
+        "covered": 4654,
+        "trials": 5000,
+        "fraction": 0.9308,
+        "monte_carlo_95_wilson": [
+          0.9234295221569059,
+          0.9375090258472328
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 4989,
+        "trials": 5000,
+        "fraction": 0.9978,
+        "monte_carlo_95_wilson": [
+          0.99606459135064,
+          0.9987710845928611
+        ]
+      }
+    },
+    {
+      "years": 25,
+      "process": "ar1:.3",
+      "seen_in_calibration": true,
+      "lags": 2,
+      "nominal_t_cutoff": 2.0686576104190406,
+      "calibrated_cutoff": 4.094762223677346,
+      "conventional": {
+        "covered": 4250,
+        "trials": 5000,
+        "fraction": 0.85,
+        "monte_carlo_95_wilson": [
+          0.839834123136507,
+          0.8596284855019531
+        ]
+      },
+      "hac": {
+        "covered": 4200,
+        "trials": 5000,
+        "fraction": 0.84,
+        "monte_carlo_95_wilson": [
+          0.8295779148514837,
+          0.8499000478258774
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 4912,
+        "trials": 5000,
+        "fraction": 0.9824,
+        "monte_carlo_95_wilson": [
+          0.9783675707189009,
+          0.9856917504445079
+        ]
+      }
+    },
+    {
+      "years": 25,
+      "process": "ar1:.6",
+      "seen_in_calibration": true,
+      "lags": 2,
+      "nominal_t_cutoff": 2.0686576104190406,
+      "calibrated_cutoff": 4.094762223677346,
+      "conventional": {
+        "covered": 3445,
+        "trials": 5000,
+        "fraction": 0.689,
+        "monte_carlo_95_wilson": [
+          0.6760282345448805,
+          0.7016815741198876
+        ]
+      },
+      "hac": {
+        "covered": 3703,
+        "trials": 5000,
+        "fraction": 0.7406,
+        "monte_carlo_95_wilson": [
+          0.7282695675023867,
+          0.7525610143216519
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 4773,
+        "trials": 5000,
+        "fraction": 0.9546,
+        "monte_carlo_95_wilson": [
+          0.9484723254351165,
+          0.9600296799564375
+        ]
+      }
+    },
+    {
+      "years": 25,
+      "process": "ma1:.5",
+      "seen_in_calibration": true,
+      "lags": 2,
+      "nominal_t_cutoff": 2.0686576104190406,
+      "calibrated_cutoff": 4.094762223677346,
+      "conventional": {
+        "covered": 4291,
+        "trials": 5000,
+        "fraction": 0.8582,
+        "monte_carlo_95_wilson": [
+          0.8482555009797352,
+          0.8675945173468258
+        ]
+      },
+      "hac": {
+        "covered": 4292,
+        "trials": 5000,
+        "fraction": 0.8584,
+        "monte_carlo_95_wilson": [
+          0.8484610341253235,
+          0.8677886771204596
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 4940,
+        "trials": 5000,
+        "fraction": 0.988,
+        "monte_carlo_95_wilson": [
+          0.9845852581132372,
+          0.9906654647883871
+        ]
+      }
+    },
+    {
+      "years": 25,
+      "process": "variance_ramp",
+      "seen_in_calibration": true,
+      "lags": 2,
+      "nominal_t_cutoff": 2.0686576104190406,
+      "calibrated_cutoff": 4.094762223677346,
+      "conventional": {
+        "covered": 4668,
+        "trials": 5000,
+        "fraction": 0.9336,
+        "monte_carlo_95_wilson": [
+          0.9263605009399494,
+          0.940173747933297
+        ]
+      },
+      "hac": {
+        "covered": 4410,
+        "trials": 5000,
+        "fraction": 0.882,
+        "monte_carlo_95_wilson": [
+          0.8727632849265877,
+          0.8906501907873886
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 4979,
+        "trials": 5000,
+        "fraction": 0.9958,
+        "monte_carlo_95_wilson": [
+          0.993587521161596,
+          0.9972512255896854
+        ]
+      }
+    },
+    {
+      "years": 25,
+      "process": "ar1:.45",
+      "seen_in_calibration": false,
+      "lags": 2,
+      "nominal_t_cutoff": 2.0686576104190406,
+      "calibrated_cutoff": 4.094762223677346,
+      "conventional": {
+        "covered": 3899,
+        "trials": 5000,
+        "fraction": 0.7798,
+        "monte_carlo_95_wilson": [
+          0.7681017416790056,
+          0.7910686523125406
+        ]
+      },
+      "hac": {
+        "covered": 3973,
+        "trials": 5000,
+        "fraction": 0.7946,
+        "monte_carlo_95_wilson": [
+          0.7831779237030113,
+          0.8055697463109611
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 4861,
+        "trials": 5000,
+        "fraction": 0.9722,
+        "monte_carlo_95_wilson": [
+          0.9672680036457926,
+          0.9764069786372955
+        ]
+      }
+    },
+    {
+      "years": 25,
+      "process": "ar1:.8",
+      "seen_in_calibration": false,
+      "lags": 2,
+      "nominal_t_cutoff": 2.0686576104190406,
+      "calibrated_cutoff": 4.094762223677346,
+      "conventional": {
+        "covered": 2488,
+        "trials": 5000,
+        "fraction": 0.4976,
+        "monte_carlo_95_wilson": [
+          0.483748284541099,
+          0.5114554004282373
+        ]
+      },
+      "hac": {
+        "covered": 2997,
+        "trials": 5000,
+        "fraction": 0.5994,
+        "monte_carlo_95_wilson": [
+          0.585746277645671,
+          0.6129011032076517
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 4350,
+        "trials": 5000,
+        "fraction": 0.87,
+        "monte_carlo_95_wilson": [
+          0.8603935163583745,
+          0.8790383842022833
+        ]
+      }
+    },
+    {
+      "years": 25,
+      "process": "ar1:.9",
+      "seen_in_calibration": false,
+      "lags": 2,
+      "nominal_t_cutoff": 2.0686576104190406,
+      "calibrated_cutoff": 4.094762223677346,
+      "conventional": {
+        "covered": 1898,
+        "trials": 5000,
+        "fraction": 0.3796,
+        "monte_carlo_95_wilson": [
+          0.3662460451980471,
+          0.3931388174303227
+        ]
+      },
+      "hac": {
+        "covered": 2439,
+        "trials": 5000,
+        "fraction": 0.4878,
+        "monte_carlo_95_wilson": [
+          0.4739597699686093,
+          0.5016589619588501
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 3895,
+        "trials": 5000,
+        "fraction": 0.779,
+        "monte_carlo_95_wilson": [
+          0.7672874340536063,
+          0.7902841882610517
+        ]
+      }
+    },
+    {
+      "years": 25,
+      "process": "ma1:.75",
+      "seen_in_calibration": false,
+      "lags": 2,
+      "nominal_t_cutoff": 2.0686576104190406,
+      "calibrated_cutoff": 4.094762223677346,
+      "conventional": {
+        "covered": 4184,
+        "trials": 5000,
+        "fraction": 0.8368,
+        "monte_carlo_95_wilson": [
+          0.826298945422259,
+          0.8467839305475505
+        ]
+      },
+      "hac": {
+        "covered": 4212,
+        "trials": 5000,
+        "fraction": 0.8424,
+        "monte_carlo_95_wilson": [
+          0.8320380831625029,
+          0.8522361945455219
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 4900,
+        "trials": 5000,
+        "fraction": 0.98,
+        "monte_carlo_95_wilson": [
+          0.9757349984643976,
+          0.9835280076683476
+        ]
+      }
+    },
+    {
+      "years": 25,
+      "process": "ar2",
+      "seen_in_calibration": false,
+      "lags": 2,
+      "nominal_t_cutoff": 2.0686576104190406,
+      "calibrated_cutoff": 4.094762223677346,
+      "conventional": {
+        "covered": 2024,
+        "trials": 5000,
+        "fraction": 0.4048,
+        "monte_carlo_95_wilson": [
+          0.3912726030911314,
+          0.41847356735920754
+        ]
+      },
+      "hac": {
+        "covered": 2410,
+        "trials": 5000,
+        "fraction": 0.482,
+        "monte_carlo_95_wilson": [
+          0.46816907444131944,
+          0.4958585628287026
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 3854,
+        "trials": 5000,
+        "fraction": 0.7708,
+        "monte_carlo_95_wilson": [
+          0.7589443127159878,
+          0.7822398999105693
+        ]
+      }
+    },
+    {
+      "years": 25,
+      "process": "heavy_tail_ar1",
+      "seen_in_calibration": false,
+      "lags": 2,
+      "nominal_t_cutoff": 2.0686576104190406,
+      "calibrated_cutoff": 4.094762223677346,
+      "conventional": {
+        "covered": 3396,
+        "trials": 5000,
+        "fraction": 0.6792,
+        "monte_carlo_95_wilson": [
+          0.6661283071926165,
+          0.691996548430275
+        ]
+      },
+      "hac": {
+        "covered": 3651,
+        "trials": 5000,
+        "fraction": 0.7302,
+        "monte_carlo_95_wilson": [
+          0.7177238999954012,
+          0.7423226500290945
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 4767,
+        "trials": 5000,
+        "fraction": 0.9534,
+        "monte_carlo_95_wilson": [
+          0.947201372105274,
+          0.9589024757709482
+        ]
+      }
+    },
+    {
+      "years": 35,
+      "process": "iid",
+      "seen_in_calibration": true,
+      "lags": 3,
+      "nominal_t_cutoff": 2.0345152974493383,
+      "calibrated_cutoff": 3.6795982039358752,
+      "conventional": {
+        "covered": 4709,
+        "trials": 5000,
+        "fraction": 0.9418,
+        "monte_carlo_95_wilson": [
+          0.9349650691832874,
+          0.9479565893780602
+        ]
+      },
+      "hac": {
+        "covered": 4407,
+        "trials": 5000,
+        "fraction": 0.8814,
+        "monte_carlo_95_wilson": [
+          0.8721441231931945,
+          0.890070273763116
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 4947,
+        "trials": 5000,
+        "fraction": 0.9894,
+        "monte_carlo_95_wilson": [
+          0.9861620249513982,
+          0.99188654838478
+        ]
+      }
+    },
+    {
+      "years": 35,
+      "process": "ar1:-.3",
+      "seen_in_calibration": true,
+      "lags": 3,
+      "nominal_t_cutoff": 2.0345152974493383,
+      "calibrated_cutoff": 3.6795982039358752,
+      "conventional": {
+        "covered": 4943,
+        "trials": 5000,
+        "fraction": 0.9886,
+        "monte_carlo_95_wilson": [
+          0.9852596468748425,
+          0.9911901547844477
+        ]
+      },
+      "hac": {
+        "covered": 4624,
+        "trials": 5000,
+        "fraction": 0.9248,
+        "monte_carlo_95_wilson": [
+          0.917159773626062,
+          0.9317879868014175
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 4983,
+        "trials": 5000,
+        "fraction": 0.9966,
+        "monte_carlo_95_wilson": [
+          0.9945614552239987,
+          0.9978760632041705
+        ]
+      }
+    },
+    {
+      "years": 35,
+      "process": "ar1:.3",
+      "seen_in_calibration": true,
+      "lags": 3,
+      "nominal_t_cutoff": 2.0345152974493383,
+      "calibrated_cutoff": 3.6795982039358752,
+      "conventional": {
+        "covered": 4269,
+        "trials": 5000,
+        "fraction": 0.8538,
+        "monte_carlo_95_wilson": [
+          0.8437353998263567,
+          0.8633213742773208
+        ]
+      },
+      "hac": {
+        "covered": 4259,
+        "trials": 5000,
+        "fraction": 0.8518,
+        "monte_carlo_95_wilson": [
+          0.8416818186753238,
+          0.861378026236134
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 4891,
+        "trials": 5000,
+        "fraction": 0.9782,
+        "monte_carlo_95_wilson": [
+          0.973770147773154,
+          0.9818956220865933
+        ]
+      }
+    },
+    {
+      "years": 35,
+      "process": "ar1:.6",
+      "seen_in_calibration": true,
+      "lags": 3,
+      "nominal_t_cutoff": 2.0345152974493383,
+      "calibrated_cutoff": 3.6795982039358752,
+      "conventional": {
+        "covered": 3367,
+        "trials": 5000,
+        "fraction": 0.6734,
+        "monte_carlo_95_wilson": [
+          0.6602722553332648,
+          0.6862615056321894
+        ]
+      },
+      "hac": {
+        "covered": 3754,
+        "trials": 5000,
+        "fraction": 0.7508,
+        "monte_carlo_95_wilson": [
+          0.738621067479137,
+          0.7625938532252222
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 4738,
+        "trials": 5000,
+        "fraction": 0.9476,
+        "monte_carlo_95_wilson": [
+          0.9410727099250614,
+          0.9534400432937234
+        ]
+      }
+    },
+    {
+      "years": 35,
+      "process": "ma1:.5",
+      "seen_in_calibration": true,
+      "lags": 3,
+      "nominal_t_cutoff": 2.0345152974493383,
+      "calibrated_cutoff": 3.6795982039358752,
+      "conventional": {
+        "covered": 4225,
+        "trials": 5000,
+        "fraction": 0.845,
+        "monte_carlo_95_wilson": [
+          0.8347041951381879,
+          0.8547660905197225
+        ]
+      },
+      "hac": {
+        "covered": 4263,
+        "trials": 5000,
+        "fraction": 0.8526,
+        "monte_carlo_95_wilson": [
+          0.8425031765634645,
+          0.8621554400248812
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 4904,
+        "trials": 5000,
+        "fraction": 0.9808,
+        "monte_carlo_95_wilson": [
+          0.9766107953587554,
+          0.9842509824508777
+        ]
+      }
+    },
+    {
+      "years": 35,
+      "process": "variance_ramp",
+      "seen_in_calibration": true,
+      "lags": 3,
+      "nominal_t_cutoff": 2.0345152974493383,
+      "calibrated_cutoff": 3.6795982039358752,
+      "conventional": {
+        "covered": 4708,
+        "trials": 5000,
+        "fraction": 0.9416,
+        "monte_carlo_95_wilson": [
+          0.9347547986326757,
+          0.9477671670094497
+        ]
+      },
+      "hac": {
+        "covered": 4424,
+        "trials": 5000,
+        "fraction": 0.8848,
+        "monte_carlo_95_wilson": [
+          0.8756536940470522,
+          0.8933554825360318
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 4947,
+        "trials": 5000,
+        "fraction": 0.9894,
+        "monte_carlo_95_wilson": [
+          0.9861620249513982,
+          0.99188654838478
+        ]
+      }
+    },
+    {
+      "years": 35,
+      "process": "ar1:.45",
+      "seen_in_calibration": false,
+      "lags": 3,
+      "nominal_t_cutoff": 2.0345152974493383,
+      "calibrated_cutoff": 3.6795982039358752,
+      "conventional": {
+        "covered": 3902,
+        "trials": 5000,
+        "fraction": 0.7804,
+        "monte_carlo_95_wilson": [
+          0.7687125132189915,
+          0.7916569595302204
+        ]
+      },
+      "hac": {
+        "covered": 4106,
+        "trials": 5000,
+        "fraction": 0.8212,
+        "monte_carlo_95_wilson": [
+          0.8103334842346069,
+          0.8315733440358885
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 4868,
+        "trials": 5000,
+        "fraction": 0.9736,
+        "monte_carlo_95_wilson": [
+          0.9687794592279957,
+          0.9776933734896462
+        ]
+      }
+    },
+    {
+      "years": 35,
+      "process": "ar1:.8",
+      "seen_in_calibration": false,
+      "lags": 3,
+      "nominal_t_cutoff": 2.0345152974493383,
+      "calibrated_cutoff": 3.6795982039358752,
+      "conventional": {
+        "covered": 2382,
+        "trials": 5000,
+        "fraction": 0.4764,
+        "monte_carlo_95_wilson": [
+          0.46257982902623607,
+          0.4902564065055707
+        ]
+      },
+      "hac": {
+        "covered": 3081,
+        "trials": 5000,
+        "fraction": 0.6162,
+        "monte_carlo_95_wilson": [
+          0.6026360910077408,
+          0.6295854950602278
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 4320,
+        "trials": 5000,
+        "fraction": 0.864,
+        "monte_carlo_95_wilson": [
+          0.8542186546809849,
+          0.8732224583030135
+        ]
+      }
+    },
+    {
+      "years": 35,
+      "process": "ar1:.9",
+      "seen_in_calibration": false,
+      "lags": 3,
+      "nominal_t_cutoff": 2.0345152974493383,
+      "calibrated_cutoff": 3.6795982039358752,
+      "conventional": {
+        "covered": 1799,
+        "trials": 5000,
+        "fraction": 0.3598,
+        "monte_carlo_95_wilson": [
+          0.34660924504093915,
+          0.3732060185844549
+        ]
+      },
+      "hac": {
+        "covered": 2550,
+        "trials": 5000,
+        "fraction": 0.51,
+        "monte_carlo_95_wilson": [
+          0.49614137445684164,
+          0.5238432715042572
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 3820,
+        "trials": 5000,
+        "fraction": 0.764,
+        "monte_carlo_95_wilson": [
+          0.7520303896180243,
+          0.7755642637549856
+        ]
+      }
+    },
+    {
+      "years": 35,
+      "process": "ma1:.75",
+      "seen_in_calibration": false,
+      "lags": 3,
+      "nominal_t_cutoff": 2.0345152974493383,
+      "calibrated_cutoff": 3.6795982039358752,
+      "conventional": {
+        "covered": 4185,
+        "trials": 5000,
+        "fraction": 0.837,
+        "monte_carlo_95_wilson": [
+          0.8265038395579859,
+          0.8469787293310457
+        ]
+      },
+      "hac": {
+        "covered": 4266,
+        "trials": 5000,
+        "fraction": 0.8532,
+        "monte_carlo_95_wilson": [
+          0.8431192601202913,
+          0.8627384352257204
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 4924,
+        "trials": 5000,
+        "fraction": 0.9848,
+        "monte_carlo_95_wilson": [
+          0.9810175073961799,
+          0.9878381287978927
+        ]
+      }
+    },
+    {
+      "years": 35,
+      "process": "ar2",
+      "seen_in_calibration": false,
+      "lags": 3,
+      "nominal_t_cutoff": 2.0345152974493383,
+      "calibrated_cutoff": 3.6795982039358752,
+      "conventional": {
+        "covered": 1729,
+        "trials": 5000,
+        "fraction": 0.3458,
+        "monte_carlo_95_wilson": [
+          0.3327394054944732,
+          0.3590973537853825
+        ]
+      },
+      "hac": {
+        "covered": 2357,
+        "trials": 5000,
+        "fraction": 0.4714,
+        "monte_carlo_95_wilson": [
+          0.4575909035731283,
+          0.485253008978129
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 3627,
+        "trials": 5000,
+        "fraction": 0.7254,
+        "monte_carlo_95_wilson": [
+          0.7128595750938516,
+          0.7375943448693167
+        ]
+      }
+    },
+    {
+      "years": 35,
+      "process": "heavy_tail_ar1",
+      "seen_in_calibration": false,
+      "lags": 3,
+      "nominal_t_cutoff": 2.0345152974493383,
+      "calibrated_cutoff": 3.6795982039358752,
+      "conventional": {
+        "covered": 3359,
+        "trials": 5000,
+        "fraction": 0.6718,
+        "monte_carlo_95_wilson": [
+          0.6586571912980478,
+          0.6846790263136303
+        ]
+      },
+      "hac": {
+        "covered": 3794,
+        "trials": 5000,
+        "fraction": 0.7588,
+        "monte_carlo_95_wilson": [
+          0.746746098386674,
+          0.7704565390865643
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 4766,
+        "trials": 5000,
+        "fraction": 0.9532,
+        "monte_carlo_95_wilson": [
+          0.9469896505406613,
+          0.9587145044163389
+        ]
+      }
+    },
+    {
+      "years": 45,
+      "process": "iid",
+      "seen_in_calibration": true,
+      "lags": 3,
+      "nominal_t_cutoff": 2.016692199227824,
+      "calibrated_cutoff": 3.4312815929468123,
+      "conventional": {
+        "covered": 4743,
+        "trials": 5000,
+        "fraction": 0.9486,
+        "monte_carlo_95_wilson": [
+          0.942127783243331,
+          0.9543834345715636
+        ]
+      },
+      "hac": {
+        "covered": 4520,
+        "trials": 5000,
+        "fraction": 0.904,
+        "monte_carlo_95_wilson": [
+          0.8955215903620775,
+          0.9118581064663163
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 4949,
+        "trials": 5000,
+        "fraction": 0.9898,
+        "monte_carlo_95_wilson": [
+          0.9866146950734218,
+          0.9922332641012002
+        ]
+      }
+    },
+    {
+      "years": 45,
+      "process": "ar1:-.3",
+      "seen_in_calibration": true,
+      "lags": 3,
+      "nominal_t_cutoff": 2.016692199227824,
+      "calibrated_cutoff": 3.4312815929468123,
+      "conventional": {
+        "covered": 4953,
+        "trials": 5000,
+        "fraction": 0.9906,
+        "monte_carlo_95_wilson": [
+          0.9875232880671987,
+          0.9929234427843112
+        ]
+      },
+      "hac": {
+        "covered": 4688,
+        "trials": 5000,
+        "fraction": 0.9376,
+        "monte_carlo_95_wilson": [
+          0.9305537470628006,
+          0.9439743601948855
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 4982,
+        "trials": 5000,
+        "fraction": 0.9964,
+        "monte_carlo_95_wilson": [
+          0.9943162662633602,
+          0.997721559245587
+        ]
+      }
+    },
+    {
+      "years": 45,
+      "process": "ar1:.3",
+      "seen_in_calibration": true,
+      "lags": 3,
+      "nominal_t_cutoff": 2.016692199227824,
+      "calibrated_cutoff": 3.4312815929468123,
+      "conventional": {
+        "covered": 4256,
+        "trials": 5000,
+        "fraction": 0.8512,
+        "monte_carlo_95_wilson": [
+          0.8410658650372065,
+          0.8607949011165854
+        ]
+      },
+      "hac": {
+        "covered": 4337,
+        "trials": 5000,
+        "fraction": 0.8674,
+        "monte_carlo_95_wilson": [
+          0.8577169616149534,
+          0.8765189309958186
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 4895,
+        "trials": 5000,
+        "fraction": 0.979,
+        "monte_carlo_95_wilson": [
+          0.9746424826691495,
+          0.9826220588674857
+        ]
+      }
+    },
+    {
+      "years": 45,
+      "process": "ar1:.6",
+      "seen_in_calibration": true,
+      "lags": 3,
+      "nominal_t_cutoff": 2.016692199227824,
+      "calibrated_cutoff": 3.4312815929468123,
+      "conventional": {
+        "covered": 3396,
+        "trials": 5000,
+        "fraction": 0.6792,
+        "monte_carlo_95_wilson": [
+          0.6661283071926165,
+          0.691996548430275
+        ]
+      },
+      "hac": {
+        "covered": 3967,
+        "trials": 5000,
+        "fraction": 0.7934,
+        "monte_carlo_95_wilson": [
+          0.7819546981139067,
+          0.8043948143847337
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 4746,
+        "trials": 5000,
+        "fraction": 0.9492,
+        "monte_carlo_95_wilson": [
+          0.9427611332579214,
+          0.9549491633146393
+        ]
+      }
+    },
+    {
+      "years": 45,
+      "process": "ma1:.5",
+      "seen_in_calibration": true,
+      "lags": 3,
+      "nominal_t_cutoff": 2.016692199227824,
+      "calibrated_cutoff": 3.4312815929468123,
+      "conventional": {
+        "covered": 4279,
+        "trials": 5000,
+        "fraction": 0.8558,
+        "monte_carlo_95_wilson": [
+          0.8457896080633068,
+          0.8652640952325904
+        ]
+      },
+      "hac": {
+        "covered": 4394,
+        "trials": 5000,
+        "fraction": 0.8788,
+        "monte_carlo_95_wilson": [
+          0.8694619334857504,
+          0.8875564555206742
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 4919,
+        "trials": 5000,
+        "fraction": 0.9838,
+        "monte_carlo_95_wilson": [
+          0.9799110235294284,
+          0.9869461480685344
+        ]
+      }
+    },
+    {
+      "years": 45,
+      "process": "variance_ramp",
+      "seen_in_calibration": true,
+      "lags": 3,
+      "nominal_t_cutoff": 2.016692199227824,
+      "calibrated_cutoff": 3.4312815929468123,
+      "conventional": {
+        "covered": 4697,
+        "trials": 5000,
+        "fraction": 0.9394,
+        "monte_carlo_95_wilson": [
+          0.9324432117954191,
+          0.9456821317352646
+        ]
+      },
+      "hac": {
+        "covered": 4503,
+        "trials": 5000,
+        "fraction": 0.9006,
+        "monte_carlo_95_wilson": [
+          0.8919967378086769,
+          0.9085881793929432
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 4958,
+        "trials": 5000,
+        "fraction": 0.9916,
+        "monte_carlo_95_wilson": [
+          0.9886658498349264,
+          0.9937793456126934
+        ]
+      }
+    },
+    {
+      "years": 45,
+      "process": "ar1:.45",
+      "seen_in_calibration": false,
+      "lags": 3,
+      "nominal_t_cutoff": 2.016692199227824,
+      "calibrated_cutoff": 3.4312815929468123,
+      "conventional": {
+        "covered": 3914,
+        "trials": 5000,
+        "fraction": 0.7828,
+        "monte_carlo_95_wilson": [
+          0.7711559514554225,
+          0.7940098363244534
+        ]
+      },
+      "hac": {
+        "covered": 4218,
+        "trials": 5000,
+        "fraction": 0.8436,
+        "monte_carlo_95_wilson": [
+          0.833268475124638,
+          0.8534039600987187
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 4858,
+        "trials": 5000,
+        "fraction": 0.9716,
+        "monte_carlo_95_wilson": [
+          0.966621176212076,
+          0.975854727313346
+        ]
+      }
+    },
+    {
+      "years": 45,
+      "process": "ar1:.8",
+      "seen_in_calibration": false,
+      "lags": 3,
+      "nominal_t_cutoff": 2.016692199227824,
+      "calibrated_cutoff": 3.4312815929468123,
+      "conventional": {
+        "covered": 2331,
+        "trials": 5000,
+        "fraction": 0.4662,
+        "monte_carlo_95_wilson": [
+          0.4524038968799633,
+          0.48004799977152257
+        ]
+      },
+      "hac": {
+        "covered": 3204,
+        "trials": 5000,
+        "fraction": 0.6408,
+        "monte_carlo_95_wilson": [
+          0.6273983844984732,
+          0.6539854306337987
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 4320,
+        "trials": 5000,
+        "fraction": 0.864,
+        "monte_carlo_95_wilson": [
+          0.8542186546809849,
+          0.8732224583030135
+        ]
+      }
+    },
+    {
+      "years": 45,
+      "process": "ar1:.9",
+      "seen_in_calibration": false,
+      "lags": 3,
+      "nominal_t_cutoff": 2.016692199227824,
+      "calibrated_cutoff": 3.4312815929468123,
+      "conventional": {
+        "covered": 1723,
+        "trials": 5000,
+        "fraction": 0.3446,
+        "monte_carlo_95_wilson": [
+          0.3315511437651367,
+          0.35788745799938704
+        ]
+      },
+      "hac": {
+        "covered": 2529,
+        "trials": 5000,
+        "fraction": 0.5058,
+        "monte_carlo_95_wilson": [
+          0.491942761305787,
+          0.5196483333516504
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 3683,
+        "trials": 5000,
+        "fraction": 0.7366,
+        "monte_carlo_95_wilson": [
+          0.7242125081390919,
+          0.748624215300507
+        ]
+      }
+    },
+    {
+      "years": 45,
+      "process": "ma1:.75",
+      "seen_in_calibration": false,
+      "lags": 3,
+      "nominal_t_cutoff": 2.016692199227824,
+      "calibrated_cutoff": 3.4312815929468123,
+      "conventional": {
+        "covered": 4196,
+        "trials": 5000,
+        "fraction": 0.8392,
+        "monte_carlo_95_wilson": [
+          0.8287580391139056,
+          0.8491211518865678
+        ]
+      },
+      "hac": {
+        "covered": 4358,
+        "trials": 5000,
+        "fraction": 0.8716,
+        "monte_carlo_95_wilson": [
+          0.8620412356048394,
+          0.8805882083095941
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 4904,
+        "trials": 5000,
+        "fraction": 0.9808,
+        "monte_carlo_95_wilson": [
+          0.9766107953587554,
+          0.9842509824508777
+        ]
+      }
+    },
+    {
+      "years": 45,
+      "process": "ar2",
+      "seen_in_calibration": false,
+      "lags": 3,
+      "nominal_t_cutoff": 2.016692199227824,
+      "calibrated_cutoff": 3.4312815929468123,
+      "conventional": {
+        "covered": 1691,
+        "trials": 5000,
+        "fraction": 0.3382,
+        "monte_carlo_95_wilson": [
+          0.32521532169832756,
+          0.35143310665109295
+        ]
+      },
+      "hac": {
+        "covered": 2408,
+        "trials": 5000,
+        "fraction": 0.4816,
+        "monte_carlo_95_wilson": [
+          0.4677697848997874,
+          0.4954584665317907
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 3510,
+        "trials": 5000,
+        "fraction": 0.702,
+        "monte_carlo_95_wilson": [
+          0.689171162942197,
+          0.7145186854719998
+        ]
+      }
+    },
+    {
+      "years": 45,
+      "process": "heavy_tail_ar1",
+      "seen_in_calibration": false,
+      "lags": 3,
+      "nominal_t_cutoff": 2.016692199227824,
+      "calibrated_cutoff": 3.4312815929468123,
+      "conventional": {
+        "covered": 3362,
+        "trials": 5000,
+        "fraction": 0.6724,
+        "monte_carlo_95_wilson": [
+          0.6592628202233041,
+          0.6852724761460401
+        ]
+      },
+      "hac": {
+        "covered": 3935,
+        "trials": 5000,
+        "fraction": 0.787,
+        "monte_carlo_95_wilson": [
+          0.7754333401677951,
+          0.7981259989157421
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 4781,
+        "trials": 5000,
+        "fraction": 0.9562,
+        "monte_carlo_95_wilson": [
+          0.9501686465740612,
+          0.9615309021712687
+        ]
+      }
+    },
+    {
+      "years": 100,
+      "process": "iid",
+      "seen_in_calibration": true,
+      "lags": 4,
+      "nominal_t_cutoff": 1.984467454426692,
+      "calibrated_cutoff": 2.8843404600561935,
+      "conventional": {
+        "covered": 4784,
+        "trials": 5000,
+        "fraction": 0.9568,
+        "monte_carlo_95_wilson": [
+          0.9508052913566617,
+          0.9620933361463341
+        ]
+      },
+      "hac": {
+        "covered": 4667,
+        "trials": 5000,
+        "fraction": 0.9334,
+        "monte_carlo_95_wilson": [
+          0.926151031491673,
+          0.9399835244623516
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 4953,
+        "trials": 5000,
+        "fraction": 0.9906,
+        "monte_carlo_95_wilson": [
+          0.9875232880671987,
+          0.9929234427843112
+        ]
+      }
+    },
+    {
+      "years": 100,
+      "process": "ar1:-.3",
+      "seen_in_calibration": true,
+      "lags": 4,
+      "nominal_t_cutoff": 1.984467454426692,
+      "calibrated_cutoff": 2.8843404600561935,
+      "conventional": {
+        "covered": 4949,
+        "trials": 5000,
+        "fraction": 0.9898,
+        "monte_carlo_95_wilson": [
+          0.9866146950734218,
+          0.9922332641012002
+        ]
+      },
+      "hac": {
+        "covered": 4687,
+        "trials": 5000,
+        "fraction": 0.9374,
+        "monte_carlo_95_wilson": [
+          0.9303439051736697,
+          0.9437845091647943
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 4957,
+        "trials": 5000,
+        "fraction": 0.9914,
+        "monte_carlo_95_wilson": [
+          0.9884366781599928,
+          0.993608824368405
+        ]
+      }
+    },
+    {
+      "years": 100,
+      "process": "ar1:.3",
+      "seen_in_calibration": true,
+      "lags": 4,
+      "nominal_t_cutoff": 1.984467454426692,
+      "calibrated_cutoff": 2.8843404600561935,
+      "conventional": {
+        "covered": 4253,
+        "trials": 5000,
+        "fraction": 0.8506,
+        "monte_carlo_95_wilson": [
+          0.8404499666155347,
+          0.8602117207805913
+        ]
+      },
+      "hac": {
+        "covered": 4466,
+        "trials": 5000,
+        "fraction": 0.8932,
+        "monte_carlo_95_wilson": [
+          0.8843351322495161,
+          0.9014611469408909
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 4886,
+        "trials": 5000,
+        "fraction": 0.9772,
+        "monte_carlo_95_wilson": [
+          0.9726816973620263,
+          0.9809856079016113
+        ]
+      }
+    },
+    {
+      "years": 100,
+      "process": "ar1:.6",
+      "seen_in_calibration": true,
+      "lags": 4,
+      "nominal_t_cutoff": 1.984467454426692,
+      "calibrated_cutoff": 2.8843404600561935,
+      "conventional": {
+        "covered": 3364,
+        "trials": 5000,
+        "fraction": 0.6728,
+        "monte_carlo_95_wilson": [
+          0.6596665862258148,
+          0.6856680959819733
+        ]
+      },
+      "hac": {
+        "covered": 4171,
+        "trials": 5000,
+        "fraction": 0.8342,
+        "monte_carlo_95_wilson": [
+          0.8236358174813556,
+          0.8442510505385681
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 4785,
+        "trials": 5000,
+        "fraction": 0.957,
+        "monte_carlo_95_wilson": [
+          0.9510175715099949,
+          0.9622807489122229
+        ]
+      }
+    },
+    {
+      "years": 100,
+      "process": "ma1:.5",
+      "seen_in_calibration": true,
+      "lags": 4,
+      "nominal_t_cutoff": 1.984467454426692,
+      "calibrated_cutoff": 2.8843404600561935,
+      "conventional": {
+        "covered": 4277,
+        "trials": 5000,
+        "fraction": 0.8554,
+        "monte_carlo_95_wilson": [
+          0.8453787157344296,
+          0.8648756017230238
+        ]
+      },
+      "hac": {
+        "covered": 4509,
+        "trials": 5000,
+        "fraction": 0.9018,
+        "monte_carlo_95_wilson": [
+          0.8932404558474757,
+          0.9097426188694765
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 4905,
+        "trials": 5000,
+        "fraction": 0.981,
+        "monte_carlo_95_wilson": [
+          0.9768300047866301,
+          0.9844314659422249
+        ]
+      }
+    },
+    {
+      "years": 100,
+      "process": "variance_ramp",
+      "seen_in_calibration": true,
+      "lags": 4,
+      "nominal_t_cutoff": 1.984467454426692,
+      "calibrated_cutoff": 2.8843404600561935,
+      "conventional": {
+        "covered": 4702,
+        "trials": 5000,
+        "fraction": 0.9404,
+        "monte_carlo_95_wilson": [
+          0.9334936208290503,
+          0.9466301872977434
+        ]
+      },
+      "hac": {
+        "covered": 4605,
+        "trials": 5000,
+        "fraction": 0.921,
+        "monte_carlo_95_wilson": [
+          0.9131960431282188,
+          0.9281575518340431
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 4937,
+        "trials": 5000,
+        "fraction": 0.9874,
+        "monte_carlo_95_wilson": [
+          0.9839127571403177,
+          0.9901388870036407
+        ]
+      }
+    },
+    {
+      "years": 100,
+      "process": "ar1:.45",
+      "seen_in_calibration": false,
+      "lags": 4,
+      "nominal_t_cutoff": 1.984467454426692,
+      "calibrated_cutoff": 2.8843404600561935,
+      "conventional": {
+        "covered": 3874,
+        "trials": 5000,
+        "fraction": 0.7748,
+        "monte_carlo_95_wilson": [
+          0.7630133303782434,
+          0.7861647406327532
+        ]
+      },
+      "hac": {
+        "covered": 4343,
+        "trials": 5000,
+        "fraction": 0.8686,
+        "monte_carlo_95_wilson": [
+          0.8589521438934818,
+          0.8776819062326221
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 4836,
+        "trials": 5000,
+        "fraction": 0.9672,
+        "monte_carlo_95_wilson": [
+          0.9618932650037165,
+          0.9717893942988222
+        ]
+      }
+    },
+    {
+      "years": 100,
+      "process": "ar1:.8",
+      "seen_in_calibration": false,
+      "lags": 4,
+      "nominal_t_cutoff": 1.984467454426692,
+      "calibrated_cutoff": 2.8843404600561935,
+      "conventional": {
+        "covered": 2369,
+        "trials": 5000,
+        "fraction": 0.4738,
+        "monte_carlo_95_wilson": [
+          0.45998541431805173,
+          0.4876548132638693
+        ]
+      },
+      "hac": {
+        "covered": 3539,
+        "trials": 5000,
+        "fraction": 0.7078,
+        "monte_carlo_95_wilson": [
+          0.6950388478016325,
+          0.7202420952700017
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 4310,
+        "trials": 5000,
+        "fraction": 0.862,
+        "monte_carlo_95_wilson": [
+          0.8521617579325518,
+          0.8712824258592269
+        ]
+      }
+    },
+    {
+      "years": 100,
+      "process": "ar1:.9",
+      "seen_in_calibration": false,
+      "lags": 4,
+      "nominal_t_cutoff": 1.984467454426692,
+      "calibrated_cutoff": 2.8843404600561935,
+      "conventional": {
+        "covered": 1662,
+        "trials": 5000,
+        "fraction": 0.3324,
+        "monte_carlo_95_wilson": [
+          0.3194757944405265,
+          0.34558153925145657
+        ]
+      },
+      "hac": {
+        "covered": 2833,
+        "trials": 5000,
+        "fraction": 0.5666,
+        "monte_carlo_95_wilson": [
+          0.5528185064378808,
+          0.5802792356630375
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 3667,
+        "trials": 5000,
+        "fraction": 0.7334,
+        "monte_carlo_95_wilson": [
+          0.720967794292263,
+          0.7454738424397844
+        ]
+      }
+    },
+    {
+      "years": 100,
+      "process": "ma1:.75",
+      "seen_in_calibration": false,
+      "lags": 4,
+      "nominal_t_cutoff": 1.984467454426692,
+      "calibrated_cutoff": 2.8843404600561935,
+      "conventional": {
+        "covered": 4169,
+        "trials": 5000,
+        "fraction": 0.8338,
+        "monte_carlo_95_wilson": [
+          0.8232261865848579,
+          0.8438612955966219
+        ]
+      },
+      "hac": {
+        "covered": 4501,
+        "trials": 5000,
+        "fraction": 0.9002,
+        "monte_carlo_95_wilson": [
+          0.8915822479502874,
+          0.9082032834128889
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 4886,
+        "trials": 5000,
+        "fraction": 0.9772,
+        "monte_carlo_95_wilson": [
+          0.9726816973620263,
+          0.9809856079016113
+        ]
+      }
+    },
+    {
+      "years": 100,
+      "process": "ar2",
+      "seen_in_calibration": false,
+      "lags": 4,
+      "nominal_t_cutoff": 1.984467454426692,
+      "calibrated_cutoff": 2.8843404600561935,
+      "conventional": {
+        "covered": 1532,
+        "trials": 5000,
+        "fraction": 0.3064,
+        "monte_carlo_95_wilson": [
+          0.2937746938579906,
+          0.3193225603351355
+        ]
+      },
+      "hac": {
+        "covered": 2615,
+        "trials": 5000,
+        "fraction": 0.523,
+        "monte_carlo_95_wilson": [
+          0.5091432791690851,
+          0.5368214065414423
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 3436,
+        "trials": 5000,
+        "fraction": 0.6872,
+        "monte_carlo_95_wilson": [
+          0.6742093832309095,
+          0.6999031891608611
+        ]
+      }
+    },
+    {
+      "years": 100,
+      "process": "heavy_tail_ar1",
+      "seen_in_calibration": false,
+      "lags": 4,
+      "nominal_t_cutoff": 1.984467454426692,
+      "calibrated_cutoff": 2.8843404600561935,
+      "conventional": {
+        "covered": 3359,
+        "trials": 5000,
+        "fraction": 0.6718,
+        "monte_carlo_95_wilson": [
+          0.6586571912980478,
+          0.6846790263136303
+        ]
+      },
+      "hac": {
+        "covered": 4174,
+        "trials": 5000,
+        "fraction": 0.8348,
+        "monte_carlo_95_wilson": [
+          0.8242503041765996,
+          0.8448356426009902
+        ]
+      },
+      "calibrated_hac": {
+        "covered": 4763,
+        "trials": 5000,
+        "fraction": 0.9526,
+        "monte_carlo_95_wilson": [
+          0.946354660519909,
+          0.9581504156794253
+        ]
+      }
+    }
+  ],
+  "case_study": {
+    "name": "Karachi",
+    "source_sha256": "cda9698f6dc9bd8682fef52372f7a174dee59e6af2c1c052bb81ca8461990fb9",
+    "windows": [
+      {
+        "start": 1981,
+        "end": 2025,
+        "complete_years": 45,
+        "slope_c_per_decade": 0.11410459618199302,
+        "lags": 3,
+        "nominal_intervals": {
+          "conventional": [
+            0.0457810511660669,
+            0.18242814119791914
+          ],
+          "hac": [
+            0.042966729350133986,
+            0.18524246301385205
+          ]
+        }
+      },
+      {
+        "start": 2001,
+        "end": 2025,
+        "complete_years": 25,
+        "slope_c_per_decade": 0.11639077717701202,
+        "lags": 2,
+        "nominal_intervals": {
+          "conventional": [
+            -0.032695950164447624,
+            0.26547750451847163
+          ],
+          "hac": [
+            0.006873735232380371,
+            0.22590781912164365
+          ]
+        }
+      }
+    ],
+    "selection": "Exploratory demonstration selected from existing NASA POWER results."
+  },
+  "passes_promotion_gate": false
+}

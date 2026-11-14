@@ -37,9 +37,9 @@ function compareIntervals(conventional: Estimate, hac: Estimate) {
   if (conventionalZero === null || hacZero === null) {
     return "The available annual series does not support both uncertainty estimates.";
   }
-  if (conventionalZero && hacZero) return "Both 95% intervals include zero.";
-  if (conventionalZero !== hacZero) return "Only one of the two 95% intervals includes zero.";
-  return "Both 95% intervals exclude zero for the fitted slope.";
+  if (conventionalZero && hacZero) return "Both nominal 95% intervals include zero.";
+  if (conventionalZero !== hacZero) return "Only one of the two nominal 95% intervals includes zero.";
+  return "Both nominal 95% intervals exclude zero for the fitted slope.";
 }
 
 function EvidenceRow({ title, detail, estimate }: { title: string; detail: string; estimate: Estimate }) {
@@ -123,13 +123,14 @@ export default function Home() {
           <div className="table-wrap">
             <table>
               <thead>
-                <tr><th scope="col">Method</th><th scope="col">95% interval (°C/decade)</th><th scope="col">p-value</th></tr>
+                <tr><th scope="col">Method</th><th scope="col">Nominal 95% interval (°C/decade)</th><th scope="col">p-value</th></tr>
               </thead>
               <tbody>
                 <EvidenceRow title="Conventional OLS" detail="Independent, constant-variance errors" estimate={trend.conventional} />
                 <EvidenceRow title="Newey–West HAC" detail={`Allows short-range dependence · ${trend.hac.max_lag_years}-year lag`} estimate={trend.hac} />
               </tbody>
             </table>
+          <p>Nominal intervals can under-cover, especially with autocorrelated annual errors. <a href="/#calibration-audit">Read the synthetic coverage audit ↗</a></p>
           </div>
         </section>
 

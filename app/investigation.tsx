@@ -6,6 +6,9 @@ import { TemperatureChart } from "./temperature-chart";
 import { compareIntervals, includesZero, interval, pValue, signed } from "./stress-format";
 import { GiovanniEvidence } from "./giovanni-evidence";
 import { WorldMap } from "./world-map";
+import { assessTrend } from "./verdict";
+import { VerdictReport, downloadEvidence } from "./verdict-report";
+import { CalibrationAudit, karachiAuditCase } from "./calibration-audit";
 import dynamic from "next/dynamic";
 
 const WorldScan = dynamic(() => import("./world-scan").then(module => module.WorldScan));
@@ -69,7 +72,7 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
   useEffect(() => {
     if (!worldwide) return;
     function openGlobalLab() {
-      if (window.location.hash === "#global-evidence") setMode("scan");
+      if (["#global-evidence", "#global-stress"].includes(window.location.hash)) setMode("scan");
     }
     window.addEventListener("hashchange", openGlobalLab);
     return () => window.removeEventListener("hashchange", openGlobalLab);
@@ -78,6 +81,8 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
   const [windowId, setWindowId] = useState("1981-2025");
   const [method, setMethod] = useState<Method>("hac");
   const [comparisonId, setComparisonId] = useState("");
+  const [windowCheck, setWindowCheck] = useState(true);
+  const [intervalCheck, setIntervalCheck] = useState(true);
   const site = data.stations.find(item => item.id === siteId) ?? data.stations[0];
   const active = site.windows.find(item => item.id === windowId) ?? site.windows[0];
   const peer = data.stations.find(item => item.id === comparisonId && item.id !== site.id);
@@ -86,6 +91,9 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
   const trend = active.trend;
   const rate = trend.slope_c_per_decade;
   const estimate = trend[method];
+  const verdict = assessTrend({ slope: rate, windowSlopes: windowCheck ? site.windows.map(window => window.trend.slope_c_per_decade) : [],
+    intervals: intervalCheck ? [trend.conventional.confidence_interval, trend.hac.confidence_interval] : undefined });
+  const nominalNotice = "Nominal intervals can under-cover in short or autocorrelated records. The stated model assumptions and the synthetic coverage audit qualify these comparisons.";
   const rates = site.windows.map(item => item.trend.slope_c_per_decade);
   const signs = new Set(rates.map(Math.sign));
   const zeroIncluded = includesZero(estimate.confidence_interval);
@@ -109,6 +117,37 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
   function selectSite(id: string) {
     setSiteId(id);
     if (id === comparisonId) setComparisonId("");
+  }
+
+  function loadKarachiCase(id: "1981-2025" | "2001-2025") {
+    setMode("local");
+    setSiteId("karachi");
+    setWindowId(id);
+    setComparisonId("");
+    setMethod("hac");
+    setWindowCheck(true);
+    setIntervalCheck(true);
+  }
+
+  function exportVerdict() {
+    downloadEvidence("power-verdict-" + site.id + "-" + active.id + ".json", {
+      schema_version: 1, dataset: data.dataset, source: site.provenance,
+      location: { name: site.location.city, requested_coordinates: { latitude: site.latitude, longitude: site.longitude },
+        native_cell: site.native_cell, candidate_native_cells: site.candidate_native_cells },
+      measurement_units: "°C", slope_units: "°C per decade", source_period: data.requested_years,
+      analysis_period: { start: active.start, end: active.end, valid_years: active.valid_years },
+      estimated_slope: rate, method: data.methods, verdict,
+      checks: { windows: windowCheck, nominal_intervals: intervalCheck },
+      uncertainty: intervalCheck ? {
+        level: "nominal 95%", selected_display_method: method, conventional: trend.conventional, hac: trend.hac,
+        calibration_audit: "/evidence-verification.v1.json", limitation: nominalNotice,
+      } : null,
+      sensitivity: windowCheck ? site.windows.map(window => ({
+        start: window.start, end: window.end, valid_years: window.valid_years,
+        slope_c_per_decade: window.trend.slope_c_per_decade,
+      })) : null,
+      limitations: [nominalNotice, ...data.limitations], annual_temperatures: site.annual_series,
+    });
   }
 
   function exportResult() {
@@ -175,6 +214,13 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
       <section id="stress-test" className="stress-section" aria-labelledby="stress-heading">
         <div className="section-heading"><h2 id="stress-heading">{worldwide ? "Local Evidence Lab · POWER" : "Evidence Stress Test"}</h2><p>Change the period or the uncertainty method for {site.location.city}.{worldwide && " This lab uses 31 precomputed NASA POWER locations."}</p></div>
         {worldwide && <p className="global-lab-jump"><a className="secondary-action" href="#global-evidence" onClick={() => setMode("scan")}>Compare any two cells in the Global Evidence Lab ↗</a></p>}
+        <div className="panel verdict-setup">
+          <div><p className="eyebrow">NASA POWER · MERRA-2</p><h3>Investigate a trend</h3>
+          <p>Choose a location and period, then select the checks to include in your verdict.</p></div>
+          <label>Location<select value={site.id} onChange={event => selectSite(event.target.value)}>
+            {data.stations.map(item => <option key={item.id} value={item.id}>{item.location.city}</option>)}
+          </select></label>
+        </div>
         <div className="panel controls">
           <fieldset><legend>Time window</legend><div className="button-group">
             {site.windows.map(item => <button type="button" key={item.id} onClick={() => setWindowId(item.id)}
@@ -185,6 +231,20 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
               aria-pressed={method === item.id}>{item.label}</button>)}
           </div></fieldset>
         </div>
+        <div className="verdict-options local-verdict-options" role="group" aria-label="Evidence checks">
+          <label><input type="checkbox" checked={intervalCheck} onChange={event => setIntervalCheck(event.target.checked)} /> Compare nominal intervals</label>
+          <label><input type="checkbox" checked={windowCheck} onChange={event => setWindowCheck(event.target.checked)} /> Check window sensitivity</label>
+        </div>
+        <VerdictReport id="local-verdict" title={site.location.city} {...verdict}
+          calculations="#local-calculations" calculationLabel="Inspect the regression and interval calculations"
+          download={exportVerdict} items={[
+            { heading: "Data", detail: <>NASA POWER {site.provenance.header.api.version} T2M near-surface air temperature (°C), derived from MERRA-2. <a href={site.provenance.source_url}>Original NASA response ↗</a></> },
+            { heading: "Estimate", detail: <>{signed(rate)} °C per decade · {period(active.start, active.end)} · {active.valid_years.length} complete years</> },
+            { heading: "Assumptions", detail: intervalCheck ? "Conventional OLS uses independent, constant-variance errors. Newey–West allows short-range dependence and heteroskedasticity." : "Ordinary least squares with an intercept. Interval agreement was excluded from this verdict." },
+            { heading: "Sensitivity", detail: <>{windowCheck ? "Fitted slopes across windows range from " + signed(Math.min(...rates)) + " to " + signed(Math.max(...rates)) + " °C/decade. " : "Window sensitivity check is off. "}
+              {intervalCheck && compareIntervals(trend.conventional, trend.hac)}</> },
+            { heading: "Limits", detail: <>Sampled near {coordinate(site.latitude, site.longitude)}. These grid estimates cannot attribute causes or resolve neighborhood conditions. {nominalNotice} <a href="#calibration-audit">Read the audit ↗</a></> },
+          ]} />
         <div className="analysis-grid">
           <figure className="panel chart-panel">
             <figcaption className="panel-title">
@@ -204,20 +264,20 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
             <p className="slope-unit">°C per decade</p>
             <dl className="selected-meta active-meta">
               <div><dt>Complete years</dt><dd>{active.valid_years.length}</dd></div>
-              <div><dt>95% interval</dt><dd data-testid="active-ci">{interval(estimate.confidence_interval)}</dd></div>
+              <div><dt>Nominal 95% interval</dt><dd data-testid="active-ci">{interval(estimate.confidence_interval)}</dd></div>
               <div><dt>Two-sided p-value</dt><dd data-testid="active-p">{pValue(estimate.p_value)}</dd></div>
             </dl>
             <p className="active-conclusion">{zeroIncluded === null ? "Interval unavailable." : zeroIncluded ? "The selected interval includes zero." : "The selected interval excludes zero."}</p>
           </aside>
         </div>
 
-        <section className="panel stress-evidence" aria-labelledby="estimate-heading">
+        <section className="panel stress-evidence" id="local-calculations" aria-labelledby="estimate-heading">
           <h3 id="estimate-heading">Compare the uncertainty estimates</h3>
-          <p>The methods use the same fitted line. Newey–West allows residuals in nearby years to be related, which can make its interval narrower or wider than the conventional interval.</p>
+          <p>The methods use the same fitted line. Newey–West allows residuals in nearby years to be related, which can make its interval narrower or wider than the conventional interval. Both intervals and p-values are model-based. <a href="#calibration-audit">See the coverage audit ↗</a></p>
           {worldwide && <IntervalPlot rows={methods.map(item => ({ label: item.label, rate, ci: trend[item.id].confidence_interval, selected: method === item.id }))} />}
           <div className="table-wrap">
             <table>
-              <thead><tr><th scope="col">Method</th><th scope="col">95% interval (°C/decade)</th><th scope="col">p-value</th></tr></thead>
+              <thead><tr><th scope="col">Method</th><th scope="col">Nominal 95% interval (°C/decade)</th><th scope="col">p-value</th></tr></thead>
               <tbody>{methods.map(item => (
                 <tr key={item.id} className={method === item.id ? "active-estimate" : undefined}>
                   <th scope="row">{item.label}<small>{item.id === "hac" ? `Short-range dependence · ${trend.hac.max_lag_years} annual lags` : "Independent, constant-variance errors"}</small></th>
@@ -234,7 +294,7 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
             <div className="peer-summary">
               <h4>{site.location.city} and {peer.location.city}</h4>
               {comparable && peerWindow ? (
-                <p>{peer.location.city} has a fitted slope of <strong>{signed(peerWindow.trend.slope_c_per_decade)} °C/decade</strong> on the same {active.valid_years.length} complete years. {methods.find(item => item.id === method)?.label} 95% interval {interval(peerWindow.trend[method].confidence_interval)} °C/decade. The comparison is descriptive. Nearby or distant samples may share reanalysis errors. No slope-difference test is shown.</p>
+                <p>{peer.location.city} has a fitted slope of <strong>{signed(peerWindow.trend.slope_c_per_decade)} °C/decade</strong> on the same {active.valid_years.length} complete years. {methods.find(item => item.id === method)?.label} nominal 95% interval {interval(peerWindow.trend[method].confidence_interval)} °C/decade. The comparison is descriptive. Nearby or distant samples may share reanalysis errors. No slope-difference test is shown.</p>
               ) : <p>The sites’ fits use different or insufficient complete years for this window. The chart shows their annual means for context.</p>}
             </div>
           )}
@@ -244,6 +304,16 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
 
       {worldwide && <section id="featured" className="regional-section">
         <div className="section-heading"><h2>Featured investigations</h2><a href="/sindh">Open the eight-location Sindh case study ↗</a></div>
+        <article className="panel verdict-report guided-case" id="karachi-case">
+          <p className="eyebrow">Guided case · Karachi · NASA POWER</p>
+          <h3>Can nearly the same warming rate lead to a different verdict?</h3>
+          <p>Compare 45 years and 25 years from the same reanalysis cell. The full-record slope is {signed(karachiAuditCase.windows[0].slope_c_per_decade)} °C per decade and both nominal intervals exclude zero. In the recent window the slope is {signed(karachiAuditCase.windows[1].slope_c_per_decade)}, but the two intervals disagree.</p>
+          <div className="global-evidence-actions">
+            <a className="secondary-action" href="#local-verdict" onClick={() => loadKarachiCase("1981-2025")}>1. Inspect 1981–2025</a>
+            <a className="secondary-action" href="#local-verdict" onClick={() => loadKarachiCase("2001-2025")}>2. Inspect 2001–2025</a>
+          </div>
+          <p>Exploratory case selected from existing results. The calculation was independently repeated from the archived monthly NASA response. <a href="/evidence-verification.v1.json">Verification record ↗</a></p>
+        </article>
         <div className="featured-grid">{featured.map(story => {
           const focal = data.stations.find(item => item.id === story.id);
           const other = data.stations.find(item => item.id === story.peer);
@@ -295,6 +365,7 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
             </ul>
           </div>
         </div>
+        <CalibrationAudit />
         <GiovanniEvidence />
       </section>
     </>
