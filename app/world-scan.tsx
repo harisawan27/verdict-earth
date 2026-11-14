@@ -5,6 +5,9 @@ import type { KeyboardEvent, PointerEvent } from "react";
 import manifest from "../public/world-scan/v1/manifest.json";
 import { signed } from "./stress-format";
 import { TemperatureChart } from "./temperature-chart";
+import { drawGeography, loadGeography, loadPaths, loadRegionalLines, pointerPoint, resolvePlace } from "./scan-geography";
+import type { Geography, Place, PlaceContext, Point } from "./scan-geography";
+import { PlaceSearch, placeDetail, placeTitle } from "./scan-place-search";
 
 const base = "/world-scan/v1";
 const { rows, columns, missing, map_scale: scale, period, resolution_degrees: step } = manifest;
@@ -36,12 +39,23 @@ type Drag = { x: number; y: number; origin: View; moved: boolean };
 export const scanManifest = manifest;
 
 export function WorldScan() {
+  const [geo, setGeo] = useState<Geography | null>(null);
+  const [geoFailed, setGeoFailed] = useState(false);
+  const [regionPath, setRegionPath] = useState<Path2D | null>(null);
+  const [showLabels, setShowLabels] = useState(true);
+  const [selection, setSelection] = useState<{ point: Point; source: string }>({ point: [66.9881, 24.8719], source: "Initial place" });
+  const [place, setPlace] = useState<{ point: Point; context: PlaceContext } | null>(null);
+  const [lookupFailed, setLookupFailed] = useState(false);
+  const [labelScale, setLabelScale] = useState(1);
+  const [hover, setHover] = useState("");
+  const hoverTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const hoverTicket = useRef(0);
   const [grid, setGrid] = useState<Int16Array | null>(null);
   const [coast, setCoast] = useState<HTMLImageElement | null>(null);
   const [mapError, setMapError] = useState(false);
   const [view, setView] = useState<View>({ x: 0, y: 0, zoom: 1 });
   const [cell, setCell] = useState<Cell>(() => toCell(25, 67));
-  const [input, setInput] = useState({ latitude: "25", longitude: "67" });
+  const [input, setInput] = useState({ latitude: "24.8719", longitude: "66.9881" });
   const [detail, setDetail] = useState<{ row: number; values: Detail[] } | null>(null);
   const [detailError, setDetailError] = useState(false);
   const canvas = useRef<HTMLCanvasElement>(null);
@@ -52,6 +66,36 @@ export function WorldScan() {
   const latitude = manifest.first_latitude - cell.row * step;
   const longitude = manifest.first_longitude + cell.column * step;
   const caption = textCoordinate(latitude, "S", "N") + " · " + textCoordinate(longitude, "W", "E");
+
+  useEffect(() => {
+    let active = true;
+    loadGeography().then(result => {
+      if (active) setGeo(result);
+      return loadPaths().then(paths => { if (active) setGeo({ ...result, paths }); }).catch(() => {});
+    }).catch(() => { if (active) setGeoFailed(true); });
+    const node = canvas.current;
+    const resize = new ResizeObserver(() => {
+      if (node?.clientWidth) setLabelScale(node.width / node.clientWidth);
+    });
+    if (node) resize.observe(node);
+    return () => { active = false; resize.disconnect(); clearTimeout(hoverTimer.current); hoverTicket.current++; };
+  }, []);
+
+  useEffect(() => {
+    if (view.zoom < 4 || regionPath) return;
+    let active = true;
+    loadRegionalLines().then(path => { if (active) setRegionPath(path); }).catch(() => {});
+    return () => { active = false; };
+  }, [view.zoom, regionPath]);
+
+  useEffect(() => {
+    if (!geo) return;
+    let active = true;
+    resolvePlace(selection.point, geo).then(context => {
+      if (active) setPlace({ point: selection.point, context });
+    }).catch(() => { if (active) setLookupFailed(true); });
+    return () => { active = false; };
+  }, [geo, selection.point]);
 
   useEffect(() => {
     const image = new Image();
@@ -116,26 +160,37 @@ export function WorldScan() {
       const left = (offset - view.x) * factor;
       const top = -view.y * factor;
       context.drawImage(image, left, top, columns * factor, rows * factor);
-      if (coast) context.drawImage(coast, left, top, columns * factor, rows * factor);
+      if (coast && !geo?.paths[2]) context.drawImage(coast, left, top, columns * factor, rows * factor);
     }
+    if (geo) drawGeography(context, regionPath ? { ...geo, paths: [geo.paths[0], geo.paths[1], geo.paths[2], regionPath] } : geo, view, labelScale, showLabels, place?.point === selection.point ? place.context.city?.[0] : undefined);
     context.strokeStyle = "#fff";
-    context.lineWidth = 2;
+    context.lineWidth = 1.7 * labelScale;
     for (const offset of [0, columns]) {
       const x = (cell.column + offset + 0.5 - view.x) * factor;
       const y = (cell.row + 0.5 - view.y) * factor;
-      const radius = Math.max(6, factor * 0.75);
+      context.strokeRect(x - factor / 2, y - factor / 2, factor, factor);
+      const radius = Math.max(3 * labelScale, factor * 0.18);
       context.beginPath();
       context.arc(x, y, radius, 0, 2 * Math.PI);
       context.stroke();
+      const [lon, lat] = selection.point;
+      const pointX = (wrap((lon + 180) / step, columns) + offset - view.x) * factor;
+      const pointY = ((90 - lat) / step - view.y) * factor;
+      context.fillStyle = "#b4fff0";
+      context.beginPath();
+      context.arc(pointX, pointY, 2 * labelScale, 0, 2 * Math.PI);
+      context.fill();
     }
-  }, [cell, coast, grid, view]);
+  }, [cell, coast, geo, grid, labelScale, place, regionPath, selection.point, showLabels, view]);
 
-  function select(next: Cell, center = false) {
+  function select(next: Cell, center = false, point: Point = [manifest.first_longitude + next.column * step, manifest.first_latitude - next.row * step], source = "Keyboard selection") {
+    setSelection({ point, source });
+    setLookupFailed(false);
     if (next.row !== cell.row) setDetailError(false);
     setCell(next);
     setInput({
-      latitude: String(manifest.first_latitude - next.row * step),
-      longitude: String(manifest.first_longitude + next.column * step),
+      latitude: String(Number(point[1].toFixed(4))),
+      longitude: String(Number(point[0].toFixed(4))),
     });
     if (center && view.zoom > 1) {
       position(next.column + 0.5 - columns / view.zoom / 2, next.row + 0.5 - rows / view.zoom / 2, view.zoom);
@@ -152,8 +207,35 @@ export function WorldScan() {
       view.y + rows / view.zoom / 2 - rows / zoom / 2, zoom);
   }
 
+  function clearHover() {
+    clearTimeout(hoverTimer.current);
+    hoverTicket.current++;
+    setHover("");
+  }
+
+  function choosePlace(place: Place) {
+    clearHover();
+    const point: Point = [place[5], place[6]];
+    const zoom = place[1] === "country" || place[1] === "marine" ? 2 : 4;
+    select(toCell(point[1], point[0]), false, point, "Search location");
+    position((point[0] + 180) / step - columns / zoom / 2, (90 - point[1]) / step - rows / zoom / 2, zoom);
+  }
+
   function move(event: PointerEvent<HTMLCanvasElement>) {
     const start = drag.current;
+    if (!start && event.pointerType === "mouse" && geo && grid) {
+      clearTimeout(hoverTimer.current);
+      const ticket = ++hoverTicket.current;
+      const { left, top, width, height } = event.currentTarget.getBoundingClientRect();
+      const point = pointerPoint((event.clientX - left) / width, (event.clientY - top) / height, view);
+      hoverTimer.current = setTimeout(() => {
+        const target = toCell(point[1], point[0]);
+        const slope = grid[target.row * columns + target.column];
+        resolvePlace(point, geo).then(found => {
+          if (ticket === hoverTicket.current) setHover(placeTitle(found) + (slope === missing ? " · Insufficient data" : " · " + signed(slope / scale) + " °C/decade"));
+        }).catch(() => {});
+      }, 220);
+    }
     if (!start || view.zoom === 1) return;
     const dx = event.clientX - start.x;
     const dy = event.clientY - start.y;
@@ -169,10 +251,8 @@ export function WorldScan() {
     drag.current = null;
     if (moved || !grid) return;
     const rect = event.currentTarget.getBoundingClientRect();
-    select({
-      column: Math.floor(wrap(view.x + (event.clientX - rect.left) / rect.width * columns / view.zoom, columns)),
-      row: clamp(Math.floor(view.y + (event.clientY - rect.top) / rect.height * rows / view.zoom), 0, rows - 1),
-    });
+    const point = pointerPoint((event.clientX - rect.left) / rect.width, (event.clientY - rect.top) / rect.height, view);
+    select(toCell(point[1], point[0]), false, point, "Clicked location");
   }
 
   function stepCell(event: KeyboardEvent<HTMLCanvasElement>) {
@@ -183,6 +263,8 @@ export function WorldScan() {
     select({ row: clamp(cell.row + shift[0], 0, rows - 1), column: wrap(cell.column + shift[1], columns) }, true);
   }
 
+  const geographic = place?.point === selection.point ? place.context : null;
+  const clicked = textCoordinate(Number(selection.point[1].toFixed(3)), "S", "N") + " · " + textCoordinate(Number(selection.point[0].toFixed(3)), "W", "E");
   const record = detail?.row === cell.row ? detail.values[cell.column] : null;
   const [rate, intercept, annual] = record ?? [null, null, []];
   const validYears = annual.flatMap((value, index) => value === null ? [] : [firstYear + index]);
@@ -218,18 +300,21 @@ export function WorldScan() {
   return <div className="scan-layout">
     <figure className="panel scan-map">
       <figcaption><div><h3>Global surface temperature trends</h3><p>NASA GISTEMP v4 LOTI · {firstYear}–{lastYear}</p></div><span>{manifest.valid_cells.toLocaleString("en-US")} analyzed cells</span></figcaption>
+      <PlaceSearch geo={geo} failed={geoFailed} choose={choosePlace} />
       <div className="scan-viewport">
         <canvas aria-label="World Scan grid. Select a cell with the pointer or move the selection with the arrow keys." tabIndex={0}
           ref={canvas} width={1080} height={540} data-zoom={view.zoom} data-map-ready={!!grid}
-          onKeyDown={stepCell}
+          onKeyDown={stepCell} onPointerLeave={clearHover}
           onPointerDown={event => {
             if (!event.isPrimary || event.button !== 0) return;
+            clearHover();
             event.currentTarget.setPointerCapture(event.pointerId);
             drag.current = { x: event.clientX, y: event.clientY, origin: view, moved: false };
           }}
           onPointerMove={move} onPointerUp={event => { if (event.isPrimary && drag.current) pick(event); }}
           onLostPointerCapture={() => { drag.current = null; }} />
         {!grid && <div className="scan-message" role="status">{mapError ? "The trend grid did not load." : "Loading NASA trend grid…"}</div>}
+        {hover && <span className="scan-hover" aria-hidden="true">{hover}</span>}
         <div className="map-buttons">
           <button type="button" disabled={view.zoom >= 8} aria-label="Zoom in" onClick={() => changeZoom(view.zoom * 2)}>+</button>
           <button type="button" disabled={view.zoom <= 1} aria-label="Zoom out" onClick={() => changeZoom(view.zoom / 2)}>−</button>
@@ -242,12 +327,15 @@ export function WorldScan() {
       </div>
       <form className="scan-coordinate-form" onSubmit={event => {
         event.preventDefault();
-        select(toCell(Number(input.latitude), Number(input.longitude)), true);
+        const point: Point = [Number(input.longitude), Number(input.latitude)];
+        select(toCell(point[1], point[0]), true, point, "Entered coordinates");
       }}>
         <label>Latitude<input type="number" min="-90" max="90" step="any" required value={input.latitude} onChange={event => setInput({ ...input, latitude: event.target.value })} /></label>
         <label>Longitude<input type="number" min="-180" max="180" step="any" required value={input.longitude} onChange={event => setInput({ ...input, longitude: event.target.value })} /></label>
         <button type="submit">Go to cell</button>
+        <label className="scan-label-toggle"><input type="checkbox" checked={showLabels} onChange={event => setShowLabels(event.target.checked)} /> Place labels</label>
       </form>
+      <p className="scan-attribution">Geographic reference: Natural Earth. Climate data: NASA GISTEMP.</p>
       {(mapError || detailError) && <button className="scan-retry secondary-action" type="button" onClick={() => {
         setMapError(false);
         setDetailError(false);
@@ -255,9 +343,13 @@ export function WorldScan() {
       }}>Retry loading NASA data</button>}
     </figure>
     <aside className="panel location-card scan-cell" aria-labelledby="scan-cell-title">
-      <p className="eyebrow">Selected 2° grid cell</p>
-      <h3 id="scan-cell-title" aria-live="polite">{caption}</h3>
+      <p className="eyebrow">Geographic context</p>
+      <h3 id="scan-cell-title" aria-live="polite">{geographic ? placeTitle(geographic) : geoFailed || lookupFailed ? "Geographic reference unavailable" : "Locating selected point…"}</h3>
+      {geographic && <p className="scan-geographic-detail">{placeDetail(geographic)}</p>}
       <dl className="selected-meta">
+        <div><dt>{selection.source}</dt><dd>{clicked}</dd></div>
+        <div><dt>NASA grid-cell center</dt><dd data-testid="scan-center">{caption}</dd></div>
+        {geographic?.city && !geographic.ambiguous && <div><dt>Nearby place</dt><dd>{geographic.city[0]} · {(geographic.distance ?? 0) < 1 ? "<1" : Math.round(geographic.distance ?? 0)} km</dd></div>}
         <div><dt>Dataset</dt><dd>GISTEMP v4 LOTI</dd></div>
         <div><dt>Analysis window</dt><dd>{firstYear}–{lastYear}</dd></div>
         {complete > 0 && <div><dt>Years represented</dt><dd>{firstValid}–{lastValid}</dd></div>}
@@ -276,6 +368,7 @@ export function WorldScan() {
     <div className="panel source-detail scan-source">
       <h3>Source and limits</h3>
       <p>NASA Goddard Institute for Space Studies. LOTI combines land-surface air temperature with ERSSTv5 sea-surface temperature. Its 1,200 km smoothing makes neighboring 2° cells spatially dependent.</p>
+      <p>Place names describe the selected point. The fitted trend applies to the full NASA grid cell. Natural Earth depicts de facto boundaries and marks disputes for context.</p>
       <p>Slopes describe linear change over the available years. The map shows descriptive estimates. Cell-level confidence intervals are omitted. Local Investigations uses NASA POWER’s separate MERRA-2-derived 2-meter air temperature series.</p>
       <div className="source-links"><a href="https://data.giss.nasa.gov/gistemp/data_v4.html">NASA GISTEMP documentation ↗</a><a href={manifest.source.url}>Original NetCDF archive ↗</a></div>
     </div>

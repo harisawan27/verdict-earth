@@ -107,3 +107,9 @@ The world artifact is `data/results/world-t2m.v1.json`. Run `python -m science.w
 ### World Scan
 
 Run `python -m science.gistemp` to regenerate the offline map and cell records. The pipeline validates the archived NetCDF and NASA global table against their retrieval receipts. See [GISTEMP source and methods](submission/SCIENTIFIC_METHODOLOGY.md#world-scan--nasa-gistemp-v4).
+
+### World Scan geography
+
+World Scan adds Natural Earth country and territory borders, zoom-dependent regional and city labels, and a local search index. The selected point, nearby place and NASA cell center are displayed separately. Offshore selections use marine areas where available. Labels and de facto boundaries are geographic context. See [data sources](submission/DATA_SOURCES.md).
+
+Use `node --test tests/scan-geography.test.mjs` (Node.js 22.18 or newer) to check geographic resolution. To rebuild the versioned overlays, install `pyshp==2.3.1` and `shapely==2.1.2` and run `python -m science.geography`. The checked-in geographic assets are served locally, with no runtime geocoder.

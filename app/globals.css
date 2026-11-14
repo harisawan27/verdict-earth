@@ -338,3 +338,28 @@ button.interval-row:hover { border-color: #67cbbb; }
   .scan-legend { padding-inline:.8rem; }
   .scan-mode button { padding-inline:.6rem; font-size:.78rem; }
 }
+
+/* Geographic context on the World Scan */
+.scan-map { overflow:visible; }
+.scan-search { position:relative; margin:0 1.15rem .85rem; display:grid; gap:.3rem; }
+.scan-search label, .scan-label-toggle { color:var(--muted); font-size:.78rem; }
+.scan-search input { width:100%; padding:.57rem .7rem; border:1px solid #3b535f; border-radius:.45rem; background:#0d1a24; color:var(--ink); }
+.scan-search-results { position:absolute; z-index:3; inset:100% 0 auto; margin:.24rem 0 0; padding:.25rem; list-style:none; background:#11232f; border:1px solid #436477; border-radius:.5rem; box-shadow:0 8px 20px #09131a99; }
+.scan-search-results li { display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:.15rem .65rem; padding:.45rem .55rem; border-radius:.35rem; cursor:pointer; }
+.scan-search-results li:hover,.scan-search-results li[aria-selected=true] { background:#234252; }
+.scan-search-results li span,.scan-search-status,.scan-attribution,.scan-geographic-detail { color:var(--muted); font-size:.78rem; }
+.scan-search-status { margin:.15rem 0 0; }
+.scan-attribution { padding:0 1.15rem .85rem; }
+.scan-label-toggle { display:inline-flex; align-items:center; gap:.4rem; margin-inline-start:auto; cursor:pointer; }
+.scan-label-toggle input { accent-color:var(--accent); }
+.scan-geographic-detail { margin:.35rem 0 .65rem; }
+.scan-hover { position:absolute; pointer-events:none; bottom:.65rem; left:.65rem; max-width:62%; padding:.3rem .5rem; border:1px solid #46606d; border-radius:.35rem; background:#10202dec; color:#f5f7fa; font-size:.75rem; }
+@media(max-width:480px) {
+  .scan-search { margin-inline:.8rem; }
+  .scan-attribution { padding-inline:.8rem; }
+  .scan-label-toggle { margin-inline-start:0; }
+}
+
+.scan-coordinate-form .scan-label-toggle { display:inline-flex; align-items:center; }
+.scan-coordinate-form .scan-label-toggle input { width:auto; }
+.scan-cell h3 { font-size:clamp(1.45rem, 2.5vw, 2.15rem); line-height:1.12; }

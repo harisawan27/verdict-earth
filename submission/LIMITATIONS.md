@@ -8,3 +8,5 @@
 - The app serves versioned data snapshots. Future NASA revisions can change a refreshed dataset. Giovanni and POWER share MERRA-2 ancestry and the Karachi comparison tests consistency within that reanalysis.
 
 - World Scan shows descriptive trends from GISTEMP surface temperature anomalies. GISTEMP smooths across distances up to 1,200 km. Its neighboring 2° cells share information and cannot resolve neighborhood trends. Cells with fewer than 40 complete years appear as insufficient data. No cell-level intervals, significance tests, or causal conclusions are shown.
+
+- Geographic lookup uses generalized Natural Earth polygons at the selected point. City names indicate nearby listed places, and province coverage is partial. Coastlines, small features, subdivisions and disputed areas can differ from current local maps. The selected point’s name does not describe the full climate cell.
