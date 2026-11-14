@@ -8,11 +8,12 @@ import { signed } from "./stress-format";
 export type ScanRecord = [slope: number | null, intercept: number | null, annual: (number | null)[]];
 export type ComparisonPlace = { title: string; center: string; record: ScanRecord | null };
 
-export function GlobalEvidence({ first, second, sameCell, waiting, error, ready, chooseFirst, clear, examples }: {
+export function GlobalEvidence({ first, second, sameCell, waiting, error, ready, chooseFirst, clear, examples, visible = true }: {
   first: ComparisonPlace | null;
   second: ComparisonPlace;
   sameCell: boolean;
   waiting: boolean;
+  visible?: boolean;
   error: boolean;
   ready: boolean;
   chooseFirst: () => void;
@@ -20,10 +21,10 @@ export function GlobalEvidence({ first, second, sameCell, waiting, error, ready,
   examples: (pair: "karachi" | "americas") => void;
 }) {
   useEffect(() => {
-    if (window.location.hash === "#global-evidence") {
+    if (visible && window.location.hash === "#global-evidence") {
       document.getElementById("global-evidence")?.scrollIntoView();
     }
-  }, []);
+  }, [visible]);
   const [windowIndex, setWindowIndex] = useState(0);
   const [start, end] = compareWindows[windowIndex];
   const result = first?.record && second.record && !sameCell
@@ -39,15 +40,15 @@ export function GlobalEvidence({ first, second, sameCell, waiting, error, ready,
     };
   });
 
-  return <section id="global-evidence" className="panel global-evidence" aria-labelledby="global-evidence-title">
+  return <section hidden={!visible} id="global-evidence" className="panel global-evidence" aria-labelledby="global-evidence-title">
     <div className="global-evidence-head">
       <div><p className="eyebrow">NASA GISTEMP</p><h3 id="global-evidence-title">Global Evidence Lab</h3>
       <p>Compare any two grid cells. Both trends use the same complete years. Annual anomalies use NASA’s 1951–1980 baseline.</p></div>
-      <a className="secondary-action" href="#stress-test">Open local POWER lab ↓</a>
+      <a className="workspace-secondary" href="#explore/gistemp">Choose cells on the map ↗</a>
     </div>
     <div className="global-evidence-actions">
       <button className="secondary-action" type="button" disabled={!ready} onClick={() => examples("karachi")}>Karachi vs. Istanbul</button>
-      <button className="secondary-action" type="button" onClick={() => examples("americas")}>New York vs. São Paulo</button>
+      <button className="secondary-action" type="button" disabled={!ready} onClick={() => examples("americas")}>New York vs. São Paulo</button>
       {first && <button className="secondary-action" type="button" onClick={clear}>Clear comparison</button>}
     </div>
     {!first ? <div className="global-empty">
@@ -71,7 +72,7 @@ export function GlobalEvidence({ first, second, sameCell, waiting, error, ready,
       {result && <p className="global-note" role="status">{result.pairs.length} shared complete years · {result.slopes
         ? "Descriptive OLS trends. A slope difference is not a significance test."
         : `At least ${result.minimum} shared complete years are required for trends in this period.`}</p>}
-      {result && result.pairs.length > 0 && <TemperatureChart points={points} primaryName={first.title} comparisonName={second.title} anomaly />}
+      {visible && result && result.pairs.length > 0 && <TemperatureChart points={points} primaryName={first.title} comparisonName={second.title} anomaly />}
       {result && result.pairs.length === 0 && <p className="global-note">The two cells have no complete years in common for this period.</p>}
     </>}
   </section>;

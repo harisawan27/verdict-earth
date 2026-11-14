@@ -68,6 +68,12 @@ export function AnomalyCalendar({ calendar, city }: { calendar: Calendar; city: 
       <p aria-live="polite"><strong>{months[month]} {year} · {anomaly === null ? "Anomaly unavailable" : `${signed(anomaly, 2)} °C anomaly`}</strong>
         {actual !== null && normal !== null && <span>{actual.toFixed(2)} °C monthly mean · {normal.toFixed(2)} °C baseline</span>}</p>
     </div>
+    <div className="calendar-mobile" role="group" aria-label={"Monthly anomalies for " + year}>{months.map((label,column) => {
+      const value = calendar.anomaly_c[(year-calendar.first_year)*12+column];
+      return <button key={label} type="button" aria-pressed={column===month} onClick={() => setSelection({year,month:column})}>
+        <i aria-hidden="true" style={{background:anomalyColor(value)}}/><span>{label}</span><strong>{value===null ? "—" : signed(value,2) + "°C"}</strong>
+      </button>;
+    })}</div>
     <div className="calendar-scroll">
       <table className="calendar-table">
         <thead><tr><th scope="col">Year</th>{months.map(label => <th scope="col" key={label}>{label}</th>)}</tr></thead>

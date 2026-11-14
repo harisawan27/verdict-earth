@@ -96,6 +96,10 @@ This compares two products derived from MERRA-2. Spatial sampling, time basis, m
 
 NASA Langley Research Center POWER Project and NASA GMAO MERRA-2 provide the temperature inputs. NASA GES DISC operates Giovanni. Pakistan Meteorological Department supplies regional location references. OpenAI Codex assisted with implementation, testing, and documentation. All production temperature values are traceable to the recorded NASA responses. Synthetic data appear only in automated tests.
 
+## Application workspace
+
+Open Overview, Explore Earth, Evidence Lab, Case Studies, or Methods & Sources from the workspace navigation. The evidence tabs use shareable URLs, for example `#evidence/gistemp/sensitivity` and `#evidence/power/verdict`. The older section links, `/sindh`, and `/karachi-baseline` still work. Global and local analyses retain their own places and periods while you move through the app.
+
 ## Guided scientific verdicts
 
 Select a GISTEMP cell or a POWER location and choose a period. The report identifies which checks were used, links the numerical evidence, and exports the data, source, calculation and limitations as JSON. The guided Karachi case shows how changing the period changes the interval-based interpretation even with a similar fitted rate. Run `python -m science.verdict_audit` to regenerate the seeded audit and case verification. The simulated alternative failed the held-out coverage screen and is not used for inference.

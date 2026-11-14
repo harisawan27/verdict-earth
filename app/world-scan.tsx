@@ -13,6 +13,7 @@ import type { ScanRecord } from "./global-evidence";
 import { detailZoom, drawGeography, loadDetailTile, loadGeography, loadPaths, loadRegionalLines, pointerPoint, resolvePlace, searchedPlaceLabel, visibleDetailKeys } from "./scan-geography";
 import type { DetailTile, Geography, Place, PlaceContext, Point } from "./scan-geography";
 import { PlaceSearch, placeDetail, placeTitle } from "./scan-place-search";
+import { useWorkspace } from "./workspace-state";
 
 const base = "/world-scan/v1";
 const { rows, columns, missing, map_scale: scale, period, resolution_degrees: step } = manifest;
@@ -79,6 +80,16 @@ function sparkline(values: (number | null)[]) {
 }
 
 export function WorldScan() {
+  const workspace = useWorkspace();
+  const route = workspace?.route;
+  const updateSummary = workspace?.updateSummary;
+  const activeGlobal = !route || route.dataset === "gistemp";
+  const showMap = !route || (activeGlobal && route.page === "explore");
+  const lab = activeGlobal && route?.page === "evidence";
+  const showChart = !route || (lab && route.view === "trend");
+  const showComparison = !route || (lab && route.view === "comparison");
+  const [inspectorOpen, setInspectorOpen] = useState(false);
+  const exportCell = useRef<() => void>(() => {});
   const [analysisWindow, setAnalysisWindow] = useState(0);
   const [windowChecks, setWindowChecks] = useState(true);
   const [opacity, setOpacity] = useState(68);
@@ -246,7 +257,7 @@ export function WorldScan() {
   useEffect(() => {
     const drawing = canvas.current?.getContext("2d");
     const image = raster.current;
-    if (!drawing || !image || !grid) return;
+    if (!showMap || !drawing || !image || !grid) return;
     const context = drawing;
     const { width, height } = context.canvas;
     const factor = width / columns * view.zoom;
@@ -324,7 +335,7 @@ export function WorldScan() {
       context.arc(pointX, pointY, 2 * labelScale, 0, 2 * Math.PI);
       context.fill();
     }
-  }, [cell, coast, detailKey, detailedPaths, geo, geographicOnly, grid, hover, labelScale, land, opacity, pin, pixelWidth, place, regionPath, selection, showLabels, view]);
+  }, [cell, coast, detailKey, detailedPaths, geo, geographicOnly, grid, hover, labelScale, land, opacity, pin, pixelWidth, place, regionPath, selection, showLabels, showMap, view]);
 
   function select(next: Cell, center = false, point: Point = [manifest.first_longitude + next.column * step, manifest.first_latitude - next.row * step], source = "Keyboard selection", searchedPlace?: Place) {
     setSelection({ point, source, searchedPlace });
@@ -511,7 +522,16 @@ export function WorldScan() {
     choosePlace(b);
   }
 
-  return <div className={expanded ? "scan-layout scan-expanded" : "scan-layout"}>
+  const shownPeriod = showMap ? firstYear + "–" + lastYear : currentFit.start + "–" + currentFit.end;
+  useEffect(() => { exportCell.current = download; });
+  useEffect(() => {
+    if ((showMap || lab) && updateSummary) updateSummary("gistemp", {
+      location: selected.title, period: shownPeriod, exportAction: showMap && record ? () => exportCell.current() : undefined,
+    });
+  }, [lab, record, selected.title, shownPeriod, showMap, updateSummary]);
+
+  return <div className={(route ? "workspace-world " : "") + (expanded ? "scan-layout scan-expanded" : "scan-layout")}>
+    <div className="workspace-map-area" hidden={!showMap}>
     <figure ref={mapPanel} className="panel scan-map">
       <figcaption><div><h3>Global surface temperature trends</h3><p>NASA GISTEMP v4 LOTI · {firstYear}–{lastYear}</p></div><span>{manifest.valid_cells.toLocaleString("en-US")} analyzed cells</span></figcaption>
       <PlaceSearch geo={geo} failed={geoFailed} choose={choosePlace} />
@@ -543,9 +563,9 @@ export function WorldScan() {
         {colors.map(color => <span key={color.label}><i style={{background: color.fill}} />{color.label}</span>)}
         <span>°C/decade</span><span><i style={{background: noData}} />Insufficient data</span>
       </div>}
+      <details className="scan-coordinates"><summary>Map settings</summary>
       <div className="scan-opacity"><label>Trend opacity <input type="range" min="0" max="100" value={opacity}
         disabled={geographicOnly} onChange={event => setOpacity(Number(event.target.value))} /></label><span>{geographicOnly ? "Off" : opacity + "%"}</span></div>
-      <details className="scan-coordinates"><summary>Map settings and coordinates</summary>
       <form className="scan-coordinate-form" onSubmit={event => {
         event.preventDefault();
         const point: Point = [Number(input.longitude), Number(input.latitude)];
@@ -567,7 +587,9 @@ export function WorldScan() {
         setRetry(retry + 1);
       }}>Retry loading NASA data</button>}
     </figure>
-    <aside className="panel location-card scan-cell" aria-labelledby="scan-cell-title">
+    <aside className="panel location-card scan-cell" aria-labelledby="scan-cell-title" data-expanded={inspectorOpen}>
+      {route && <button className="inspector-toggle" type="button" aria-expanded={inspectorOpen} aria-controls="inspector-extra inspector-data"
+        onClick={() => setInspectorOpen(!inspectorOpen)}>{inspectorOpen ? "Minimize details" : "Expand details"}</button>}
       <p className="eyebrow">{pin ? sameCell ? "Pinned place A" : "Selected place B" : "Selected place"}</p>
       <h3 id="scan-cell-title" aria-live="polite">{geographicTitle}</h3>
       {geographicDetail && <p className="scan-geographic-detail">{geographicDetail}</p>}
@@ -576,15 +598,16 @@ export function WorldScan() {
         {rate !== null && <span>°C per decade</span>}
         <p>{firstYear}–{lastYear} · GISTEMP grid-cell trend</p>
       </div>
-      {complete > 1 && <svg className="scan-sparkline" viewBox="0 0 248 52" role="img" aria-label="Selected cell annual temperature anomaly history">
+      <div className="inspector-extra" id="inspector-extra">{complete > 1 && <svg className="scan-sparkline" viewBox="0 0 248 52" role="img" aria-label="Selected cell annual temperature anomaly history">
         <path d="M0 51H248" stroke="#46596a" />
         <path d={sparkline(annual)} fill="none" stroke="#6de5c5" strokeWidth="2" vectorEffect="non-scaling-stroke" />
       </svg>}
-      <div className="scan-result-actions">
+      </div><div className="scan-result-actions">
         <button className="primary-action" type="button" onClick={() => pinPoint(selection.point, selected.title)}>{pin ? "Use selection as A" : "Compare a place"}</button>
-        <a className="secondary-action" href="#global-stress">Investigate this cell ↓</a>
+        <a className="workspace-primary" href="#scan-series">Investigate evidence ↗</a>
+        {route && pin && <a className="workspace-secondary" href="#global-evidence">Open comparison ↗</a>}
       </div>
-      <details className="scan-methods"><summary>Data &amp; methods</summary>
+      <details id="inspector-data" className="scan-methods inspector-extra"><summary>Data &amp; methods</summary>
       <dl className="selected-meta">
         <div><dt>{selection.source}</dt><dd>{clicked}</dd></div>
         <div><dt>NASA grid-cell center</dt><dd data-testid="scan-center">{caption}</dd></div>
@@ -598,25 +621,47 @@ export function WorldScan() {
       <button className="secondary-action" type="button" disabled={!record} onClick={download}>Download cell data ↓</button>
       </details>
     </aside>
-    <GlobalStress name={selected.title} coordinates={{ latitude, longitude }} point={selection.point}
+    </div>
+    {lab && <div className="workspace-lab-context panel">
+      <div><p className="eyebrow">NASA GISTEMP · Surface temperature anomalies</p><h2>{selected.title}</h2><p>{caption} · 2° smoothed grid · 1951–1980 reference</p></div>
+      <label>Analysis period<select value={analysisWindow} onChange={event => setAnalysisWindow(Number(event.target.value))}>
+        {fits.map((fit, index) => <option key={fit.start+"-"+fit.end} value={index}>{fit.start}–{fit.end}</option>)}
+      </select></label>
+      <a href="#explore/gistemp" className="workspace-secondary">Change place</a>
+    </div>}
+    {(!route || (lab && (route.view === "sensitivity" || route.view === "verdict"))) && <GlobalStress name={selected.title} coordinates={{ latitude, longitude }} point={selection.point}
       fit={currentFit} fits={fits} active={analysisWindow} setActive={setAnalysisWindow} annual={annual}
-      available={!!record} failed={detailError} checks={windowChecks} setChecks={setWindowChecks} />
-    <GlobalEvidence first={pin && { title: pin.title, center: pin.center, record: pinDetail?.pin === pin ? pinDetail.record : null }}
+      available={!!record} failed={detailError} checks={windowChecks} setChecks={setWindowChecks} view={route ? route.view === "verdict" ? "verdict" : "sensitivity" : undefined} />}
+    <GlobalEvidence visible={showComparison} first={pin && { title: pin.title, center: pin.center, record: pinDetail?.pin === pin ? pinDetail.record : null }}
       second={selected} sameCell={sameCell} waiting={!!pin && !sameCell && !pinError && !detailError && (!record || pinDetail?.pin !== pin)}
       error={!!pin && (pinError || detailError)} ready={!!geo}
       chooseFirst={() => pinPoint(selection.point, selected.title)} clear={() => { setPin(null); setPinDetail(null); setPinError(false); }} examples={loadExample} />
-    <figure id="scan-series" className="panel chart-panel scan-series">
+    {showChart && <div className="workspace-trend-grid"><figure id="scan-series" className="panel chart-panel scan-series">
       <figcaption className="panel-title"><div><p className="eyebrow muted">GISTEMP v4 LOTI · {caption}</p><h3>Annual surface temperature anomalies</h3></div><span className="unit-label">°C</span></figcaption>
       <p>Relative to the NASA 1951–1980 baseline. Each annual mean uses 12 months weighted by calendar days.</p>
       {complete > 0 ? <TemperatureChart points={chart} window={currentFit} anomaly /> : <p className="scan-no-series">{record ? "This cell has no complete calendar years in the analysis period." : "Annual series pending."}</p>}
       {complete > 0 && <div className="legend"><span><i className="legend-line" />Annual anomaly</span>{currentFit.slope !== null && <span><i className="legend-line legend-fit" />{currentFit.start}–{currentFit.end} fit</span>}</div>}
     </figure>
-    <div className="panel source-detail scan-source">
+    {route && <aside className="panel interpretation workspace-trend-summary">
+      <p className="eyebrow">Estimated temperature trend</p>
+      <p className="slope">{!record ? detailError ? "Unavailable" : "Loading…" : currentFit.slope === null ? "Unavailable" : signed(currentFit.slope)}</p>
+      <p>°C per decade · {shownPeriod}</p>
+      <p>{currentFit.years.length} complete years · {currentFit.minimum} required</p>
+      <a className="workspace-primary" href="#global-stress">Test window sensitivity ↗</a>
+    </aside>}
+    </div>}
+    {lab && route.view === "uncertainty" && <article className="panel verdict-report">
+      <p className="eyebrow">GISTEMP · Evidence limits</p><h3>Statistical strength not assessed</h3>
+      <p>World Scan provides descriptive fits for smoothed 2° grid cells. A calibrated cell-level confidence interval or significance test is unavailable.</p>
+      <p>You can test whether the fitted direction changes across time windows.</p>
+      <a className="workspace-secondary" href="#global-stress">Inspect window sensitivity ↗</a>
+    </article>}
+    {!route && <div className="panel source-detail scan-source">
       <h3>Source and limits</h3>
       <p>NASA Goddard Institute for Space Studies. LOTI combines land-surface air temperature with ERSSTv5 sea-surface temperature. Its 1,200 km smoothing makes neighboring 2° cells spatially dependent.</p>
       <p>Place names describe the selected point. The fitted trend applies to the full NASA grid cell. Natural Earth depicts de facto boundaries and marks disputes for context.</p>
       <p>Slopes describe linear change over the available years. The map shows descriptive estimates. Cell-level confidence intervals are omitted. Local Investigations uses NASA POWER’s separate MERRA-2-derived 2-meter air temperature series.</p>
       <div className="source-links"><a href="https://data.giss.nasa.gov/gistemp/data_v4.html">NASA GISTEMP documentation ↗</a><a href={manifest.source.url}>Original NetCDF archive ↗</a></div>
-    </div>
+    </div>}
   </div>;
 }

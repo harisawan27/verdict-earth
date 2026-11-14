@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type region from "../data/results/sindh-t2m.v1.json";
 import { TemperatureChart } from "./temperature-chart";
 import { compareIntervals, includesZero, interval, pValue, signed } from "./stress-format";
@@ -9,6 +9,9 @@ import { WorldMap } from "./world-map";
 import { assessTrend } from "./verdict";
 import { VerdictReport, downloadEvidence } from "./verdict-report";
 import { CalibrationAudit, karachiAuditCase } from "./calibration-audit";
+import { CaseWorkspace } from "./case-workspace";
+import { destinationHref, evidenceViews, methodViews, useWorkspace } from "./workspace-state";
+import scan from "../public/world-scan/v1/manifest.json";
 import dynamic from "next/dynamic";
 
 const WorldScan = dynamic(() => import("./world-scan").then(module => module.WorldScan));
@@ -68,15 +71,29 @@ function SitePlot({ stations, selected, select }: { stations: Station[]; selecte
 const period = (start: number, end: number) => `${start}–${end}`;
 
 export function Investigation({ data, worldwide = false }: { data: Region; worldwide?: boolean }) {
-  const [mode, setMode] = useState<"scan" | "local">("scan");
+  const workspace = useWorkspace();
+  const route = workspace?.route;
+  const updateSummary = workspace?.updateSummary;
+  const [legacyMode, setMode] = useState<"scan" | "local">("scan");
+  const mode = route ? route.dataset === "power" ? "local" : "scan" : legacyMode;
+  const scanActive = !!route && route.dataset === "gistemp" && ["explore", "evidence"].includes(route.page);
+  const [caseSteps, setCaseSteps] = useState<Record<string, number>>({});
+  const [visitedScan, setVisitedScan] = useState(false);
+  useEffect(() => { if (scanActive) setVisitedScan(true); }, [scanActive]);
+  const localMap = !route || (route.page === "explore" && route.dataset === "power");
+  const localLab = !route || (route.page === "evidence" && route.dataset === "power");
+  const localView = route?.view ?? "";
+  const isMethods = !route || route.page === "methods";
+  const sourceView = !route || route.view === "sources";
+  const exportCurrent = useRef<() => void>(() => {});
   useEffect(() => {
-    if (!worldwide) return;
+    if (!worldwide || route) return;
     function openGlobalLab() {
       if (["#global-evidence", "#global-stress"].includes(window.location.hash)) setMode("scan");
     }
     window.addEventListener("hashchange", openGlobalLab);
     return () => window.removeEventListener("hashchange", openGlobalLab);
-  }, [worldwide]);
+  }, [worldwide, route]);
   const [siteId, setSiteId] = useState("karachi");
   const [windowId, setWindowId] = useState("1981-2025");
   const [method, setMethod] = useState<Method>("hac");
@@ -166,15 +183,32 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
+  useEffect(() => { exportCurrent.current = exportVerdict; });
+  useEffect(() => {
+    if (updateSummary) updateSummary("power", { location: site.location.city, period: period(active.start, active.end),
+      exportAction: () => exportCurrent.current() });
+  }, [updateSummary, site.location.city, active.start, active.end]);
+
   return (
     <>
-      <section id="region" className="regional-section" aria-labelledby="regional-heading">
-        <div className="section-heading"><h2 id="regional-heading">{worldwide ? "Explore Earth" : "Sampling locations"}</h2><p>{worldwide && mode === "scan" ? "Select a NASA GISTEMP grid cell to inspect its anomaly record." : "Select a point to investigate its NASA POWER temperature record."}</p></div>
-        {worldwide && <div className="scan-mode" role="group" aria-label="NASA dataset">
+      {route && (route.page === "explore" || route.page === "evidence") && <div className="workspace-controls">
+        <nav className="workspace-segments" aria-label="Dataset">
+          <a href={destinationHref(route.page,"gistemp",route.view)} aria-current={route.dataset==="gistemp" ? "page" : undefined}>Global · GISTEMP</a>
+          <a href={destinationHref(route.page,"power",route.view)} aria-current={route.dataset==="power" ? "page" : undefined}>Local · POWER</a>
+        </nav>
+        <p>{route.dataset==="gistemp" ? "Surface temperature anomalies on NASA’s 2° grid." : "Near-surface air temperature at 31 sampled reanalysis locations. Explore and Evidence remember each dataset’s selection separately."}</p>
+      </div>}
+      {route?.page === "evidence" && <nav className="workspace-tabs" aria-label="Evidence views">{evidenceViews.map(([view,label]) =>
+        <a href={destinationHref("evidence",route.dataset,view)} key={view} aria-current={route.view===view ? "page" : undefined}>
+          {view==="comparison" && route.dataset==="power" ? "Anomalies" : view==="uncertainty" && route.dataset==="gistemp" ? "Evidence limits" : label}</a>)}</nav>}
+      {route && (visitedScan || scanActive) && <div className="workspace-scan-view" hidden={!scanActive}><WorldScan/></div>}
+      <section hidden={!localMap} id="region" className="regional-section" aria-label="Map and location inspector">
+        {!route && <div className="section-heading"><h2 id="regional-heading">{worldwide ? "Explore Earth" : "Sampling locations"}</h2><p>{worldwide && mode === "scan" ? "Select a NASA GISTEMP grid cell to inspect its anomaly record." : "Select a point to investigate its NASA POWER temperature record."}</p></div>}
+        {worldwide && !route && <div className="scan-mode" role="group" aria-label="NASA dataset">
           <button type="button" aria-pressed={mode === "scan"} onClick={() => setMode("scan")}>World Scan · GISTEMP</button>
           <button type="button" aria-pressed={mode === "local"} onClick={() => setMode("local")}>Local Investigations · POWER</button>
         </div>}
-        {worldwide && mode === "scan" ? <WorldScan /> : <div className="regional-grid">
+        {!route && worldwide && mode === "scan" ? <WorldScan /> : <div className="regional-grid">
           {worldwide ? <WorldMap stations={data.stations} selected={site.id} select={selectSite} /> : <figure className="panel geo-panel">
             <figcaption><strong>Sampling points in Sindh</strong><span>1981–2025 linear slope</span></figcaption>
             <SitePlot stations={data.stations} selected={site.id} select={selectSite} />
@@ -191,6 +225,7 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
             <h3>{site.location.city}</h3>
             {site.country && <p className="atlas-country">{site.country} · {site.continent}</p>}
             <p className="location-coordinate">{coordinate(site.latitude, site.longitude)}</p>
+            {route && <div className="scan-result"><strong>{signed(rate)}</strong><span>°C per decade</span><p>{period(active.start, active.end)} · estimated temperature trend</p></div>}
             <dl className="selected-meta">
               <div><dt>Full record</dt><dd>{site.completeness.complete_calendar_years} complete years</dd></div>
               {worldwide && <div><dt>Native grid</dt><dd>{cell ? coordinate(cell.latitude, cell.longitude) : candidate ? coordinate(candidate[0], candidate[1]) + " (inferred)" : "Unavailable"}</dd></div>}
@@ -206,32 +241,40 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
                 ))}
               </select>
             </label>
-            {worldwide && <a className="secondary-action atlas-lab-link" href="#stress-test">Open Evidence Lab ↓</a>}
+            {worldwide && <a className="workspace-primary atlas-lab-link" href="#stress-test">Investigate evidence ↗</a>}
           </aside>
         </div>}
       </section>
 
-      <section id="stress-test" className="stress-section" aria-labelledby="stress-heading">
-        <div className="section-heading"><h2 id="stress-heading">{worldwide ? "Local Evidence Lab · POWER" : "Evidence Stress Test"}</h2><p>Change the period or the uncertainty method for {site.location.city}.{worldwide && " This lab uses 31 precomputed NASA POWER locations."}</p></div>
-        {worldwide && <p className="global-lab-jump"><a className="secondary-action" href="#global-evidence" onClick={() => setMode("scan")}>Compare any two cells in the Global Evidence Lab ↗</a></p>}
-        <div className="panel verdict-setup">
+      {localLab && <section id="stress-test" className="stress-section" aria-label="Local Evidence Lab">
+        {!route && <div className="section-heading"><h2 id="stress-heading">{worldwide ? "Local Evidence Lab · POWER" : "Evidence Stress Test"}</h2><p>Change the period or the uncertainty method for {site.location.city}.{worldwide && " This lab uses 31 precomputed NASA POWER locations."}</p></div>}
+        {!route && worldwide && <p className="global-lab-jump"><a className="secondary-action" href="#global-evidence" onClick={() => setMode("scan")}>Compare any two cells in the Global Evidence Lab ↗</a></p>}
+        {!route && <div className="panel verdict-setup">
           <div><p className="eyebrow">NASA POWER · MERRA-2</p><h3>Investigate a trend</h3>
           <p>Choose a location and period, then select the checks to include in your verdict.</p></div>
           <label>Location<select value={site.id} onChange={event => selectSite(event.target.value)}>
             {data.stations.map(item => <option key={item.id} value={item.id}>{item.location.city}</option>)}
           </select></label>
         </div>
-        <div className="panel controls">
-          <fieldset><legend>Time window</legend><div className="button-group">
+        }
+        {route && <div className="workspace-lab-context panel">
+          <div><p className="eyebrow">NASA POWER · Near-surface air temperature</p><h2>{site.location.city}</h2><p>{coordinate(site.latitude, site.longitude)} · MERRA-2 reanalysis</p></div>
+          <label>Location<select value={site.id} onChange={event => selectSite(event.target.value)}>{data.stations.map(item =>
+            <option key={item.id} value={item.id}>{item.location.city}</option>)}</select></label>
+          <label>Analysis period<select value={active.id} onChange={event => setWindowId(event.target.value)}>{site.windows.map(item =>
+            <option key={item.id} value={item.id}>{period(item.start,item.end)}</option>)}</select></label>
+        </div>}
+        {(!route || ["uncertainty","sensitivity","verdict"].includes(localView)) && <div className="panel controls">
+          {!route && <fieldset><legend>Time window</legend><div className="button-group">
             {site.windows.map(item => <button type="button" key={item.id} onClick={() => setWindowId(item.id)}
               aria-pressed={active.id === item.id}>{period(item.start, item.end)}</button>)}
-          </div></fieldset>
+          </div></fieldset>}
           <fieldset><legend>Uncertainty method</legend><div className="button-group">
             {methods.map(item => <button type="button" key={item.id} onClick={() => setMethod(item.id)}
               aria-pressed={method === item.id}>{item.label}</button>)}
           </div></fieldset>
-        </div>
-        <div className="verdict-options local-verdict-options" role="group" aria-label="Evidence checks">
+        </div>}
+        {(!route || localView === "verdict") && <><div className="verdict-options local-verdict-options" role="group" aria-label="Evidence checks">
           <label><input type="checkbox" checked={intervalCheck} onChange={event => setIntervalCheck(event.target.checked)} /> Compare nominal intervals</label>
           <label><input type="checkbox" checked={windowCheck} onChange={event => setWindowCheck(event.target.checked)} /> Check window sensitivity</label>
         </div>
@@ -244,8 +287,8 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
             { heading: "Sensitivity", detail: <>{windowCheck ? "Fitted slopes across windows range from " + signed(Math.min(...rates)) + " to " + signed(Math.max(...rates)) + " °C/decade. " : "Window sensitivity check is off. "}
               {intervalCheck && compareIntervals(trend.conventional, trend.hac)}</> },
             { heading: "Limits", detail: <>Sampled near {coordinate(site.latitude, site.longitude)}. These grid estimates cannot attribute causes or resolve neighborhood conditions. {nominalNotice} <a href="#calibration-audit">Read the audit ↗</a></> },
-          ]} />
-        <div className="analysis-grid">
+          ]} /></>}
+        {(!route || localView === "trend") && <div className="analysis-grid">
           <figure className="panel chart-panel">
             <figcaption className="panel-title">
               <div><p className="eyebrow muted">{site.location.city} · NASA POWER</p><h3>Annual mean air temperature</h3></div>
@@ -268,11 +311,13 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
               <div><dt>Two-sided p-value</dt><dd data-testid="active-p">{pValue(estimate.p_value)}</dd></div>
             </dl>
             <p className="active-conclusion">{zeroIncluded === null ? "Interval unavailable." : zeroIncluded ? "The selected interval includes zero." : "The selected interval excludes zero."}</p>
+          {route && <a className="workspace-primary" href="#local-calculations">Compare uncertainty ↗</a>}
           </aside>
-        </div>
+        </div>}
 
-        <section className="panel stress-evidence" id="local-calculations" aria-labelledby="estimate-heading">
-          <h3 id="estimate-heading">Compare the uncertainty estimates</h3>
+        {(!route || localView === "uncertainty" || localView === "sensitivity") && <section className="panel stress-evidence" id="local-calculations" aria-labelledby="estimate-heading">
+          <h3 id="estimate-heading">{localView === "sensitivity" ? "Time-window sensitivity" : "Compare the uncertainty estimates"}</h3>
+          {(!route || localView === "uncertainty") && <>
           <p>The methods use the same fitted line. Newey–West allows residuals in nearby years to be related, which can make its interval narrower or wider than the conventional interval. Both intervals and p-values are model-based. <a href="#calibration-audit">See the coverage audit ↗</a></p>
           {worldwide && <IntervalPlot rows={methods.map(item => ({ label: item.label, rate, ci: trend[item.id].confidence_interval, selected: method === item.id }))} />}
           <div className="table-wrap">
@@ -288,9 +333,9 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
             </table>
           </div>
           <p className="evidence-summary"><strong>{rate > 0 ? "The fitted series warms" : rate < 0 ? "The fitted series cools" : "The fitted slope is zero"} over {period(active.start, active.end)}.</strong>{" "}
-            {compareIntervals(trend.conventional, trend.hac)} Across the available windows, slopes range from {signed(Math.min(...rates))} to {signed(Math.max(...rates))} °C/decade{signs.size > 1 ? " and change sign." : "."} Shorter windows typically have less power. These checks cannot attribute the change to a cause.</p>
-          {worldwide && <div className="window-plot"><h4>Time-window sensitivity</h4><p>Each row shows the fitted slope, interval and sample size for the selected uncertainty method.</p><IntervalPlot rows={site.windows.map(item => ({label: period(item.start, item.end), rate: item.trend.slope_c_per_decade, ci: item.trend[method].confidence_interval, selected: item.id === active.id, count: item.valid_years.length, select: () => setWindowId(item.id)}))} /></div>}
-          {peer && (
+            {compareIntervals(trend.conventional, trend.hac)} Across the available windows, slopes range from {signed(Math.min(...rates))} to {signed(Math.max(...rates))} °C/decade{signs.size > 1 ? " and change sign." : "."} Shorter windows typically have less power. These checks cannot attribute the change to a cause.</p></>}
+          {worldwide && (!route || localView === "sensitivity") && <div className="window-plot"><h4>Time-window sensitivity</h4><p>Each row shows the fitted slope, interval and sample size for the selected uncertainty method.</p><IntervalPlot rows={site.windows.map(item => ({label: period(item.start, item.end), rate: item.trend.slope_c_per_decade, ci: item.trend[method].confidence_interval, selected: item.id === active.id, count: item.valid_years.length, select: () => setWindowId(item.id)}))} /></div>}
+          {peer && (!route || localView === "uncertainty") && (
             <div className="peer-summary">
               <h4>{site.location.city} and {peer.location.city}</h4>
               {comparable && peerWindow ? (
@@ -298,11 +343,14 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
               ) : <p>The sites’ fits use different or insufficient complete years for this window. The chart shows their annual means for context.</p>}
             </div>
           )}
-        </section>
-      {site.calendar && <AnomalyCalendar calendar={site.calendar} city={site.location.city} />}
-      </section>
+        </section>}
+      {site.calendar && (!route || localView === "comparison") && <AnomalyCalendar calendar={site.calendar} city={site.location.city} />}
+      </section>}
 
-      {worldwide && <section id="featured" className="regional-section">
+      {route?.page === "cases" && <CaseWorkspace key={route.view} chosen={route.view} sites={data.stations} step={caseSteps[route.view] ?? 0}
+        setStep={step => setCaseSteps(previous => ({ ...previous, [route.view]: step }))}
+        open={(id, peerId) => { setSiteId(id); setWindowId("1981-2025"); setComparisonId(peerId); }} openKarachi={loadKarachiCase} />}
+      {worldwide && !route && <section id="featured" className="regional-section">
         <div className="section-heading"><h2>Featured investigations</h2><a href="/sindh">Open the eight-location Sindh case study ↗</a></div>
         <article className="panel verdict-report guided-case" id="karachi-case">
           <p className="eyebrow">Guided case · Karachi · NASA POWER</p>
@@ -328,9 +376,12 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
           </article>;
         })}</div>
       </section>}
-      <section id="how-we-know" className="regional-section" aria-labelledby="source-heading">
-        <div className="section-heading"><h2 id="source-heading">How We Know</h2><button type="button" className="download-result" onClick={exportResult}>Download selected results ↓</button></div>
+      {isMethods && <section id="how-we-know" className="regional-section" aria-labelledby="source-heading">
+        <div className="section-heading"><h2 id="source-heading">{route ? "Trace the evidence" : "How We Know"}</h2>{sourceView && <button type="button" className="download-result" onClick={exportResult}>Download selected POWER results ↓</button>}</div>
+        {route && <nav className="workspace-tabs" aria-label="Methods sections">{methodViews.map(([view,label]) =>
+          <a key={view} href={"#methods/"+view} aria-current={route.view===view ? "page" : undefined}>{label}</a>)}</nav>}
         <div className="provenance-grid">
+          {sourceView && <>
           <div className="panel source-detail">
             <h3>NASA POWER · {site.location.city}</h3>
             <p>{data.dataset.name} ({data.dataset.variable}), {data.dataset.data_type.toLowerCase()} from {data.dataset.original_product}.</p>
@@ -355,19 +406,31 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
               ))}</ol>
             </details>
           </div>
-          <div className="panel source-detail">
+          {route && <div className="panel source-detail">
+            <h3>NASA GISTEMP v4 LOTI</h3>
+            <p>Land air and sea-surface temperature anomalies relative to 1951–1980. The original 2° grid uses 1,200 km spatial smoothing.</p>
+            <p>World Scan fits 1981–2025 and supports {scan.valid_cells.toLocaleString("en-US")} analyzed grid cells.</p>
+            <div className="source-links"><a href={scan.source.url}>Original NASA archive ↗</a><a href="https://data.giss.nasa.gov/gistemp/data_v4.html">GISTEMP documentation ↗</a><a href="https://www.naturalearthdata.com/">Natural Earth geographic data ↗</a></div>
+          </div>}</>}
+          {(!route || route.view === "methods" || route.view === "limits") && <div className="panel source-detail">
             <h3>Methods and limitations</h3>
             <ul>
               <li>{data.methods.annual_aggregation}</li><li>{data.methods.regression}</li>
               <li>{data.methods.conventional} {data.methods.hac}</li>
               <li>In a seeded 100-year AR(1) simulation, the nominal 95% HAC intervals covered the true slope in 337 of 400 runs. The nominal level is a reference, and actual coverage depends on the residual process and sample length.</li>
               {data.limitations.map(item => <li key={item}>{item}</li>)}
+              {route && <li>GISTEMP trends describe a smoothed 2° cell. Nearby cells share information. The app does not establish an attribution or calibrated cell-level interval.</li>}
             </ul>
-          </div>
+          </div>}
         </div>
-        <CalibrationAudit />
-        <GiovanniEvidence />
-      </section>
+        {(!route || route.view === "calibration") && <CalibrationAudit />}
+        {(!route || route.view === "giovanni") && <GiovanniEvidence />}
+        {route?.view === "reproduce" && <article className="panel source-detail">
+          <h3>Reproduce from the original records</h3><p>Scientific data, code and receipt checksums are archived in the project repository. The evidence downloads include selected periods, estimates, and their limits.</p>
+          <div className="source-links"><a href="https://github.com/harisawan27/verdict-earth/blob/master/submission/SCIENTIFIC_METHODOLOGY.md">Full scientific methodology ↗</a><a href="/evidence-verification.v1.json" download>Calibration and case verification JSON ↓</a></div>
+        </article>}
+        {route && ["methods","limits"].includes(route.view) && <p className="workspace-legacy"><a href="https://github.com/harisawan27/verdict-earth/blob/master/submission/SCIENTIFIC_METHODOLOGY.md">Full methodology and reproducibility notes ↗</a></p>}
+      </section>}
     </>
   );
 }
