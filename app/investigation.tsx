@@ -182,7 +182,7 @@ export function Investigation({ data }: { data: Region }) {
 
         <section className="panel stress-evidence" aria-labelledby="estimate-heading">
           <h3 id="estimate-heading">Compare the uncertainty estimates</h3>
-          <p>The methods use the same fitted line. Newey–West allows residuals in nearby years to be related, which can change the estimated uncertainty.</p>
+          <p>The methods use the same fitted line. Newey–West allows residuals in nearby years to be related, which can make its interval narrower or wider than the conventional interval.</p>
           <div className="table-wrap">
             <table>
               <thead><tr><th scope="col">Method</th><th scope="col">95% interval (°C/decade)</th><th scope="col">p-value</th></tr></thead>
@@ -201,7 +201,7 @@ export function Investigation({ data }: { data: Region }) {
             <div className="peer-summary">
               <h4>{site.location.city} and {peer.location.city}</h4>
               {comparable && peerWindow ? (
-                <p>{peer.location.city} has a fitted slope of <strong>{signed(peerWindow.trend.slope_c_per_decade)} °C/decade</strong> on the same {active.valid_years.length} complete years. {methods.find(item => item.id === method)?.label} 95% interval {interval(peerWindow.trend[method].confidence_interval)} °C/decade. The slope comparison is descriptive.</p>
+                <p>{peer.location.city} has a fitted slope of <strong>{signed(peerWindow.trend.slope_c_per_decade)} °C/decade</strong> on the same {active.valid_years.length} complete years. {methods.find(item => item.id === method)?.label} 95% interval {interval(peerWindow.trend[method].confidence_interval)} °C/decade. This display compares the fitted slopes descriptively.</p>
               ) : <p>The sites’ fits use different or insufficient complete years for this window. The chart shows their annual means for context.</p>}
             </div>
           )}

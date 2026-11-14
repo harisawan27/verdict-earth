@@ -87,9 +87,14 @@ def validate_response(
     if (
         payload["type"] != "Feature"
         or geometry["type"] != "Point"
+        or not isinstance(response_coords, list)
         or len(response_coords) < 2
-        or any(abs(actual - requested) > 0.000500001
-               for actual, requested in zip(response_coords[:2], [longitude, latitude]))
+        or any(
+            type(actual) not in (int, float)
+            or not math.isfinite(actual)
+            or abs(actual - requested) > 0.000500001
+            for actual, requested in zip(response_coords[:2], [longitude, latitude])
+        )
     ):
         raise ValueError(f"Unexpected NASA point coordinates: {response_coords!r}")
     api = header["api"]

@@ -30,6 +30,10 @@ On macOS or Linux, use `.venv/bin/python` in place of `.\.venv\Scripts\python.ex
 
 Vercel can build this as a standard Next.js project using the committed JSON and lockfile. Python and the NASA API are needed only to generate or refresh the source artifacts.
 
+## Release and submission
+
+The repository is [public on GitHub](https://github.com/harisawan27/verdict-earth). Production deployment is pending. The [submission checklist](submission/SUBMISSION_CHECKLIST.md) covers Vercel import, public-link verification, and the NASA project form. The [demo script](submission/DEMO_SCRIPT.md) includes a 30-second storyboard. For a local production preview use `npm run build` followed by `npm run start`. The production app bundles its scientific results and needs no NASA connection or sign-in for browsing, analysis, or JSON download.
+
 ## Data and provenance
 
 The source is the [NASA POWER Monthly and Annual Point API](https://power.larc.nasa.gov/docs/services/api/temporal/monthly/), community `SB`, parameter `T2M`, requested years 1981–2025. The raw response and its retrieval receipt are in `data/raw/`. The receipt records the exact request URL, UTC retrieval timestamp, and SHA-256 of the original bytes. The analysis record is `data/results/karachi-t2m.v1.json`.
@@ -46,7 +50,7 @@ If the point service becomes unavailable, the [NASA POWER archive on AWS](https:
 
 Each annual mean is weighted by the number of days in each month, including leap days. Years with an absent, partial, or fill-value month are excluded. Ordinary least squares regresses annual temperature on elapsed calendar decades with an intercept.
 
-The two-sided conventional test uses a 95% Student t interval with `n − 2` degrees of freedom. It assumes independent, constant-variance errors. The Newey–West HAC estimate uses Bartlett weights, a maximum lag of `floor(4 × (n/100)^(2/9))` calendar years, and the finite-sample covariance multiplier `n/(n−2)`. It uses the same Student t reference as an approximation. Gaps contribute no residual scores and preserve the spacing between years. The slope is shared by both estimates. Exact-fit or zero-variance cases produce an unavailable interval and p-value.
+The two-sided conventional test uses a 95% Student t interval with `n − 2` degrees of freedom. It assumes independent, constant-variance errors. The Newey–West HAC estimate uses Bartlett weights, a maximum lag of `floor(4 × (n/100)^(2/9))` calendar years, and the finite-sample covariance multiplier `n/(n−2)`. It uses the same Student t reference as an approximation. Gaps contribute no residual scores and preserve the spacing between years. The slope is shared by both estimates. HAC can produce a narrower or wider interval than conventional OLS. Exact-fit or zero-variance cases produce an unavailable interval and p-value.
 
 The comparison concerns linear change over the selected interval. Confidence intervals represent regression uncertainty, exclude uncertainty in the underlying reanalysis, and cannot establish cause. A fixed lag may miss dependence at longer timescales, and a linear fit can obscure shifts, extremes, and seasonal patterns.
 
@@ -59,7 +63,7 @@ The pipeline matches 12 monthly point temperatures to the original, checksummed 
 
 Run `python -m science.region` in the Python environment to regenerate `data/results/sindh-t2m.v1.json` offline. It contains observations, grid matches, and fits for 1981–2025, 1991–2025, 2001–2025, and 1981–2015. Pass `--refresh` for new snapshots at the seven regional locations. The Karachi baseline has a separate refresh command. If NASA revises the matched 2023 values, compare the original and new regional grid snapshot and checksum before accepting new matches.
 
-The comparison dropdown overlays another site's annual means. The interface presents matched-window slopes when the sites have the same valid years. Comparisons are descriptive. The related time windows are sensitivity checks without multiple-comparison adjustment. Statistical significance cannot establish cause.
+The comparison dropdown overlays another site's annual means. The interface presents matched-window slopes when the sites have the same valid years. Comparisons are descriptive. The eight sites and four related time windows are exploratory sensitivity checks without multiple-comparison adjustment. Statistical significance cannot establish cause.
 
 In the seeded zero-trend AR(1) test (400 series of 100 years, lag-one correlation 0.6), the 95% intervals included the true slope in 265 conventional fits and 337 HAC fits. HAC improved coverage in this simulation and still fell short of the nominal 95%.
 
@@ -70,7 +74,7 @@ Anonymous access checked November 14, 2026. Giovanni in the Cloud returned HTTP 
 1. Open [Giovanni](https://giovanni.gsfc.nasa.gov/giovanni/#dataKeyword=M2TMNXSLV) and sign into NASA Earthdata in your browser. Keep credentials and tokens outside the repository.
 2. Choose **Time Series → Area-Averaged**. Search **M2TMNXSLV** and select **2-meter air temperature, monthly, M2TMNXSLV v5.12.4** (`M2TMNXSLV_5_12_4_T2M`, normally kelvin). [NASA product DOI](https://doi.org/10.5067/AP1B0BA5PD2K).
 3. Enter **1981-01-01 to 2025-12-31** and bounds **66.81, 24.94, 66.94, 25.06** in west, south, east, north order. Click **Plot Data**. Confirm the result caption identifies a single point at 66.875° E, 25° N. If the large signed-in job fails, retry in non-overlapping calendar-year batches.
-4. Under **Downloads**, save the original **CSV** file for each successful batch. Keep its headers and bytes intact.
+4. Under **Downloads**, save the original **CSV** file for each successful batch in the ignored local folder `data/incoming/`. Keep its headers and bytes intact.
 5. Run the import with the actual UTC download date and the CSV units. Replace the date and path in this example.
 
 ```powershell
@@ -84,3 +88,7 @@ This compares two products derived from MERRA-2. Spatial sampling, time basis, m
 ## Attribution and AI use
 
 NASA Langley Research Center POWER Project and NASA GMAO MERRA-2 provide the temperature inputs. NASA GES DISC operates Giovanni. Pakistan Meteorological Department supplies regional location references. OpenAI Codex assisted with implementation, testing, and documentation. All production temperature values are traceable to the recorded NASA responses. Synthetic data appear only in automated tests.
+
+## License and third-party rights
+
+This repository currently has no project-wide software license grant. Dependencies retain their respective licenses. See [data sources and credits](submission/DATA_SOURCES.md) for NASA and PMD materials and [NASA POWER’s citation guidance](https://power.larc.nasa.gov/docs/referencing/) for source acknowledgment.

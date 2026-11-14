@@ -117,3 +117,14 @@ def test_real_snapshot_is_complete_and_matches_cached_provenance():
     assert provenance["header"]["start"] == "19810101"
     assert provenance["header"]["end"] == "20251231"
     assert monthly.iloc[0] == pytest.approx(19.31)
+
+
+@pytest.mark.parametrize("bad_coordinate", [True, None, float("nan")])
+def test_rejects_invalid_returned_coordinate(synthetic_payload, bad_coordinate):
+    synthetic_payload["geometry"]["coordinates"][0] = bad_coordinate
+    # json.dumps can serialize NaN even though it is outside the JSON standard.
+    body = json.dumps(synthetic_payload).encode()
+    _, receipt = serialize_fixture({})
+    receipt["sha256"] = hashlib.sha256(body).hexdigest()
+    with pytest.raises(ValueError, match="Unexpected NASA point coordinates"):
+        validate_response(body, receipt)
