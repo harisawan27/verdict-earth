@@ -1,0 +1,286 @@
+{
+  "schema_version": 1,
+  "location": {
+    "city": "Karachi",
+    "country": "Pakistan",
+    "latitude": 24.9,
+    "longitude": 67.0
+  },
+  "dataset": {
+    "name": "NASA POWER Monthly and Annual · MERRA-2",
+    "variable": "T2M",
+    "description": "2-meter air temperature",
+    "units": "°C",
+    "data_type": "Gridded atmospheric reanalysis"
+  },
+  "requested_years": {
+    "start": 1981,
+    "end": 2025
+  },
+  "years_analyzed": {
+    "start": 1981,
+    "end": 2025
+  },
+  "valid_annual_observations": 45,
+  "annual_series": [
+    {
+      "year": 1981,
+      "temperature_c": 25.927150684931508
+    },
+    {
+      "year": 1982,
+      "temperature_c": 25.92632876712329
+    },
+    {
+      "year": 1983,
+      "temperature_c": 25.522109589041094
+    },
+    {
+      "year": 1984,
+      "temperature_c": 25.532049180327867
+    },
+    {
+      "year": 1985,
+      "temperature_c": 25.55164383561644
+    },
+    {
+      "year": 1986,
+      "temperature_c": 25.3992602739726
+    },
+    {
+      "year": 1987,
+      "temperature_c": 25.918246575342465
+    },
+    {
+      "year": 1988,
+      "temperature_c": 26.60418032786885
+    },
+    {
+      "year": 1989,
+      "temperature_c": 25.9
+    },
+    {
+      "year": 1990,
+      "temperature_c": 26.07509589041096
+    },
+    {
+      "year": 1991,
+      "temperature_c": 25.75290410958904
+    },
+    {
+      "year": 1992,
+      "temperature_c": 25.902213114754097
+    },
+    {
+      "year": 1993,
+      "temperature_c": 26.438273972602737
+    },
+    {
+      "year": 1994,
+      "temperature_c": 26.12383561643836
+    },
+    {
+      "year": 1995,
+      "temperature_c": 26.03386301369863
+    },
+    {
+      "year": 1996,
+      "temperature_c": 25.73715846994536
+    },
+    {
+      "year": 1997,
+      "temperature_c": 25.692876712328765
+    },
+    {
+      "year": 1998,
+      "temperature_c": 26.70032876712329
+    },
+    {
+      "year": 1999,
+      "temperature_c": 26.458547945205478
+    },
+    {
+      "year": 2000,
+      "temperature_c": 26.09428961748634
+    },
+    {
+      "year": 2001,
+      "temperature_c": 26.260301369863015
+    },
+    {
+      "year": 2002,
+      "temperature_c": 25.97928767123288
+    },
+    {
+      "year": 2003,
+      "temperature_c": 26.14739726027397
+    },
+    {
+      "year": 2004,
+      "temperature_c": 26.248715846994536
+    },
+    {
+      "year": 2005,
+      "temperature_c": 25.965917808219178
+    },
+    {
+      "year": 2006,
+      "temperature_c": 25.828684931506846
+    },
+    {
+      "year": 2007,
+      "temperature_c": 26.257068493150683
+    },
+    {
+      "year": 2008,
+      "temperature_c": 25.646502732240435
+    },
+    {
+      "year": 2009,
+      "temperature_c": 26.409561643835616
+    },
+    {
+      "year": 2010,
+      "temperature_c": 26.32791780821918
+    },
+    {
+      "year": 2011,
+      "temperature_c": 26.01953424657534
+    },
+    {
+      "year": 2012,
+      "temperature_c": 25.68327868852459
+    },
+    {
+      "year": 2013,
+      "temperature_c": 26.138356164383563
+    },
+    {
+      "year": 2014,
+      "temperature_c": 26.114712328767126
+    },
+    {
+      "year": 2015,
+      "temperature_c": 26.497972602739726
+    },
+    {
+      "year": 2016,
+      "temperature_c": 26.522786885245903
+    },
+    {
+      "year": 2017,
+      "temperature_c": 26.12945205479452
+    },
+    {
+      "year": 2018,
+      "temperature_c": 26.555890410958902
+    },
+    {
+      "year": 2019,
+      "temperature_c": 25.924630136986302
+    },
+    {
+      "year": 2020,
+      "temperature_c": 25.872841530054643
+    },
+    {
+      "year": 2021,
+      "temperature_c": 26.413342465753423
+    },
+    {
+      "year": 2022,
+      "temperature_c": 25.978438356164386
+    },
+    {
+      "year": 2023,
+      "temperature_c": 26.39676712328767
+    },
+    {
+      "year": 2024,
+      "temperature_c": 26.600327868852457
+    },
+    {
+      "year": 2025,
+      "temperature_c": 26.339041095890412
+    }
+  ],
+  "trend": {
+    "model": "Ordinary least squares with intercept",
+    "slope_c_per_decade": 0.11410459618199352,
+    "intercept_c": 25.827838421473455,
+    "reference_year": 1981,
+    "degrees_of_freedom": 43,
+    "confidence_level": 0.95,
+    "conventional": {
+      "standard_error": 0.03387901487499514,
+      "confidence_interval": [
+        0.04578105116606741,
+        0.1824281411979196
+      ],
+      "p_value": 0.0016056741930916929
+    },
+    "hac": {
+      "standard_error": 0.03527452868568529,
+      "confidence_interval": [
+        0.04296672935013389,
+        0.18524246301385316
+      ],
+      "p_value": 0.0023431450399796464,
+      "kernel": "Bartlett",
+      "max_lag_years": 3,
+      "bandwidth_rule": "floor(4 × (n / 100)^(2/9))",
+      "small_sample_correction": "n / (n − 2)",
+      "reference_distribution": "Student t (n − 2 degrees of freedom, approximate)"
+    }
+  },
+  "completeness": {
+    "requested_months": 540,
+    "returned_month_keys": 540,
+    "valid_months": 540,
+    "absent_months": [],
+    "fill_value_months": [],
+    "partial_months": [],
+    "ignored_annual_summaries": 45,
+    "complete_calendar_years": 45,
+    "excluded_calendar_years": []
+  },
+  "provenance": {
+    "source_url": "https://power.larc.nasa.gov/api/temporal/monthly/point?parameters=T2M&community=SB&latitude=24.9&longitude=67.0&start=1981&end=2025&format=JSON",
+    "retrieved_at_utc": "2026-11-14T15:03:32.333Z",
+    "sha256": "cda9698f6dc9bd8682fef52372f7a174dee59e6af2c1c052bb81ca8461990fb9",
+    "documentation_url": "https://power.larc.nasa.gov/docs/services/api/temporal/monthly/",
+    "source_documentation_url": "https://power.larc.nasa.gov/docs/methodology/data/sources_meteorology/",
+    "attribution": "NASA Langley Research Center POWER Project, using NASA GMAO MERRA-2.",
+    "community": "SB",
+    "header": {
+      "title": "NASA/POWER Source Native Resolution Monthly and Annual",
+      "api": {
+        "version": "v2.10.0",
+        "name": "POWER Monthly and Annual API"
+      },
+      "sources": [
+        "MERRA2"
+      ],
+      "fill_value": -999.0,
+      "time_standard": "LST",
+      "start": "19810101",
+      "end": "20251231"
+    },
+    "parameter": {
+      "units": "C",
+      "longname": "Temperature at 2 Meters"
+    },
+    "returned_coordinates": [
+      67.0,
+      24.9,
+      53.05
+    ],
+    "messages": []
+  },
+  "limitations": [
+    "NASA POWER T2M is a MERRA-2 gridded reanalysis estimate. The grid footprint can blend land and sea near Karachi and can miss neighborhood-scale conditions.",
+    "A linear fit summarizes this time window. It can miss changes in the warming rate, extremes, and seasonal patterns.",
+    "Conventional inference assumes independent, constant-variance residuals and uses a Student t reference. HAC allows heteroskedasticity and short-range dependence, and its interval is approximate and sensitive to lag choice.",
+    "Both intervals describe slope uncertainty under the regression assumptions. They exclude uncertainty in the reanalysis itself and cannot attribute the change to a specific cause."
+  ]
+}
