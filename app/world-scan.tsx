@@ -5,6 +5,8 @@ import type { KeyboardEvent, PointerEvent } from "react";
 import manifest from "../public/world-scan/v1/manifest.json";
 import { signed } from "./stress-format";
 import { TemperatureChart } from "./temperature-chart";
+import { GlobalEvidence } from "./global-evidence";
+import type { ScanRecord } from "./global-evidence";
 import { detailZoom, drawGeography, loadDetailTile, loadGeography, loadPaths, loadRegionalLines, pointerPoint, resolvePlace, searchedPlaceLabel, visibleDetailKeys } from "./scan-geography";
 import type { DetailTile, Geography, Place, PlaceContext, Point } from "./scan-geography";
 import { PlaceSearch, placeDetail, placeTitle } from "./scan-place-search";
@@ -14,15 +16,15 @@ const { rows, columns, missing, map_scale: scale, period, resolution_degrees: st
 const [firstYear, lastYear] = period;
 const totalYears = lastYear - firstYear + 1;
 const colors = [
-  { edge: -0.4, fill: "#385e9e", label: "≤ −0.4" },
-  { edge: -0.1, fill: "#70a0ce", label: "−0.4 to −0.1" },
-  { edge: 0.1, fill: "#d2d2cc", label: "−0.1 to +0.1" },
-  { edge: 0.4, fill: "#e9aa69", label: "+0.1 to +0.4" },
-  { edge: 0.7, fill: "#dc724f", label: "+0.4 to +0.7" },
-  { edge: Infinity, fill: "#a9404c", label: "> +0.7" },
+  { edge: -0.4, fill: "#3f72a7", label: "≤ −0.4" },
+  { edge: -0.1, fill: "#699bb8", label: "−0.4 to −0.1" },
+  { edge: 0.1, fill: "#354752", label: "−0.1 to +0.1" },
+  { edge: 0.4, fill: "#a3825b", label: "+0.1 to +0.4" },
+  { edge: 0.7, fill: "#c28155", label: "+0.4 to +0.7" },
+  { edge: Infinity, fill: "#d56859", label: "> +0.7" },
 ];
 const maxZoom = 32;
-const noData = "#20333e";
+const noData = "#172535";
 const wrap = (position: number, width: number) => ((position % width) + width) % width;
 const clamp = (value: number, low: number, high: number) => Math.max(low, Math.min(high, value));
 const toCell = (lat: number, lon: number) => ({
@@ -34,12 +36,51 @@ const textCoordinate = (value: number, negative: string, positive: string) =>
 
 type Cell = ReturnType<typeof toCell>;
 type View = { x: number; y: number; zoom: number };
-type Detail = [slope: number | null, intercept: number | null, annual: (number | null)[]];
+type Pinned = { cell: Cell; title: string; center: string };
+const rowCache = new Map<number, Promise<ScanRecord[]>>();
+
+function loadRow(row: number) {
+  const cached = rowCache.get(row);
+  if (cached) return cached;
+  if (rowCache.size >= 12) rowCache.delete(rowCache.keys().next().value!);
+  const request = fetch(base + "/row-" + row + ".json").then(async response => {
+    if (!response.ok) throw new Error("GISTEMP cell details");
+    const values = await response.json() as ScanRecord[];
+    if (values.length !== columns) throw new Error("Unexpected detail row");
+    return values;
+  }).catch(error => {
+    if (rowCache.get(row) === request) rowCache.delete(row);
+    throw error;
+  });
+  rowCache.set(row, request);
+  return request;
+}
+
+function formatCenter(cell: Cell) {
+  const latitude = manifest.first_latitude - cell.row * step;
+  const longitude = manifest.first_longitude + cell.column * step;
+  return textCoordinate(latitude, "S", "N") + " · " + textCoordinate(longitude, "W", "E");
+}
+
 type Drag = { x: number; y: number; origin: View; moved: boolean };
 
 export const scanManifest = manifest;
 
+function sparkline(values: (number | null)[]) {
+  const observations = values.filter((value): value is number => value !== null);
+  const minimum = Math.min(...observations);
+  const range = Math.max(0.01, Math.max(...observations) - minimum);
+  return values.map((value, i) => value === null ? "" :
+    (values[i - 1] == null ? "M" : "L") + (i * 248 / (values.length - 1)).toFixed(1)
+    + " " + (48 - 44 * (value - minimum) / range).toFixed(1)).join(" ");
+}
+
 export function WorldScan() {
+  const [opacity, setOpacity] = useState(68);
+  const [expanded, setExpanded] = useState(false);
+  const [pin, setPin] = useState<Pinned | null>(null);
+  const [pinDetail, setPinDetail] = useState<{ pin: Pinned; record: ScanRecord } | null>(null);
+  const [pinError, setPinError] = useState(false);
   const [geo, setGeo] = useState<Geography | null>(null);
   const [geoFailed, setGeoFailed] = useState(false);
   const [regionPath, setRegionPath] = useState<Path2D | null>(null);
@@ -52,7 +93,7 @@ export function WorldScan() {
   const [pixelWidth, setPixelWidth] = useState(1080);
   const [cssWidth, setCssWidth] = useState(1080);
   const labelScale = pixelWidth / cssWidth;
-  const [hover, setHover] = useState("");
+  const [hover, setHover] = useState<{ cell: Cell; label: string } | null>(null);
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const hoverTicket = useRef(0);
   const [grid, setGrid] = useState<Int16Array | null>(null);
@@ -62,16 +103,37 @@ export function WorldScan() {
   const [view, setView] = useState<View>({ x: 0, y: 0, zoom: 1 });
   const [cell, setCell] = useState<Cell>(() => toCell(25, 67));
   const [input, setInput] = useState({ latitude: "24.8719", longitude: "66.9881" });
-  const [detail, setDetail] = useState<{ row: number; values: Detail[] } | null>(null);
+  const [detail, setDetail] = useState<{ row: number; values: ScanRecord[] } | null>(null);
   const [detailError, setDetailError] = useState(false);
   const canvas = useRef<HTMLCanvasElement>(null);
+  const mapPanel = useRef<HTMLElement>(null);
+  const [fullscreen, setFullscreen] = useState(false);
+  useEffect(() => {
+    function updateFullscreen() { setFullscreen(document.fullscreenElement === mapPanel.current); }
+    document.addEventListener("fullscreenchange", updateFullscreen);
+    return () => document.removeEventListener("fullscreenchange", updateFullscreen);
+  }, []);
+
+  async function toggleFullscreen() {
+    if (document.fullscreenElement === mapPanel.current) {
+      await document.exitFullscreen();
+      return;
+    }
+    try {
+      if (!mapPanel.current?.requestFullscreen) throw new Error("Fullscreen unavailable");
+      await mapPanel.current.requestFullscreen();
+    } catch {
+      setExpanded(value => !value);
+    }
+  }
   const raster = useRef<HTMLCanvasElement | null>(null);
   const drag = useRef<Drag | null>(null);
-  const cached = useRef(new Map<number, Detail[]>());
+  const motion = useRef(0);
+  useEffect(() => () => cancelAnimationFrame(motion.current), []);
   const [retry, setRetry] = useState(0);
   const latitude = manifest.first_latitude - cell.row * step;
   const longitude = manifest.first_longitude + cell.column * step;
-  const caption = textCoordinate(latitude, "S", "N") + " · " + textCoordinate(longitude, "W", "E");
+  const caption = formatCenter(cell);
 
   useEffect(() => {
     let active = true;
@@ -121,12 +183,12 @@ export function WorldScan() {
   }, [geo, selection.point]);
 
   useEffect(() => {
-    if (!geographicOnly || land) return;
+    if (land) return;
     const image = new Image();
     image.onload = () => setLand(image);
     image.src = "/world-scan/land-reference.svg";
     return () => { image.onload = null; };
-  }, [geographicOnly, land]);
+  }, [land]);
 
   useEffect(() => {
     const image = new Image();
@@ -160,45 +222,47 @@ export function WorldScan() {
   }, [retry]);
 
   useEffect(() => {
-    const row = cell.row;
-    const stored = cached.current.get(row);
-    if (stored) {
-      setDetail({ row, values: stored });
-      return;
-    }
-    const controller = new AbortController();
-    fetch(base + "/row-" + row + ".json", { signal: controller.signal }).then(response => {
-      if (!response.ok) throw new Error("GISTEMP cell details");
-      return response.json() as Promise<Detail[]>;
-    }).then(values => {
-      if (values.length !== columns) throw new Error("Unexpected detail row");
-      if (cached.current.size >= 12) cached.current.delete(cached.current.keys().next().value!);
-      cached.current.set(row, values);
-      setDetail({ row, values });
-    }).catch(() => { if (!controller.signal.aborted) setDetailError(true); });
-    return () => controller.abort();
+    let active = true;
+    loadRow(cell.row).then(values => {
+      if (active) setDetail({ row: cell.row, values });
+    }).catch(() => { if (active) setDetailError(true); });
+    return () => { active = false; };
   }, [cell.row, retry]);
 
   useEffect(() => {
-    const context = canvas.current?.getContext("2d");
+    if (!pin) return;
+    let active = true;
+    loadRow(pin.cell.row).then(values => {
+      if (active) setPinDetail({ pin, record: values[pin.cell.column] });
+    }).catch(() => { if (active) setPinError(true); });
+    return () => { active = false; };
+  }, [pin, retry]);
+
+  useEffect(() => {
+    const drawing = canvas.current?.getContext("2d");
     const image = raster.current;
-    if (!context || !image || !grid) return;
+    if (!drawing || !image || !grid) return;
+    const context = drawing;
     const { width, height } = context.canvas;
     const factor = width / columns * view.zoom;
     context.imageSmoothingEnabled = false;
     context.clearRect(0, 0, width, height);
-    if (geographicOnly) {
-      context.fillStyle = "#dceaf0";
-      context.fillRect(0, 0, width, height);
-    }
+    context.fillStyle = geographicOnly ? "#dceaf0" : "#102030";
+    context.fillRect(0, 0, width, height);
     for (const offset of [-columns, 0, columns]) {
       const left = (offset - view.x) * factor;
       const top = -view.y * factor;
-      if (!geographicOnly) context.drawImage(image, left, top, columns * factor, rows * factor);
-      else if (land) {
+      if (land) {
         context.imageSmoothingEnabled = true;
+        context.globalAlpha = geographicOnly ? 1 : .14;
         context.drawImage(land, left, top, columns * factor, rows * factor);
+        context.globalAlpha = 1;
         context.imageSmoothingEnabled = false;
+      }
+      if (!geographicOnly) {
+        context.globalAlpha = opacity / 100;
+        context.drawImage(image, left, top, columns * factor, rows * factor);
+        context.globalAlpha = 1;
       }
       if (coast && !geo?.paths[2]) context.drawImage(coast, left, top, columns * factor, rows * factor);
     }
@@ -209,12 +273,40 @@ export function WorldScan() {
       regionPath ? { ...geo, paths: [geo.paths[0], geo.paths[1], geo.paths[2], regionPath] } : geo,
       view, labelScale, showLabels, isSearchedCity ? searched : matchedCity,
       detailedPaths?.key === detailKey ? detailedPaths.tiles : [], geographicOnly);
-    context.strokeStyle = geographicOnly ? "#17685d" : "#fff";
+    function outline(target: Cell, color: string, letter?: string) {
+      for (const offset of [-columns, 0, columns]) {
+        const x = (target.column + offset - view.x) * factor;
+        const y = (target.row - view.y) * factor;
+        context.strokeStyle = color;
+        context.lineWidth = labelScale * (letter ? 1.7 : 1);
+        context.strokeRect(x, y, factor, factor);
+        if (letter && x + factor > 0 && x < width && y + factor > 0 && y < height) {
+          const markerX = Math.min(width - 10 * labelScale, Math.max(10 * labelScale, x + factor / 2));
+          const markerY = Math.max(11 * labelScale, Math.min(height - 10 * labelScale, y - 10 * labelScale));
+          context.fillStyle = "#142633";
+          context.beginPath();
+          context.arc(markerX, markerY, 9 * labelScale, 0, Math.PI * 2);
+          context.fill();
+          context.stroke();
+          context.fillStyle = "#fff";
+          context.textAlign = "center";
+          context.textBaseline = "middle";
+          context.font = "700 " + (11 * labelScale) + "px system-ui";
+          context.fillText(letter, markerX, markerY);
+          context.textAlign = "start";
+        }
+      }
+    }
+    if (hover) outline(hover.cell, geographicOnly ? "#496072" : "#fae1ba");
+    if (pin) outline(pin.cell, "#6de5c5", "A");
+    const samePin = pin && pin.cell.row === cell.row && pin.cell.column === cell.column;
+    if (pin && !samePin) outline(cell, "#ffc78e", "B");
+    context.strokeStyle = geographicOnly ? "#17685d" : pin && !samePin ? "#ffc78e" : "#fff";
     context.lineWidth = 1.7 * labelScale;
     for (const offset of [-columns, 0, columns]) {
       const x = (cell.column + offset + 0.5 - view.x) * factor;
       const y = (cell.row + 0.5 - view.y) * factor;
-      context.strokeRect(x - factor / 2, y - factor / 2, factor, factor);
+      if (!pin) context.strokeRect(x - factor / 2, y - factor / 2, factor, factor);
       const radius = Math.max(3 * labelScale, factor * 0.18);
       context.beginPath();
       context.arc(x, y, radius, 0, 2 * Math.PI);
@@ -227,7 +319,7 @@ export function WorldScan() {
       context.arc(pointX, pointY, 2 * labelScale, 0, 2 * Math.PI);
       context.fill();
     }
-  }, [cell, coast, detailKey, detailedPaths, geo, geographicOnly, grid, labelScale, land, pixelWidth, place, regionPath, selection, showLabels, view]);
+  }, [cell, coast, detailKey, detailedPaths, geo, geographicOnly, grid, hover, labelScale, land, opacity, pin, pixelWidth, place, regionPath, selection, showLabels, view]);
 
   function select(next: Cell, center = false, point: Point = [manifest.first_longitude + next.column * step, manifest.first_latitude - next.row * step], source = "Keyboard selection", searchedPlace?: Place) {
     setSelection({ point, source, searchedPlace });
@@ -248,6 +340,8 @@ export function WorldScan() {
   }
 
   function changeZoom(target: number) {
+    cancelAnimationFrame(motion.current);
+    clearHover();
     const zoom = clamp(target, 1, maxZoom);
     position(view.x + columns / view.zoom / 2 - columns / zoom / 2,
       view.y + rows / view.zoom / 2 - rows / zoom / 2, zoom);
@@ -256,7 +350,33 @@ export function WorldScan() {
   function clearHover() {
     clearTimeout(hoverTimer.current);
     hoverTicket.current++;
-    setHover("");
+    setHover(null);
+  }
+
+  function flyTo(point: Point, zoom: number) {
+    cancelAnimationFrame(motion.current);
+    const targetX = wrap((point[0] + 180) / step - columns / zoom / 2, columns);
+    const targetY = clamp((90 - point[1]) / step - rows / zoom / 2, 0, rows - rows / zoom);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      position(targetX, targetY, zoom);
+      return;
+    }
+    const dx = wrap(targetX - view.x + columns / 2, columns) - columns / 2;
+    // Interpolate viewport centers so the selected point stays in view on a zoom.
+    const startCenter = view.x + columns / view.zoom / 2;
+    const deltaCenter = dx + columns / zoom / 2 - columns / view.zoom / 2;
+    const startCenterY = view.y + rows / view.zoom / 2;
+    const endCenterY = targetY + rows / zoom / 2;
+    const started = performance.now();
+    function frame(now: number) {
+      const t = Math.min(1, (now - started) / 420);
+      const ease = 1 - (1 - t) ** 3;
+      const nextZoom = view.zoom * (zoom / view.zoom) ** ease;
+      position(startCenter + deltaCenter * ease - columns / nextZoom / 2,
+        startCenterY + (endCenterY - startCenterY) * ease - rows / nextZoom / 2, nextZoom);
+      if (t < 1) motion.current = requestAnimationFrame(frame);
+    }
+    motion.current = requestAnimationFrame(frame);
   }
 
   function choosePlace(place: Place) {
@@ -264,7 +384,7 @@ export function WorldScan() {
     const point: Point = [place[5], place[6]];
     const zoom = place[1] === "country" || place[1] === "marine" ? 2 : 4;
     select(toCell(point[1], point[0]), false, point, "Search location", place);
-    position((point[0] + 180) / step - columns / zoom / 2, (90 - point[1]) / step - rows / zoom / 2, zoom);
+    flyTo(point, zoom);
   }
 
   function move(event: PointerEvent<HTMLCanvasElement>) {
@@ -278,7 +398,7 @@ export function WorldScan() {
         const target = toCell(point[1], point[0]);
         const slope = grid[target.row * columns + target.column];
         resolvePlace(point, geo).then(found => {
-          if (ticket === hoverTicket.current) setHover(placeTitle(found) + (slope === missing ? " · Insufficient data" : " · " + signed(slope / scale) + " °C/decade"));
+          if (ticket === hoverTicket.current) setHover({cell: target, label: placeTitle(found) + (slope === missing ? " · Insufficient data" : " · " + signed(slope / scale) + " °C/decade")});
         }).catch(() => {});
       }, 220);
     }
@@ -353,8 +473,36 @@ export function WorldScan() {
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
-  return <div className="scan-layout">
-    <figure className="panel scan-map">
+  const selected = { title: searchedPlace || geographic ? geographicTitle : caption, center: caption, record };
+  const sameCell = !!pin && pin.cell.row === cell.row && pin.cell.column === cell.column;
+  function pinPoint(point: Point, title: string) {
+    const target = toCell(point[1], point[0]);
+    setPinError(false);
+    setPin({ cell: target, title, center: formatCenter(target) });
+  }
+
+  function fitPair() {
+    if (!pin || sameCell) return;
+    clearHover();
+    const firstX = manifest.first_longitude + pin.cell.column * step;
+    const firstY = manifest.first_latitude - pin.cell.row * step;
+    const dx = wrap(longitude - firstX + 180, 360) - 180;
+    const dy = latitude - firstY;
+    const zoom = clamp(Math.min(360 / (Math.abs(dx) + 16), 180 / (Math.abs(dy) + 16)), 1, 12);
+    flyTo([firstX + dx / 2, firstY + dy / 2], zoom);
+  }
+
+  function loadExample(pair: "karachi" | "americas") {
+    const names = pair === "karachi" ? ["Karachi", "Istanbul"] : ["New York City", "São Paulo"];
+    const cities = names.map(name => geo?.places.find(p => (p[1] === "city" || p[1] === "capital") && p[0] === name));
+    const [a, b] = cities;
+    if (!a || !b) return;
+    pinPoint([a[5], a[6]], searchedPlaceLabel(a));
+    choosePlace(b);
+  }
+
+  return <div className={expanded ? "scan-layout scan-expanded" : "scan-layout"}>
+    <figure ref={mapPanel} className="panel scan-map">
       <figcaption><div><h3>Global surface temperature trends</h3><p>NASA GISTEMP v4 LOTI · {firstYear}–{lastYear}</p></div><span>{manifest.valid_cells.toLocaleString("en-US")} analyzed cells</span></figcaption>
       <PlaceSearch geo={geo} failed={geoFailed} choose={choosePlace} />
       <div className="scan-viewport">
@@ -364,6 +512,7 @@ export function WorldScan() {
           onKeyDown={stepCell} onPointerLeave={clearHover}
           onPointerDown={event => {
             if (!event.isPrimary || event.button !== 0) return;
+            cancelAnimationFrame(motion.current);
             clearHover();
             event.currentTarget.setPointerCapture(event.pointerId);
             drag.current = { x: event.clientX, y: event.clientY, origin: view, moved: false };
@@ -371,17 +520,22 @@ export function WorldScan() {
           onPointerMove={move} onPointerUp={event => { if (event.isPrimary && drag.current) pick(event); }}
           onLostPointerCapture={() => { drag.current = null; }} />
         {!grid && <div className="scan-message" role="status">{mapError ? "The trend grid did not load." : "Loading NASA trend grid…"}</div>}
-        {hover && <span className="scan-hover" aria-hidden="true">{hover}</span>}
+        {hover && <span className="scan-hover" aria-hidden="true">{hover.label}</span>}
         <div className="map-buttons">
           <button type="button" disabled={view.zoom >= maxZoom} aria-label="Zoom in" onClick={() => changeZoom(view.zoom * 2)}>+</button>
           <button type="button" disabled={view.zoom <= 1} aria-label="Zoom out" onClick={() => changeZoom(view.zoom / 2)}>−</button>
-          <button type="button" onClick={() => setView({ x: 0, y: 0, zoom: 1 })}>Reset</button>
+          <button type="button" onClick={() => { cancelAnimationFrame(motion.current); clearHover(); setView({ x: 0, y: 0, zoom: 1 }); }}>Reset</button>
+          {pin && !sameCell && <button type="button" onClick={fitPair}>Fit A + B</button>}
+          <button type="button" aria-pressed={fullscreen || expanded} onClick={toggleFullscreen}>{fullscreen ? "Exit fullscreen" : expanded ? "Exit wide map" : "Fullscreen"}</button>
         </div>
       </div>
       {!geographicOnly && <div className="geo-legend scan-legend" aria-label="Trend classes in degrees Celsius per decade">
         {colors.map(color => <span key={color.label}><i style={{background: color.fill}} />{color.label}</span>)}
         <span>°C/decade</span><span><i style={{background: noData}} />Insufficient data</span>
       </div>}
+      <div className="scan-opacity"><label>Trend opacity <input type="range" min="0" max="100" value={opacity}
+        disabled={geographicOnly} onChange={event => setOpacity(Number(event.target.value))} /></label><span>{geographicOnly ? "Off" : opacity + "%"}</span></div>
+      <details className="scan-coordinates"><summary>Map settings and coordinates</summary>
       <form className="scan-coordinate-form" onSubmit={event => {
         event.preventDefault();
         const point: Point = [Number(input.longitude), Number(input.latitude)];
@@ -394,18 +548,33 @@ export function WorldScan() {
           <label className="scan-label-toggle"><input type="checkbox" checked={showLabels} onChange={event => setShowLabels(event.target.checked)} /> Place labels</label>
           <label className="scan-label-toggle"><input type="checkbox" checked={!geographicOnly} onChange={event => setGeographicOnly(!event.target.checked)} /> NASA trend colors</label>
         </div>
-      </form>
+      </form></details>
       <p className="scan-attribution">Geographic reference: Natural Earth. Climate data: NASA GISTEMP, 2° grid.</p>
-      {(mapError || detailError) && <button className="scan-retry secondary-action" type="button" onClick={() => {
+      {(mapError || detailError || pinError) && <button className="scan-retry secondary-action" type="button" onClick={() => {
         setMapError(false);
         setDetailError(false);
+        setPinError(false);
         setRetry(retry + 1);
       }}>Retry loading NASA data</button>}
     </figure>
     <aside className="panel location-card scan-cell" aria-labelledby="scan-cell-title">
-      <p className="eyebrow">Geographic context</p>
+      <p className="eyebrow">{pin ? sameCell ? "Pinned place A" : "Selected place B" : "Selected place"}</p>
       <h3 id="scan-cell-title" aria-live="polite">{geographicTitle}</h3>
       {geographicDetail && <p className="scan-geographic-detail">{geographicDetail}</p>}
+      <div className="scan-result" aria-live="polite">
+        <strong data-testid="scan-slope">{rate === null ? "Unavailable" : signed(rate)}</strong>
+        {rate !== null && <span>°C per decade</span>}
+        <p>{firstYear}–{lastYear} · GISTEMP grid-cell trend</p>
+      </div>
+      {complete > 1 && <svg className="scan-sparkline" viewBox="0 0 248 52" role="img" aria-label="Selected cell annual temperature anomaly history">
+        <path d="M0 51H248" stroke="#46596a" />
+        <path d={sparkline(annual)} fill="none" stroke="#6de5c5" strokeWidth="2" vectorEffect="non-scaling-stroke" />
+      </svg>}
+      <div className="scan-result-actions">
+        <button className="primary-action" type="button" onClick={() => pinPoint(selection.point, selected.title)}>{pin ? "Use selection as A" : "Compare a place"}</button>
+        <a className="secondary-action" href="#global-evidence">View Global Lab ↓</a>
+      </div>
+      <details className="scan-methods"><summary>Data &amp; methods</summary>
       <dl className="selected-meta">
         <div><dt>{selection.source}</dt><dd>{clicked}</dd></div>
         <div><dt>NASA grid-cell center</dt><dd data-testid="scan-center">{caption}</dd></div>
@@ -414,11 +583,15 @@ export function WorldScan() {
         <div><dt>Analysis window</dt><dd>{firstYear}–{lastYear}</dd></div>
         {complete > 0 && <div><dt>Years represented</dt><dd>{firstValid}–{lastValid}</dd></div>}
         <div><dt>Complete years</dt><dd>{record ? complete + " / " + totalYears : "—"}</dd></div>
-        <div><dt>Linear trend</dt><dd data-testid="scan-slope">{rate === null ? "Unavailable" : signed(rate) + " °C/decade"}</dd></div>
       </dl>
       <p className="scan-cell-status" role="status">{record ? rate === null ? `A slope requires at least ${manifest.minimum_complete_years} complete years.` : "OLS fit on complete calendar years." : detailError ? "Cell details did not load." : "Loading cell history…"}</p>
       <button className="secondary-action" type="button" disabled={!record} onClick={download}>Download cell data ↓</button>
+      </details>
     </aside>
+    <GlobalEvidence first={pin && { title: pin.title, center: pin.center, record: pinDetail?.pin === pin ? pinDetail.record : null }}
+      second={selected} sameCell={sameCell} waiting={!!pin && !sameCell && !pinError && !detailError && (!record || pinDetail?.pin !== pin)}
+      error={!!pin && (pinError || detailError)} ready={!!geo}
+      chooseFirst={() => pinPoint(selection.point, selected.title)} clear={() => { setPin(null); setPinDetail(null); setPinError(false); }} examples={loadExample} />
     <figure className="panel chart-panel scan-series">
       <figcaption className="panel-title"><div><p className="eyebrow muted">GISTEMP v4 LOTI · {caption}</p><h3>Annual surface temperature anomalies</h3></div><span className="unit-label">°C</span></figcaption>
       <p>Relative to the NASA 1951–1980 baseline. Each annual mean uses 12 months weighted by calendar days.</p>

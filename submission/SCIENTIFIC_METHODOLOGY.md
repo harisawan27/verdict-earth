@@ -56,3 +56,7 @@ As a sanity check, the cosine-latitude-weighted diagnostic annual series across 
 Smoothing makes neighboring cells spatially dependent. The nominal grid spacing does not measure local precision. World Scan shows descriptive slopes and omits cell-level confidence intervals and significance tests. It does not attribute causes. NASA POWER's MERRA-2-derived 2-meter air temperature and the Karachi Giovanni comparison remain in Local Investigations, with their own data and interpretation.
 
 Reproduce with `python -m science.gistemp`. The archived originals are in `data/gistemp/`. The browser uses versioned artifacts in `public/world-scan/v1/` and downloads only the necessary latitude rows.
+
+### Global GISTEMP comparison
+
+The Global Evidence Lab restricts both grid cells to the same complete calendar years within the chosen window. It shows both annual anomaly series relative to NASA’s 1951–1980 baseline and estimates separate descriptive ordinary least-squares slopes in °C per decade. A slope is displayed when at least 80% of the window’s calendar years are complete for both cells. Smoothing introduces spatial dependence, and the comparison reports no significance test for slope differences. The precomputed NASA POWER Local Evidence Lab uses a separate dataset and retains its local uncertainty analyses.

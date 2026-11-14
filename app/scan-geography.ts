@@ -166,7 +166,7 @@ export function drawGeography(ctx: CanvasRenderingContext2D, geo: Geography, vie
       mask.rect(0, 0, 360, 180);
       for (const tile of activeDetail) mask.rect(tile.column * detailSize, tile.row * detailSize, detailSize, detailSize);
       ctx.clip(mask, "evenodd");
-      ctx.strokeStyle = "#263e4d";
+      ctx.strokeStyle = geographicOnly ? "#263e4d" : "rgba(177,205,213,.66)";
       ctx.lineWidth = labelScale * 0.85 / factor;
       ctx.stroke(geo.paths[2]);
       ctx.restore();
@@ -190,12 +190,12 @@ export function drawGeography(ctx: CanvasRenderingContext2D, geo: Geography, vie
       ctx.globalAlpha = 1;
     }
     if (view.zoom >= 4 && geo.paths[3]) {
-      ctx.strokeStyle = "rgba(35,51,64,.54)";
+      ctx.strokeStyle = geographicOnly ? "rgba(35,51,64,.54)" : "rgba(187,218,230,.33)";
       ctx.lineWidth = labelScale * 0.7 / factor;
       ctx.stroke(geo.paths[3]);
     }
     if (geo.paths[0]) {
-      ctx.strokeStyle = "rgba(20,38,50,.82)";
+      ctx.strokeStyle = geographicOnly ? "rgba(20,38,50,.82)" : "rgba(224,234,237,.58)";
       ctx.lineWidth = labelScale * 1.05 / factor;
       ctx.stroke(geo.paths[0]);
       ctx.setLineDash([3 * labelScale / factor, 2 * labelScale / factor]);

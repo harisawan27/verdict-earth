@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type region from "../data/results/sindh-t2m.v1.json";
 import { TemperatureChart } from "./temperature-chart";
 import { compareIntervals, includesZero, interval, pValue, signed } from "./stress-format";
@@ -66,6 +66,14 @@ const period = (start: number, end: number) => `${start}–${end}`;
 
 export function Investigation({ data, worldwide = false }: { data: Region; worldwide?: boolean }) {
   const [mode, setMode] = useState<"scan" | "local">("scan");
+  useEffect(() => {
+    if (!worldwide) return;
+    function openGlobalLab() {
+      if (window.location.hash === "#global-evidence") setMode("scan");
+    }
+    window.addEventListener("hashchange", openGlobalLab);
+    return () => window.removeEventListener("hashchange", openGlobalLab);
+  }, [worldwide]);
   const [siteId, setSiteId] = useState("karachi");
   const [windowId, setWindowId] = useState("1981-2025");
   const [method, setMethod] = useState<Method>("hac");
@@ -165,7 +173,8 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
       </section>
 
       <section id="stress-test" className="stress-section" aria-labelledby="stress-heading">
-        <div className="section-heading"><h2 id="stress-heading">Evidence Stress Test</h2><p>Change the period or the uncertainty method for {site.location.city}.</p></div>
+        <div className="section-heading"><h2 id="stress-heading">{worldwide ? "Local Evidence Lab · POWER" : "Evidence Stress Test"}</h2><p>Change the period or the uncertainty method for {site.location.city}.{worldwide && " This lab uses 31 precomputed NASA POWER locations."}</p></div>
+        {worldwide && <p className="global-lab-jump"><a className="secondary-action" href="#global-evidence" onClick={() => setMode("scan")}>Compare any two cells in the Global Evidence Lab ↗</a></p>}
         <div className="panel controls">
           <fieldset><legend>Time window</legend><div className="button-group">
             {site.windows.map(item => <button type="button" key={item.id} onClick={() => setWindowId(item.id)}

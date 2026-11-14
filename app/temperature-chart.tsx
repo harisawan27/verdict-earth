@@ -8,11 +8,12 @@ import {
 export type ChartPoint = { year: number; temperature_c: number | null; fitted_c: number | null; comparison_c?: number | null };
 
 export function TemperatureChart({
-  points, window: selectedWindow, comparisonName, anomaly = false,
+  points, window: selectedWindow, comparisonName, anomaly = false, primaryName,
 }: {
   points: ChartPoint[];
   window?: { start: number; end: number };
   comparisonName?: string;
+  primaryName?: string;
   anomaly?: boolean;
 }) {
   const gradient = useId().replace(/[^a-zA-Z0-9_-]/g, "");
@@ -72,7 +73,7 @@ export function TemperatureChart({
             formatter={(value) => typeof value !== "number" ? "Unavailable" : value.toFixed(2) + " °C"}
             labelFormatter={(year) => "Year " + year}
           />
-          <Area type="linear" dataKey="temperature_c" name={anomaly ? "Annual anomaly" : "Annual mean"} fill={`url(#${gradient})`}
+          <Area type="linear" dataKey="temperature_c" name={primaryName ?? (anomaly ? "Annual anomaly" : "Annual mean")} fill={`url(#${gradient})`}
             stroke="#66e8cb" strokeWidth={2.35} activeDot={{ r: 4, stroke: "#0c151b" }}
             baseValue={domain[0]} isAnimationActive={false} connectNulls={false} />
           {comparisonName && (
