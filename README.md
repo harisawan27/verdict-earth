@@ -4,7 +4,7 @@
 
 NASA Space Apps Challenge 2026 · Be An Earth System Trend Detective! · Sahiwal Virtual, Pakistan
 
-Verdict Earth investigates annual 2-meter air temperature at eight locations across Sindh, Pakistan. The Evidence Stress Test covers four historical windows and two uncertainty methods. Next.js reads versioned scientific results offline. The original investigation remains at /karachi-baseline.
+Verdict Earth explores 45 years of 2-meter air temperature at 31 sampled locations across six continents. The atlas combines a searchable world map, annual temperature series, monthly local anomalies, matched-year location comparisons, and an Evidence Lab for four historical windows and two uncertainty methods. The eight-location regional case study is at `/sindh` and the original baseline is at `/karachi-baseline`.
 
 ## Run locally
 
@@ -23,6 +23,7 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m pytest -q
 .\.venv\Scripts\python.exe -m science.generate
 .\.venv\Scripts\python.exe -m science.region
+.\.venv\Scripts\python.exe -m science.world --offline
 npm run build
 ```
 
@@ -32,7 +33,7 @@ Vercel can build this as a standard Next.js project using the committed JSON and
 
 ## Release and submission
 
-The repository is [public on GitHub](https://github.com/harisawan27/verdict-earth). Production deployment is pending. The [submission checklist](submission/SUBMISSION_CHECKLIST.md) covers Vercel import, public-link verification, and the NASA project form. The [demo script](submission/DEMO_SCRIPT.md) includes a 30-second storyboard. For a local production preview use `npm run build` followed by `npm run start`. The production app bundles its scientific results and needs no NASA connection or sign-in for browsing, analysis, or JSON download.
+The repository is [public on GitHub](https://github.com/harisawan27/verdict-earth). The existing production domain is [verdict-earth.vercel.app](https://verdict-earth.vercel.app/). Check that the deployed release displays the worldwide atlas and the Karachi Giovanni comparison. The [submission checklist](submission/SUBMISSION_CHECKLIST.md) covers Vercel import, public-link verification, and the NASA project form. The [demo script](submission/DEMO_SCRIPT.md) includes a 30-second storyboard. For a local production preview use `npm run build` followed by `npm run start`. The production app bundles its scientific results and needs no NASA connection or sign-in for browsing, analysis, or JSON download.
 
 ## Data and provenance
 
@@ -65,7 +66,7 @@ Run `python -m science.region` in the Python environment to regenerate `data/res
 
 The comparison dropdown overlays another site's annual means. The interface presents matched-window slopes when the sites have the same valid years. Comparisons are descriptive. The eight sites and four related time windows are exploratory sensitivity checks without multiple-comparison adjustment. Statistical significance cannot establish cause.
 
-In the seeded zero-trend AR(1) test (400 series of 100 years, lag-one correlation 0.6), the 95% intervals included the true slope in 265 conventional fits and 337 HAC fits. HAC improved coverage in this simulation and still fell short of the nominal 95%.
+In the seeded zero-trend AR(1) test (400 series of 100 years, lag-one correlation 0.6), the 95% intervals included the true slope in 265 conventional fits and 337 HAC fits. HAC improved coverage in this simulation and still fell short of the nominal 95%. A follow-up audit using the same seeded stationary AR(1) design found HAC coverage of 311, 317, and 317 of 400 for 25, 35, and 45 years respectively. The estimator agreed with statsmodels in every complete-series run. See [Scientific methodology](submission/SCIENTIFIC_METHODOLOGY.md).
 
 ## Import a signed-in Giovanni export
 
@@ -98,3 +99,7 @@ NASA Langley Research Center POWER Project and NASA GMAO MERRA-2 provide the tem
 ## License and third-party rights
 
 This repository currently has no project-wide software license grant. Dependencies retain their respective licenses. See [data sources and credits](submission/DATA_SOURCES.md) for NASA and PMD materials and [NASA POWER’s citation guidance](https://power.larc.nasa.gov/docs/referencing/) for source acknowledgment.
+
+### Worldwide atlas
+
+The world artifact is `data/results/world-t2m.v1.json`. Run `python -m science.world --offline` to rebuild from verified local snapshots or omit `--offline` to fetch missing snapshots. The atlas uses 31 NASA POWER grid-point records for January 1981 to December 2025, all complete. Coordinates were cross-checked with the [GeoNames populated-place dataset](https://download.geonames.org/export/dump/) except the original Karachi reference. The map uses land outlines derived from [Natural Earth via world-atlas 2.0.2](https://github.com/topojson/world-atlas). Only markers encode trends. Karachi has a verified native cell. Other worldwide grid centers are inferred from the nominal grid spacing. Monthly anomalies use the same month’s complete 1991–2020 average at the same grid cell.

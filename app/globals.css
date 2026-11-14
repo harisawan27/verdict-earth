@@ -216,3 +216,85 @@ button:focus-visible, select:focus-visible { outline: 2px solid var(--accent); o
   .hero-actions { gap: 8px 10px; margin-top: 17px; }
   .hero-question { margin-top: 17px; }
 }
+
+/* Worldwide atlas and Evidence Lab */
+.atlas { --panel: #101f2a; --line: #2b404d; }
+.atlas-hero { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 24px; padding: clamp(45px, 7vw, 100px) 0 40px; }
+.atlas-hero h1 { font-size: clamp(3.3rem, 8.3vw, 8rem); line-height: .94; letter-spacing: -.086em; }
+.atlas-hero .hero-mission { max-width: 59ch; margin-top: 21px; line-height: 1.6; }
+.atlas-facts { min-width: 208px; border-left: 1px solid var(--line); padding-left: 22px; margin-bottom: 7px; }
+.atlas-facts div { padding: 8px 0; }
+.atlas-facts dt, .atlas-filters label, .calendar-interaction label { color: var(--muted); font: .72rem/1.6 var(--mono); }
+.atlas-facts dd { margin-top: 3px; font-weight: 710; }
+.atlas-map { min-width: 0; overflow: hidden; }
+.atlas-map figcaption { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 19px 12px; }
+.atlas-map figcaption h3 { font-size: 1.1rem; font-weight: 680; }
+.atlas-map figcaption span { color: var(--muted); font-size: .76rem; }
+.atlas-filters { display: grid; grid-template-columns: 1fr 1fr 1.15fr; gap: 8px; padding: 0 19px 13px; }
+.atlas-filters input, .atlas-filters select, .calendar-interaction select { width: 100%; display: block; min-width: 0; padding: 7px 8px; color: var(--ink); background: #0b1822; border: 1px solid #3b535f; border-radius: 6px; font: .83rem/1.35 Inter, system-ui, sans-serif; }
+.atlas-viewport { position: relative; border-block: 1px solid var(--line); }
+.atlas-viewport svg { width: 100%; display: block; }
+.atlas-viewport g[data-point] { cursor: pointer; }
+.atlas-viewport g[data-point]:hover .atlas-dot, .atlas-viewport g[data-point]:focus-visible .atlas-dot { stroke: white; stroke-width: 2; }
+.atlas-viewport .can-pan { cursor: grab; touch-action: none; }
+.atlas-viewport .can-pan:active { cursor: grabbing; }
+.map-buttons { position: absolute; right: 10px; bottom: 10px; display: flex; gap: 4px; }
+.map-buttons button { background: #11222e; color: var(--ink); border: 1px solid #4a6574; padding: 4px 8px; border-radius: 5px; cursor: pointer; font-size: .75rem; }
+.map-buttons button:disabled { opacity: .5; cursor: default; }
+.atlas-legend { padding: 11px 19px; }
+.atlas-country { margin-top: 7px; color: var(--muted); font-size: .86rem; }
+.atlas-lab-link { display: inline-block; margin-top: 14px; }
+.atlas .chart { height: 310px; }
+.interval-plot { margin-top: 12px; }
+.interval-row, .interval-axis { display: grid; grid-template-columns: minmax(76px, 1fr) minmax(74px, 2.2fr) minmax(68px, .9fr); align-items: center; gap: 10px; }
+.interval-axis { display: flex; justify-content: space-between; margin-inline: 29% 24%; color: var(--muted); font: .72rem var(--mono); }
+.interval-row { width: 100%; text-align: left; padding: 7px 8px; border: 1px solid transparent; border-radius: 6px; }
+.interval-row[data-active=true], .interval-row[aria-pressed=true] { background: #143333; border-color: #345652; }
+button.interval-row { cursor: pointer; }
+button.interval-row:hover { border-color: #67cbbb; }
+.interval-label, .interval-value { font-size: .8rem; }
+.interval-row small { display: block; color: var(--muted); font-size: .68rem; }
+.interval-value { text-align: right; font-family: var(--mono); }
+.interval-track { height: 23px; position: relative; display: block; background: #0b1922; border-radius: 4px; }
+.interval-track::before { content: ""; position: absolute; left: 50%; height: 100%; border-left: 1px dashed #8b9dab; }
+.interval-track i { position: absolute; top: 50%; transform: translateY(-50%); }
+.interval-range { border-block: 2px solid #71e8cb; }
+.interval-point { width: 8px; height: 8px; border-radius: 50%; background: #d8fff7; margin-left: -4px; }
+.window-plot { margin-top: 18px; }
+.window-plot h4 { font-size: 1rem; font-weight: 670; }
+.window-plot p { margin-top: 4px; font-size: .85rem; color: var(--muted); }
+.anomaly-panel { margin-top: 15px; padding: 20px 23px; min-width: 0; }
+.anomaly-panel > p { color: var(--muted); margin-top: 8px; font-size: .86rem; }
+.anomaly-key { display: flex; flex-wrap: wrap; gap: 10px 17px; margin-block: 13px; color: var(--muted); font: .73rem var(--mono); }
+.anomaly-key span { display: inline-flex; gap: 6px; align-items: center; }
+.anomaly-key i { width: 13px; height: 12px; border-radius: 2px; }
+.calendar-interaction { display: grid; grid-template-columns: auto auto 1fr; gap: 10px; align-items: end; }
+.calendar-interaction p { font-size: .85rem; margin-bottom: 2px; }
+.calendar-interaction p span { display: block; color: var(--muted); font-size: .76rem; }
+.calendar-scroll { max-height: 354px; overflow: auto; margin-top: 10px; }
+.calendar-table { border-collapse: separate; border-spacing: 3px; table-layout: fixed; }
+.calendar-table thead { position: sticky; top: 0; background: var(--panel); z-index: 1; }
+.calendar-table th, .calendar-table td { padding: 0; text-align: center; border: 0; font: .7rem/1.35 var(--mono); }
+.calendar-table th:first-child { width: 42px; }
+.calendar-table td button { width: 100%; min-height: 15px; display: block; border: 1px solid transparent; border-radius: 2px; cursor: pointer; }
+.calendar-table .calendar-selected button, .calendar-table td button:hover { border-color: white; }
+.featured-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 13px; }
+.featured-card { padding: 18px; display: flex; flex-direction: column; gap: 9px; }
+.featured-card h3 { font-size: 1.16rem; font-weight: 680; }
+.featured-card p:not(.eyebrow) { color: var(--muted); font-size: .88rem; }
+.featured-card a { margin-top: auto; padding-top: 8px; color: var(--accent); font-size: .83rem; }
+@media (max-width: 780px) {
+  .atlas-hero { grid-template-columns: 1fr; }
+  .atlas-facts { display: grid; grid-template-columns: repeat(2, 1fr); border-left: none; border-top: 1px solid var(--line); padding: 6px 0 0; }
+}
+@media (max-width: 580px) {
+  .atlas .chart { height: 235px; }
+  .atlas-filters { grid-template-columns: 1fr 1fr; padding-inline: 12px; }
+  .atlas-filters label:last-child { grid-column: 1 / -1; }
+  .anomaly-panel { padding-inline: 12px; }
+  .calendar-table th:not(:first-child) { font-size: .57rem; letter-spacing: -.06em; }
+  .calendar-table th:first-child { width: 33px; }
+  .calendar-interaction { grid-template-columns: 1fr 1fr; }
+  .calendar-interaction p { grid-column: 1 / -1; }
+  .featured-grid { grid-template-columns: 1fr; }
+}

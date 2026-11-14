@@ -3,13 +3,13 @@ import type { ReactNode } from "react";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Verdict Earth | Sindh Temperature Trends",
+  title: "Verdict Earth | The Planet Under Investigation",
   applicationName: "Verdict Earth",
-  description: "Investigate temperature trends across Sindh and test how the estimates change with method and period.",
+  description: "Investigate NASA temperature records from six continents and test how the estimates change with method and period.",
   openGraph: {
     type: "website",
-    title: "Verdict Earth | Sindh Temperature Trends",
-    description: "Investigate real NASA temperature series across Sindh and test how the trend changes with the analysis period and assumptions.",
+    title: "Verdict Earth | The Planet Under Investigation",
+    description: "Investigate real NASA temperature series across six continents and test how the trend changes with the analysis period and assumptions.",
   },
 };
 

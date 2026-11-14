@@ -3,10 +3,10 @@ export type Estimate = {
   p_value: number | null;
 };
 
-export function signed(value: number) {
+export function signed(value: number, digits = 3) {
   return value.toLocaleString("en-US", {
-    minimumFractionDigits: 3,
-    maximumFractionDigits: 3,
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
     signDisplay: "exceptZero",
   });
 }

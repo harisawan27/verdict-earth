@@ -1,8 +1,11 @@
 # Data sources and credits
 
-- **NASA Langley Research Center POWER Project.** The Monthly and Annual API (v2.10.0, accessed 2026-11-14 UTC) supplies the monthly T2M series used in all eight investigations. The regional endpoint supplies the 2023 native-grid check. Original NASA files and the companion URL, retrieval time, and SHA-256 receipts are stored in [data/raw](../data/raw). [Monthly API](https://power.larc.nasa.gov/docs/services/api/temporal/monthly/) · [Meteorology data sources](https://power.larc.nasa.gov/docs/methodology/data/sources_meteorology/).
+- **NASA Langley Research Center POWER Project.** The Monthly and Annual API (v2.10.0, accessed 2026-11-14 UTC) supplies the monthly T2M series used in the 31-location atlas and eight-location Sindh case study. The regional endpoint supplies the 2023 native-grid check. Original NASA files and the companion URL, retrieval time, and SHA-256 receipts are stored in [data/raw](../data/raw). [Monthly API](https://power.larc.nasa.gov/docs/services/api/temporal/monthly/) · [Meteorology data sources](https://power.larc.nasa.gov/docs/methodology/data/sources_meteorology/).
 - **NASA Global Modeling and Assimilation Office MERRA-2.** Underlying gridded atmospheric reanalysis. [MERRA-2 documentation](https://gmao.gsfc.nasa.gov/gmao-products/merra-2/).
 - **Pakistan Meteorological Department, Regional Meteorological Centre Sindh.** Geographic reference for seven of the request coordinates. The temperatures in the app come from NASA POWER. [PMD Sindh network](https://rmcsindh.pmd.gov.pk/Network.html).
+
+- **GeoNames.** The populated-place file supplied reference coordinates for checking atlas request points outside Karachi. [GeoNames data export](https://download.geonames.org/export/dump/).
+- **Natural Earth.** The bundled 1:110m land outline provides map context. Temperature information is shown only at sampled locations. [World Atlas 2.0.2](https://github.com/topojson/world-atlas).
 
 ## Challenge resource use
 

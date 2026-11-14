@@ -1,5 +1,8 @@
-import data from "../data/results/sindh-t2m.v1.json";
+import data from "../data/results/world-t2m.v1.json";
 import { Investigation } from "./investigation";
+
+const continents = new Set(data.stations.map(site => site.continent)).size;
+const years = Math.min(...data.stations.map(site => site.completeness.complete_calendar_years));
 
 export default function Home() {
   return (
@@ -9,27 +12,35 @@ export default function Home() {
         <div className="shell masthead">
           <a className="brand" href="#top"><span className="brand-mark" aria-hidden="true" />VERDICT EARTH</a>
           <nav aria-label="Investigation sections">
-            <a href="#region">Region</a>
-            <a href="#stress-test">Stress test</a>
-            <a href="#how-we-know">How we know</a>
+            <a href="#region">Explore Earth</a>
+            <a href="#stress-test">Evidence Lab</a>
+            <a href="#featured">Featured investigations</a>
+            <a href="#how-we-know">How We Know</a>
           </nav>
         </div>
       </header>
-      <main className="shell" id="top" tabIndex={-1}>
-        <section className="regional-hero">
-          <p className="eyebrow"><span className="status-dot" />NASA Space Apps Challenge 2026</p>
-          <h1>Temperature trends<br className="hero-break" /> across Sindh<span>.</span></h1>
-          <p className="hero-mission">Don’t just detect a trend. Test whether it survives scrutiny.</p>
-          <div className="hero-facts"><span>Pakistan</span><span>{data.stations.length} locations</span><span>1981–2025</span><span>NASA POWER · MERRA-2</span></div>
-          <p className="hero-question">How much does a reported trend change when you test a different time window or uncertainty method?</p>
-          <div className="hero-actions">
-            <a className="primary-action" href="#region">Explore sampling locations <span aria-hidden="true">　↓</span></a>
-            <a className="secondary-action" href="#stress-test">Open Evidence Stress Test</a>
+      <main className="shell atlas" id="top" tabIndex={-1}>
+        <section className="regional-hero atlas-hero">
+          <div>
+            <p className="eyebrow"><span className="status-dot" />NASA Space Apps Challenge 2026</p>
+            <h1>The Planet Under<br className="hero-break" /> Investigation<span>.</span></h1>
+            <p className="hero-mission">{years} years of NASA climate data. Explore temperature change around the world and test how much confidence the evidence deserves.</p>
+            <div className="hero-actions">
+              <a className="primary-action" href="#region">Explore Earth <span aria-hidden="true">↓</span></a>
+              <a className="secondary-action" href="#stress-test">Open Evidence Lab</a>
+            </div>
           </div>
+          <dl className="atlas-facts">
+            <div><dt>Sampled locations</dt><dd>{data.stations.length}</dd></div>
+            <div><dt>Continents</dt><dd>{continents}</dd></div>
+            <div><dt>Analysis period</dt><dd>{data.requested_years.start}–{data.requested_years.end}</dd></div>
+            <div><dt>Dataset</dt><dd>NASA POWER · MERRA-2</dd></div>
+          </dl>
         </section>
-        <Investigation data={data} />
+        <Investigation data={data} worldwide />
       </main>
       <footer className="shell footer">
+        <a href="/sindh">Sindh regional investigation ↗</a>
         <a href="/karachi-baseline">Karachi baseline investigation ↗</a>
         <span>Sahiwal Virtual · Pakistan</span>
       </footer>

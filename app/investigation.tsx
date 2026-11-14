@@ -5,9 +5,13 @@ import type region from "../data/results/sindh-t2m.v1.json";
 import { TemperatureChart } from "./temperature-chart";
 import { compareIntervals, includesZero, interval, pValue, signed } from "./stress-format";
 import { GiovanniEvidence } from "./giovanni-evidence";
+import { WorldMap } from "./world-map";
+import { AnomalyCalendar, IntervalPlot } from "./evidence-visuals";
 
-type Region = typeof region;
-type Station = Region["stations"][number];
+type RegionalStation = (typeof region)["stations"][number];
+export type Calendar = { baseline_years: number[]; baseline_c: (number | null)[]; first_year: number; temperature_c: (number | null)[]; anomaly_c: (number | null)[] };
+type Station = Omit<RegionalStation, "coordinate_source" | "location" | "shared_sample_flags" | "native_cell"> & { native_cell: {latitude: number; longitude: number} | null; coordinate_source?: string; location: { city: string }; country?: string; continent?: string; calendar?: Calendar; shared_sample_flags: {sites: string[]; reasons: string[]}[] };
+type Region = Omit<typeof region, "stations" | "duplicate_pairs"> & { stations: Station[]; duplicate_pairs: {sites: string[]; reasons: string[]}[] };
 type Method = "conventional" | "hac";
 
 const methods = [
@@ -57,7 +61,7 @@ function SitePlot({ stations, selected, select }: { stations: Station[]; selecte
 
 const period = (start: number, end: number) => `${start}–${end}`;
 
-export function Investigation({ data }: { data: Region }) {
+export function Investigation({ data, worldwide = false }: { data: Region; worldwide?: boolean }) {
   const [siteId, setSiteId] = useState("karachi");
   const [windowId, setWindowId] = useState("1981-2025");
   const [method, setMethod] = useState<Method>("hac");
@@ -82,6 +86,13 @@ export function Investigation({ data }: { data: Region }) {
   const cell = site.native_cell;
   const matched = data.stations.filter(item => item.native_cell !== null).length;
   const returned = site.provenance.returned_coordinates;
+  const candidate = site.candidate_native_cells[0];
+  const coordinate = (lat: number, lon: number) => `${Math.abs(lat).toFixed(3)}° ${lat < 0 ? "S" : "N"} · ${Math.abs(lon).toFixed(3)}° ${lon < 0 ? "W" : "E"}`;
+  const featured = [
+    { id: "oslo", peer: "karachi", title: "How do Oslo and Karachi compare?", window: "1981-2025" },
+    { id: "nairobi", peer: "sao-paulo", title: "How do two tropical grid cells compare?", window: "1981-2025" },
+    { id: "karachi", peer: "", title: "Does the uncertainty method change the reading?", window: "2001-2025" },
+  ];
 
   function selectSite(id: string) {
     setSiteId(id);
@@ -107,9 +118,9 @@ export function Investigation({ data }: { data: Region }) {
   return (
     <>
       <section id="region" className="regional-section" aria-labelledby="regional-heading">
-        <div className="section-heading"><h2 id="regional-heading">Sampling locations</h2><p>Select a point to investigate its temperature record.</p></div>
+        <div className="section-heading"><h2 id="regional-heading">{worldwide ? "Explore Earth" : "Sampling locations"}</h2><p>Select a point to investigate its temperature record.</p></div>
         <div className="regional-grid">
-          <figure className="panel geo-panel">
+          {worldwide ? <WorldMap stations={data.stations} selected={site.id} select={selectSite} /> : <figure className="panel geo-panel">
             <figcaption><strong>Sampling points in Sindh</strong><span>1981–2025 linear slope</span></figcaption>
             <SitePlot stations={data.stations} selected={site.id} select={selectSite} />
             <div className="geo-legend" aria-label="Slope legend in degrees Celsius per decade">
@@ -118,14 +129,16 @@ export function Investigation({ data }: { data: Region }) {
               <span><i style={{ background: gridColor.warming }} />&gt; +0.025</span>
               <span>°C/decade</span>
             </div>
-          </figure>
+          </figure>}
 
           <aside className="panel location-card">
             <p className="eyebrow">Selected location</p>
             <h3>{site.location.city}</h3>
-            <p className="location-coordinate">{site.latitude.toFixed(3)}° N · {site.longitude.toFixed(3)}° E</p>
+            {site.country && <p className="atlas-country">{site.country} · {site.continent}</p>}
+            <p className="location-coordinate">{coordinate(site.latitude, site.longitude)}</p>
             <dl className="selected-meta">
               <div><dt>Full record</dt><dd>{site.completeness.complete_calendar_years} complete years</dd></div>
+              {worldwide && <div><dt>Native grid</dt><dd>{cell ? coordinate(cell.latitude, cell.longitude) : candidate ? coordinate(candidate[0], candidate[1]) + " (inferred)" : "Unavailable"}</dd></div>}
               <div><dt>Full-record slope</dt><dd>{signed(site.windows[0].trend.slope_c_per_decade)} °C/decade</dd></div>
               <div><dt>Source</dt><dd>NASA POWER</dd></div>
             </dl>
@@ -138,6 +151,7 @@ export function Investigation({ data }: { data: Region }) {
                 ))}
               </select>
             </label>
+            {worldwide && <a className="secondary-action atlas-lab-link" href="#stress-test">Open Evidence Lab ↓</a>}
           </aside>
         </div>
       </section>
@@ -183,6 +197,7 @@ export function Investigation({ data }: { data: Region }) {
         <section className="panel stress-evidence" aria-labelledby="estimate-heading">
           <h3 id="estimate-heading">Compare the uncertainty estimates</h3>
           <p>The methods use the same fitted line. Newey–West allows residuals in nearby years to be related, which can make its interval narrower or wider than the conventional interval.</p>
+          {worldwide && <IntervalPlot rows={methods.map(item => ({ label: item.label, rate, ci: trend[item.id].confidence_interval, selected: method === item.id }))} />}
           <div className="table-wrap">
             <table>
               <thead><tr><th scope="col">Method</th><th scope="col">95% interval (°C/decade)</th><th scope="col">p-value</th></tr></thead>
@@ -197,17 +212,35 @@ export function Investigation({ data }: { data: Region }) {
           </div>
           <p className="evidence-summary"><strong>{rate > 0 ? "The fitted series warms" : rate < 0 ? "The fitted series cools" : "The fitted slope is zero"} over {period(active.start, active.end)}.</strong>{" "}
             {compareIntervals(trend.conventional, trend.hac)} Across the available windows, slopes range from {signed(Math.min(...rates))} to {signed(Math.max(...rates))} °C/decade{signs.size > 1 ? " and change sign." : "."} Shorter windows typically have less power. These checks cannot attribute the change to a cause.</p>
+          {worldwide && <div className="window-plot"><h4>Time-window sensitivity</h4><p>Each row shows the fitted slope, interval and sample size for the selected uncertainty method.</p><IntervalPlot rows={site.windows.map(item => ({label: period(item.start, item.end), rate: item.trend.slope_c_per_decade, ci: item.trend[method].confidence_interval, selected: item.id === active.id, count: item.valid_years.length, select: () => setWindowId(item.id)}))} /></div>}
           {peer && (
             <div className="peer-summary">
               <h4>{site.location.city} and {peer.location.city}</h4>
               {comparable && peerWindow ? (
-                <p>{peer.location.city} has a fitted slope of <strong>{signed(peerWindow.trend.slope_c_per_decade)} °C/decade</strong> on the same {active.valid_years.length} complete years. {methods.find(item => item.id === method)?.label} 95% interval {interval(peerWindow.trend[method].confidence_interval)} °C/decade. This display compares the fitted slopes descriptively.</p>
+                <p>{peer.location.city} has a fitted slope of <strong>{signed(peerWindow.trend.slope_c_per_decade)} °C/decade</strong> on the same {active.valid_years.length} complete years. {methods.find(item => item.id === method)?.label} 95% interval {interval(peerWindow.trend[method].confidence_interval)} °C/decade. The comparison is descriptive. Nearby or distant samples may share reanalysis errors. No slope-difference test is shown.</p>
               ) : <p>The sites’ fits use different or insufficient complete years for this window. The chart shows their annual means for context.</p>}
             </div>
           )}
         </section>
+      {site.calendar && <AnomalyCalendar calendar={site.calendar} city={site.location.city} />}
       </section>
 
+      {worldwide && <section id="featured" className="regional-section">
+        <div className="section-heading"><h2>Featured investigations</h2><a href="/sindh">Open the eight-location Sindh case study ↗</a></div>
+        <div className="featured-grid">{featured.map(story => {
+          const focal = data.stations.find(item => item.id === story.id);
+          const other = data.stations.find(item => item.id === story.peer);
+          const fit = focal?.windows.find(item => item.id === story.window)?.trend;
+          const peerFit = other?.windows.find(item => item.id === story.window)?.trend;
+          if (!focal || !fit || (story.peer && !peerFit)) return null;
+          return <article className="panel featured-card" key={story.id}>
+            <p className="eyebrow">{focal.location.city}{other ? ` · ${other.location.city}` : ""}</p>
+            <h3>{story.title}</h3>
+            <p>{peerFit ? `Fitted 1981–2025 slopes: ${signed(fit.slope_c_per_decade)} and ${signed(peerFit.slope_c_per_decade)} °C per decade, respectively.` : `2001–2025: ${signed(fit.slope_c_per_decade)} °C per decade. ${compareIntervals(fit.conventional, fit.hac)}`}</p>
+            <a href="#stress-test" onClick={() => { setSiteId(story.id); setWindowId(story.window); setComparisonId(story.peer); }}>Open investigation ↗</a>
+          </article>;
+        })}</div>
+      </section>}
       <section id="how-we-know" className="regional-section" aria-labelledby="source-heading">
         <div className="section-heading"><h2 id="source-heading">How We Know</h2><button type="button" className="download-result" onClick={exportResult}>Download selected results ↓</button></div>
         <div className="provenance-grid">
@@ -217,17 +250,17 @@ export function Investigation({ data }: { data: Region }) {
             <dl className="selected-meta">
               <div><dt>Resolution</dt><dd>{data.dataset.spatial_resolution} · monthly</dd></div>
               <div><dt>NASA coverage</dt><dd>{site.provenance.header.start} – {site.provenance.header.end}</dd></div>
-              <div><dt>Returned point</dt><dd>{returned[1]}° N · {returned[0]}° E</dd></div>
-              <div><dt>Native cell</dt><dd>{cell ? `${cell.latitude}° N · ${cell.longitude}° E` : "No unique 2023 match"}</dd></div>
+              <div><dt>Returned point</dt><dd>{coordinate(returned[1], returned[0])}</dd></div>
+              <div><dt>Native cell</dt><dd>{cell ? coordinate(cell.latitude, cell.longitude) : worldwide && candidate ? coordinate(candidate[0], candidate[1]) + " (inferred)" : "No unique 2023 match"}</dd></div>
               <div><dt>Valid months</dt><dd>{site.completeness.valid_months} / {site.completeness.requested_months}</dd></div>
               <div><dt>Retrieved (UTC)</dt><dd>{site.provenance.retrieved_at_utc.slice(0, 10)}</dd></div>
             </dl>
-            <p>{matched} of {data.stations.length} sites matched a unique 2023 native cell by monthly values. {data.duplicate_pairs.length} pairs flagged by the duplicate screen.</p>
+            <p>{matched} of {data.stations.length} sites matched a unique 2023 native cell by monthly values. {worldwide && "Other atlas locations show nearest grid centers inferred from coordinates."} {data.duplicate_pairs.length} pairs flagged by the duplicate screen.</p>
             <div className="source-links">
               <a href={site.provenance.source_url}>Original NASA response ↗</a>
               <a href={site.provenance.documentation_url}>POWER methods ↗</a>
               <a href={data.grid_verification.source_url}>Native-grid check ↗</a>
-              {site.coordinate_source.startsWith("https://") && <a href={site.coordinate_source}>PMD reference coordinates ↗</a>}
+              {site.coordinate_source?.startsWith("https://") && <a href={site.coordinate_source}>PMD reference coordinates ↗</a>}
             </div>
             <details className="annual-details"><summary>Annual temperature values</summary>
               <ol className="data-list">{site.annual_series.map(({ year, temperature_c }) => (
@@ -240,6 +273,7 @@ export function Investigation({ data }: { data: Region }) {
             <ul>
               <li>{data.methods.annual_aggregation}</li><li>{data.methods.regression}</li>
               <li>{data.methods.conventional} {data.methods.hac}</li>
+              <li>In a seeded 100-year AR(1) simulation, the nominal 95% HAC intervals covered the true slope in 337 of 400 runs. The nominal level is a reference, and actual coverage depends on the residual process and sample length.</li>
               {data.limitations.map(item => <li key={item}>{item}</li>)}
             </ul>
           </div>
