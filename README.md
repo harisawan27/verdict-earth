@@ -6,7 +6,7 @@ NASA Space Apps Challenge 2026 · Be An Earth System Trend Detective! · Sahiwal
 
 Verdict Earth is a temperature-trend investigation tool. It maps NASA GISTEMP v4 surface temperature anomalies, fits local air temperature records from NASA POWER, and shows how conclusions depend on the period and the evidence available. Its default analysis period is **1981–2025**. POWER supports worldwide point lookup by place name or coordinates, subject to NASA response availability and record completeness.
 
-[Open Verdict Earth](https://verdict-earth.vercel.app/) · [GitHub repository](https://github.com/harisawan27/verdict-earth)
+[Open Verdict Earth](https://verdict-earth.vercel.app/) · [GitHub repository](https://github.com/harisawan27/verdict-earth) · [View the 7-slide demo](submission/VERDICT_EARTH_DEMO.pdf)
 
 ## A three-minute walkthrough
 
