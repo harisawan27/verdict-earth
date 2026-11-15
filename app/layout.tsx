@@ -7,11 +7,11 @@ export const viewport: Viewport = { width: "device-width", initialScale: 1, view
 export const metadata: Metadata = {
   title: "Verdict Earth | The Planet Under Investigation",
   applicationName: "Verdict Earth",
-  description: "Investigate NASA temperature records from six continents and test how the estimates change with method and period.",
+  description: "Explore NASA surface temperature anomalies and local air temperature. Compare records and test how the evidence changes with the analysis period.",
   openGraph: {
     type: "website",
     title: "Verdict Earth | The Planet Under Investigation",
-    description: "Investigate real NASA temperature series across six continents and test how the trend changes with the analysis period and assumptions.",
+    description: "Explore NASA GISTEMP anomalies, NASA POWER air temperature, and the evidence behind fitted temperature trends.",
   },
 };
 

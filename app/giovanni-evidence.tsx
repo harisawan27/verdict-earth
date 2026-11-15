@@ -29,8 +29,8 @@ export function GiovanniEvidence() {
         <>
           <p>{record.dataset} and NASA POWER compared on {years.length} shared complete years ({years[0]}–{years.at(-1)}).</p>
           <dl className="selected-meta">
-            <div><dt>Giovanni slope · 95% HAC interval</dt><dd>{slopeLabel.format(giovanni.slope_c_per_decade)} · {interval(giovanni.hac.confidence_interval)} °C/decade</dd></div>
-            <div><dt>POWER slope · 95% HAC interval</dt><dd>{slopeLabel.format(power.slope_c_per_decade)} · {interval(power.hac.confidence_interval)} °C/decade</dd></div>
+            <div><dt>Giovanni slope · nominal 95% HAC interval</dt><dd>{slopeLabel.format(giovanni.slope_c_per_decade)} · {interval(giovanni.hac.confidence_interval)} °C/decade</dd></div>
+            <div><dt>POWER slope · nominal 95% HAC interval</dt><dd>{slopeLabel.format(power.slope_c_per_decade)} · {interval(power.hac.confidence_interval)} °C/decade</dd></div>
           </dl>
           {record.matched_months !== undefined && record.monthly_mean_absolute_difference_c !== undefined && (
             <p>Across {record.matched_months} matching months at the same native grid cell, the temperatures differed by {record.monthly_mean_absolute_difference_c.toFixed(3)} °C on average in absolute terms.</p>
@@ -40,7 +40,7 @@ export function GiovanniEvidence() {
       ) : (
         <>
           <p>{record.reason}</p>
-          <p>Global Awards eligibility is unconfirmed while the analysis uses POWER alone.</p>
+          <p>The archived NASA POWER analysis is available in Evidence Lab.</p>
         </>
       )}
       <div className="source-links">

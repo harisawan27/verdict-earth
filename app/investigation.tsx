@@ -6,6 +6,8 @@ import { TemperatureChart } from "./temperature-chart";
 import { compareIntervals, includesZero, interval, pValue, signed } from "./stress-format";
 import { GiovanniEvidence } from "./giovanni-evidence";
 import { WorldMap } from "./world-map";
+import { PowerPointPicker } from "./power-point-picker";
+import type { PowerPoint } from "./power-point-picker";
 import { assessTrend } from "./verdict";
 import { VerdictReport, downloadEvidence } from "./verdict-report";
 import { CalibrationAudit, karachiAuditCase } from "./calibration-audit";
@@ -19,7 +21,33 @@ import { AnomalyCalendar, IntervalPlot } from "./evidence-visuals";
 
 type RegionalStation = (typeof region)["stations"][number];
 export type Calendar = { baseline_years: number[]; baseline_c: (number | null)[]; first_year: number; temperature_c: (number | null)[]; anomaly_c: (number | null)[] };
-type Station = Omit<RegionalStation, "coordinate_source" | "location" | "shared_sample_flags" | "native_cell"> & { native_cell: {latitude: number; longitude: number} | null; coordinate_source?: string; location: { city: string }; country?: string; continent?: string; calendar?: Calendar; shared_sample_flags: {sites: string[]; reasons: string[]}[] };
+type RegionalWindow = RegionalStation["windows"][number];
+type RegionalTrend = RegionalWindow["trend"];
+type Uncertainty = { standard_error: number | null; confidence_interval: number[] | null; p_value: number | null };
+type PowerTrend = Omit<RegionalTrend, "conventional" | "hac"> & {
+  conventional: Uncertainty;
+  hac: Omit<RegionalTrend["hac"], keyof Uncertainty> & Uncertainty;
+};
+export type Station = Omit<RegionalStation, "coordinate_source" | "location" | "shared_sample_flags" |
+  "native_cell" | "annual_series" | "windows" | "completeness"> & {
+  native_cell: { latitude: number; longitude: number } | null;
+  coordinate_source?: string;
+  location: { city: string };
+  country?: string;
+  continent?: string;
+  live?: boolean;
+  calendar?: Calendar;
+  shared_sample_flags: { sites: string[]; reasons: string[] }[];
+  annual_series: { year: number; temperature_c: number | null }[];
+  windows: (Omit<RegionalWindow, "trend"> & { trend: PowerTrend })[];
+  completeness: Omit<RegionalStation["completeness"], "absent_months" | "fill_value_months" |
+    "partial_months" | "excluded_calendar_years"> & {
+    absent_months: string[];
+    fill_value_months: string[];
+    partial_months: string[];
+    excluded_calendar_years: number[];
+  };
+};
 type Region = Omit<typeof region, "stations" | "duplicate_pairs"> & { stations: Station[]; duplicate_pairs: {sites: string[]; reasons: string[]}[] };
 type Method = "conventional" | "hac";
 
@@ -69,6 +97,45 @@ function SitePlot({ stations, selected, select }: { stations: Station[]; selecte
 }
 
 const period = (start: number, end: number) => `${start}–${end}`;
+const quietRequest = { pending: false, message: "" };
+
+function usePowerPoint() {
+  const [record, setRecord] = useState<Station | null>(null);
+  const [status, setStatus] = useState(quietRequest);
+  const controller = useRef<AbortController | null>(null);
+
+  useEffect(() => () => controller.current?.abort(), []);
+
+  function cancel() {
+    controller.current?.abort();
+    setStatus(quietRequest);
+  }
+
+  async function load(point: PowerPoint, select: (id: string) => void) {
+    controller.current?.abort();
+    const request = new AbortController();
+    controller.current = request;
+    setStatus({ pending: true, message: "Requesting NASA POWER data for " + point.label + "…" });
+    try {
+      const query = new URLSearchParams({ lat: point.latitude.toFixed(4), lon: point.longitude.toFixed(4) });
+      const response = await fetch("/api/power?" + query, { signal: request.signal });
+      if (!response.ok) {
+        const failure = await response.json().catch(() => null);
+        throw new Error(failure?.error ?? "The NASA POWER request failed. Try again shortly.");
+      }
+      const result: Station = await response.json();
+      if (request.signal.aborted) return;
+      setRecord({ ...result, location: { city: point.label } });
+      select(result.id);
+      setStatus(quietRequest);
+    } catch (error) {
+      if (!request.signal.aborted) setStatus({ pending: false, message: "Could not load " + point.label + ". " +
+        (error instanceof Error ? error.message : "Try again shortly.") });
+    }
+  }
+
+  return { record, status, cancel, load };
+}
 
 export function Investigation({ data, worldwide = false }: { data: Region; worldwide?: boolean }) {
   const workspace = useWorkspace();
@@ -100,9 +167,13 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
   const [comparisonId, setComparisonId] = useState("");
   const [windowCheck, setWindowCheck] = useState(true);
   const [intervalCheck, setIntervalCheck] = useState(true);
-  const site = data.stations.find(item => item.id === siteId) ?? data.stations[0];
+  const primaryPoint = usePowerPoint();
+  const comparisonPoint = usePowerPoint();
+  const site = (primaryPoint.record?.id === siteId ? primaryPoint.record : data.stations.find(item => item.id === siteId)) ?? data.stations[0];
   const active = site.windows.find(item => item.id === windowId) ?? site.windows[0];
-  const peer = data.stations.find(item => item.id === comparisonId && item.id !== site.id);
+  const peer = comparisonId === site.id ? undefined
+    : comparisonPoint.record?.id === comparisonId ? comparisonPoint.record
+    : data.stations.find(item => item.id === comparisonId);
   const peerWindow = peer?.windows.find(item => item.id === active.id);
   const comparable = peerWindow && peerWindow.valid_years.join() === active.valid_years.join();
   const trend = active.trend;
@@ -123,8 +194,15 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
   const cell = site.native_cell;
   const matched = data.stations.filter(item => item.native_cell !== null).length;
   const returned = site.provenance.returned_coordinates;
-  const candidate = site.candidate_native_cells[0];
+
   const coordinate = (lat: number, lon: number) => `${Math.abs(lat).toFixed(3)}° ${lat < 0 ? "S" : "N"} · ${Math.abs(lon).toFixed(3)}° ${lon < 0 ? "W" : "E"}`;
+  const gridLabel = cell ? coordinate(cell.latitude, cell.longitude)
+    : site.candidate_native_cells.map(([lat, lon]) => coordinate(lat, lon)).join(" / ");
+  const gridDetail = cell ? gridLabel : gridLabel && worldwide ? gridLabel + " (inferred)" : "No unique match";
+  const comparisonShared = peer?.calendar && site.calendar
+    && site.calendar.temperature_c.every((value, index) => value === peer.calendar?.temperature_c[index]);
+  const recordMethods = site.live ? { ...data.methods,
+    grid_check: "Candidate MERRA-2 native centers are inferred from nominal grid spacing. This request has no regional grid match." } : data.methods;
   const featured = [
     { id: "oslo", peer: "karachi", title: "How do Oslo and Karachi compare?", window: "1981-2025" },
     { id: "nairobi", peer: "sao-paulo", title: "How do two tropical grid cells compare?", window: "1981-2025" },
@@ -132,28 +210,45 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
   ];
 
   function selectSite(id: string) {
+    primaryPoint.cancel();
     setSiteId(id);
-    if (id === comparisonId) setComparisonId("");
+    setComparisonId(previous => previous === id ? "" : previous);
+  }
+
+  function selectComparison(id: string) {
+    comparisonPoint.cancel();
+    setComparisonId(id);
+  }
+
+  function powerPicker(secondary = false) {
+    const point = secondary ? comparisonPoint : primaryPoint;
+    return <PowerPointPicker secondary={secondary} stations={secondary ? data.stations.filter(item => item.id !== site.id) : data.stations}
+      value={secondary ? peer?.id ?? "" : site.id} status={point.status}
+      select={secondary ? selectComparison : selectSite}
+      choose={selection => point.load(selection, secondary ? setComparisonId : id => {
+        setSiteId(id);
+        setComparisonId(previous => previous === id ? "" : previous);
+      })} />;
   }
 
   function loadKarachiCase(id: "1981-2025" | "2001-2025") {
     setMode("local");
-    setSiteId("karachi");
+    selectSite("karachi");
     setWindowId(id);
-    setComparisonId("");
+    selectComparison("");
     setMethod("hac");
     setWindowCheck(true);
     setIntervalCheck(true);
   }
 
   function exportVerdict() {
-    downloadEvidence("power-verdict-" + site.id + "-" + active.id + ".json", {
-      schema_version: 1, dataset: data.dataset, source: site.provenance,
+    downloadEvidence("power-verdict-" + site.id.replace(/[:,]/g, "-") + "-" + active.id + ".json", {
+      schema_version: 1, dataset: data.dataset, source: site.provenance, record_type: site.live ? "on-demand" : "archived",
       location: { name: site.location.city, requested_coordinates: { latitude: site.latitude, longitude: site.longitude },
         native_cell: site.native_cell, candidate_native_cells: site.candidate_native_cells },
       measurement_units: "°C", slope_units: "°C per decade", source_period: data.requested_years,
       analysis_period: { start: active.start, end: active.end, valid_years: active.valid_years },
-      estimated_slope: rate, method: data.methods, verdict,
+      estimated_slope: rate, method: recordMethods, verdict,
       checks: { windows: windowCheck, nominal_intervals: intervalCheck },
       uncertainty: intervalCheck ? {
         level: "nominal 95%", selected_display_method: method, conventional: trend.conventional, hac: trend.hac,
@@ -170,15 +265,15 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
   function exportResult() {
     const exported = {
       schema_version: data.schema_version, region: data.region,
-      dataset: data.dataset, methods: data.methods, limitations: data.limitations,
+      dataset: data.dataset, methods: recordMethods, limitations: data.limitations,
       site, active_window: active, selected_uncertainty_method: method,
       comparison: comparable ? { site: peer, window: peerWindow } : null,
-      grid_verification: data.grid_verification,
+      grid_verification: site.live ? null : data.grid_verification,
     };
     const url = URL.createObjectURL(new Blob([JSON.stringify(exported, null, 2) + "\n"], { type: "application/json" }));
     const download = document.createElement("a");
     download.href = url;
-    download.download = `${site.id}-t2m-${active.id}.json`;
+    download.download = site.id.replace(/[:,]/g, "-") + "-t2m-" + active.id + ".json";
     download.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
@@ -196,7 +291,7 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
           <a href={destinationHref(route.page,"gistemp",route.view)} aria-current={route.dataset==="gistemp" ? "page" : undefined}>Global · GISTEMP</a>
           <a href={destinationHref(route.page,"power",route.view)} aria-current={route.dataset==="power" ? "page" : undefined}>Local · POWER</a>
         </nav>
-        <p>{route.dataset==="gistemp" ? "Surface temperature anomalies on NASA’s 2° grid." : "Near-surface air temperature at 31 sampled reanalysis locations. Explore and Evidence remember each dataset’s selection separately."}</p>
+        <p>{route.dataset==="gistemp" ? "Surface temperature anomalies on NASA’s 2° grid." : "Gridded 2-meter air temperature. Search a place, enter coordinates, or choose an archived sample."}</p>
       </div>}
       {route?.page === "evidence" && <nav className="workspace-tabs" aria-label="Evidence views">{evidenceViews.map(([view,label]) =>
         <a href={destinationHref("evidence",route.dataset,view)} key={view} aria-current={route.view===view ? "page" : undefined}>
@@ -209,7 +304,9 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
           <button type="button" aria-pressed={mode === "local"} onClick={() => setMode("local")}>Local Investigations · POWER</button>
         </div>}
         {!route && worldwide && mode === "scan" ? <WorldScan /> : <div className="regional-grid">
-          {worldwide ? <WorldMap stations={data.stations} selected={site.id} select={selectSite} /> : <figure className="panel geo-panel">
+          {worldwide ? <WorldMap stations={data.stations} selected={site.id} select={selectSite} liveSite={site.live ? site : undefined}>
+            {route && powerPicker()}
+          </WorldMap> : <figure className="panel geo-panel">
             <figcaption><strong>Sampling points in Sindh</strong><span>1981–2025 linear slope</span></figcaption>
             <SitePlot stations={data.stations} selected={site.id} select={selectSite} />
             <div className="geo-legend" aria-label="Slope legend in degrees Celsius per decade">
@@ -224,30 +321,34 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
             <p className="eyebrow">Selected location</p>
             <h3>{site.location.city}</h3>
             {site.country && <p className="atlas-country">{site.country} · {site.continent}</p>}
+            {route && <p className="location-note">{site.live ? "On-demand NASA record" : "Archived NASA sample"}</p>}
             <p className="location-coordinate">{coordinate(site.latitude, site.longitude)}</p>
             {route && <div className="scan-result"><strong>{signed(rate)}</strong><span>°C per decade</span><p>{period(active.start, active.end)} · estimated temperature trend</p></div>}
             <dl className="selected-meta">
               <div><dt>Full record</dt><dd>{site.completeness.complete_calendar_years} complete years</dd></div>
-              {worldwide && <div><dt>Native grid</dt><dd>{cell ? coordinate(cell.latitude, cell.longitude) : candidate ? coordinate(candidate[0], candidate[1]) + " (inferred)" : "Unavailable"}</dd></div>}
+              {worldwide && <div><dt>Native grid</dt><dd>{gridDetail}</dd></div>}
               <div><dt>Full-record slope</dt><dd>{signed(site.windows[0].trend.slope_c_per_decade)} °C/decade</dd></div>
               <div><dt>Source</dt><dd>NASA POWER</dd></div>
             </dl>
             {site.shared_sample_flags.length > 0 && <p className="location-note">This site has a possible shared sample. See the source record.</p>}
-            <label className="select-label">Compare with
+            {route ? <details className="power-comparison">
+              <summary>{peer ? "Compare with " + peer.location.city : "Compare with a second point"}</summary>
+              {powerPicker(true)}
+            </details> : <label className="select-label">Compare with
               <select value={comparisonId} onChange={event => setComparisonId(event.target.value)}>
                 <option value="">Choose a second location</option>
                 {data.stations.filter(item => item.id !== site.id).map(item => (
                   <option key={item.id} value={item.id}>{item.location.city}</option>
                 ))}
               </select>
-            </label>
+            </label>}
             {worldwide && <a className="workspace-primary atlas-lab-link" href="#stress-test">Investigate evidence ↗</a>}
           </aside>
         </div>}
       </section>
 
       {localLab && <section id="stress-test" className="stress-section" aria-label="Local Evidence Lab">
-        {!route && <div className="section-heading"><h2 id="stress-heading">{worldwide ? "Local Evidence Lab · POWER" : "Evidence Stress Test"}</h2><p>Change the period or the uncertainty method for {site.location.city}.{worldwide && " This lab uses 31 precomputed NASA POWER locations."}</p></div>}
+        {!route && <div className="section-heading"><h2 id="stress-heading">{worldwide ? "Local Evidence Lab · POWER" : "Evidence Stress Test"}</h2><p>Change the period or the uncertainty method for {site.location.city}.{worldwide && " Archived NASA POWER locations are available here."}</p></div>}
         {!route && worldwide && <p className="global-lab-jump"><a className="secondary-action" href="#global-evidence" onClick={() => setMode("scan")}>Compare any two cells in the Global Evidence Lab ↗</a></p>}
         {!route && <div className="panel verdict-setup">
           <div><p className="eyebrow">NASA POWER · MERRA-2</p><h3>Investigate a trend</h3>
@@ -258,10 +359,9 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
         </div>
         }
         {route && <div className="workspace-lab-context panel">
-          <div><p className="eyebrow">NASA POWER · Near-surface air temperature</p><h2>{site.location.city}</h2><p>{coordinate(site.latitude, site.longitude)} · MERRA-2 reanalysis</p></div>
-          <label>Location<select value={site.id} onChange={event => selectSite(event.target.value)}>{data.stations.map(item =>
-            <option key={item.id} value={item.id}>{item.location.city}</option>)}</select></label>
-          <label>Analysis period<select value={active.id} onChange={event => setWindowId(event.target.value)}>{site.windows.map(item =>
+          <div><p className="eyebrow">NASA POWER · Near-surface air temperature</p><h2>{site.location.city}</h2><p>{coordinate(site.latitude, site.longitude)} · {site.live ? "On-demand" : "Archived"} MERRA-2 record</p></div>
+          {powerPicker()}
+          <label className="power-period">Analysis period<select value={active.id} onChange={event => setWindowId(event.target.value)}>{site.windows.map(item =>
             <option key={item.id} value={item.id}>{period(item.start,item.end)}</option>)}</select></label>
         </div>}
         {(!route || ["uncertainty","sensitivity","verdict"].includes(localView)) && <div className="panel controls">
@@ -306,12 +406,17 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
             <p className="slope" data-testid="slope">{signed(rate)}</p>
             <p className="slope-unit">°C per decade</p>
             <dl className="selected-meta active-meta">
+              <div><dt>Uncertainty method</dt><dd>{methods.find(item => item.id === method)?.label}</dd></div>
               <div><dt>Complete years</dt><dd>{active.valid_years.length}</dd></div>
               <div><dt>Nominal 95% interval</dt><dd data-testid="active-ci">{interval(estimate.confidence_interval)}</dd></div>
               <div><dt>Two-sided p-value</dt><dd data-testid="active-p">{pValue(estimate.p_value)}</dd></div>
             </dl>
             <p className="active-conclusion">{zeroIncluded === null ? "Interval unavailable." : zeroIncluded ? "The selected interval includes zero." : "The selected interval excludes zero."}</p>
-          {route && <a className="workspace-primary" href="#local-calculations">Compare uncertainty ↗</a>}
+            {route && <a className="workspace-primary" href="#local-calculations">Compare uncertainty ↗</a>}
+            {route && <details className="power-comparison">
+              <summary>{peer ? "Compare with " + peer.location.city : "Compare with a second point"}</summary>
+              {powerPicker(true)}
+            </details>}
           </aside>
         </div>}
 
@@ -338,6 +443,7 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
           {peer && (!route || localView === "uncertainty") && (
             <div className="peer-summary">
               <h4>{site.location.city} and {peer.location.city}</h4>
+              {comparisonShared && <p>These locations have identical rounded monthly series and may sample the same native grid cell.</p>}
               {comparable && peerWindow ? (
                 <p>{peer.location.city} has a fitted slope of <strong>{signed(peerWindow.trend.slope_c_per_decade)} °C/decade</strong> on the same {active.valid_years.length} complete years. {methods.find(item => item.id === method)?.label} nominal 95% interval {interval(peerWindow.trend[method].confidence_interval)} °C/decade. The comparison is descriptive. Nearby or distant samples may share reanalysis errors. No slope-difference test is shown.</p>
               ) : <p>The sites’ fits use different or insufficient complete years for this window. The chart shows their annual means for context.</p>}
@@ -349,7 +455,7 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
 
       {route?.page === "cases" && <CaseWorkspace key={route.view} chosen={route.view} sites={data.stations} step={caseSteps[route.view] ?? 0}
         setStep={step => setCaseSteps(previous => ({ ...previous, [route.view]: step }))}
-        open={(id, peerId) => { setSiteId(id); setWindowId("1981-2025"); setComparisonId(peerId); }} openKarachi={loadKarachiCase} />}
+        open={(id, peerId) => { selectSite(id); setWindowId("1981-2025"); selectComparison(peerId); }} openKarachi={loadKarachiCase} />}
       {worldwide && !route && <section id="featured" className="regional-section">
         <div className="section-heading"><h2>Featured investigations</h2><a href="/sindh">Open the eight-location Sindh case study ↗</a></div>
         <article className="panel verdict-report guided-case" id="karachi-case">
@@ -389,15 +495,17 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
               <div><dt>Resolution</dt><dd>{data.dataset.spatial_resolution} · monthly</dd></div>
               <div><dt>NASA coverage</dt><dd>{site.provenance.header.start} – {site.provenance.header.end}</dd></div>
               <div><dt>Returned point</dt><dd>{coordinate(returned[1], returned[0])}</dd></div>
-              <div><dt>Native cell</dt><dd>{cell ? coordinate(cell.latitude, cell.longitude) : worldwide && candidate ? coordinate(candidate[0], candidate[1]) + " (inferred)" : "No unique 2023 match"}</dd></div>
+              <div><dt>Native cell</dt><dd>{gridDetail}</dd></div>
               <div><dt>Valid months</dt><dd>{site.completeness.valid_months} / {site.completeness.requested_months}</dd></div>
               <div><dt>Retrieved (UTC)</dt><dd>{site.provenance.retrieved_at_utc.slice(0, 10)}</dd></div>
+              <div><dt>Response SHA-256</dt><dd className="source-checksum">{site.provenance.sha256}</dd></div>
             </dl>
-            <p>{matched} of {data.stations.length} sites matched a unique 2023 native cell by monthly values. {worldwide && "Other atlas locations show nearest grid centers inferred from coordinates."} {data.duplicate_pairs.length} pairs flagged by the duplicate screen.</p>
+            {site.live ? <p>This point was retrieved on demand. Its candidate native grid centers are inferred from the nominal spacing.</p>
+              : <p>{matched} of {data.stations.length} archived sites matched a unique 2023 native cell by monthly values. {worldwide && "Other archived locations show inferred grid centers."} {data.duplicate_pairs.length} pairs flagged by the duplicate screen.</p>}
             <div className="source-links">
               <a href={site.provenance.source_url}>Original NASA response ↗</a>
               <a href={site.provenance.documentation_url}>POWER methods ↗</a>
-              <a href={data.grid_verification.source_url}>Native-grid check ↗</a>
+              {!site.live && <a href={data.grid_verification.source_url}>Native-grid check ↗</a>}
               {site.coordinate_source?.startsWith("https://") && <a href={site.coordinate_source}>PMD reference coordinates ↗</a>}
             </div>
             <details className="annual-details"><summary>Annual temperature values</summary>
@@ -426,7 +534,7 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
         {(!route || route.view === "calibration") && <CalibrationAudit />}
         {(!route || route.view === "giovanni") && <GiovanniEvidence />}
         {route?.view === "reproduce" && <article className="panel source-detail">
-          <h3>Reproduce from the original records</h3><p>Scientific data, code and receipt checksums are archived in the project repository. The evidence downloads include selected periods, estimates, and their limits.</p>
+          <h3>Reproduce from the original records</h3><p>The repository contains archived NASA inputs, receipt checksums, generated results, and analysis code. On-demand POWER exports record the request URL, retrieval time, and response checksum alongside the selected fit.</p>
           <div className="source-links"><a href="https://github.com/harisawan27/verdict-earth/blob/master/submission/SCIENTIFIC_METHODOLOGY.md">Full scientific methodology ↗</a><a href="/evidence-verification.v1.json" download>Calibration and case verification JSON ↓</a></div>
         </article>}
         {route && ["methods","limits"].includes(route.view) && <p className="workspace-legacy"><a href="https://github.com/harisawan27/verdict-earth/blob/master/submission/SCIENTIFIC_METHODOLOGY.md">Full methodology and reproducibility notes ↗</a></p>}

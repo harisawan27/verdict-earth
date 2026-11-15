@@ -21,7 +21,10 @@ export function placeDetail(context: PlaceContext) {
   return [...new Set([region, broaderArea, context.country[3]].filter(Boolean))].join(" · ");
 }
 
-export function PlaceSearch({ geo, failed, choose }: { geo: Geography | null; failed: boolean; choose: (place: Place) => void }) {
+export function PlaceSearch({ geo, failed, choose, label = "Find a place",
+  unavailableText = "Place search unavailable. You can still use the map or coordinates." }: {
+  geo: Geography | null; failed: boolean; choose: (place: Place) => void; label?: string; unavailableText?: string;
+}) {
   const resultsId = useId();
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
@@ -35,7 +38,7 @@ export function PlaceSearch({ geo, failed, choose }: { geo: Geography | null; fa
   return <div className="scan-search" onBlur={event => {
     if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false);
   }}>
-    <label htmlFor={resultsId + "-input"}>Find a place</label>
+    <label htmlFor={resultsId + "-input"}>{label}</label>
     <input id={resultsId + "-input"} type="search" autoComplete="off" role="combobox" aria-autocomplete="list"
       aria-expanded={results.length > 0} aria-controls={resultsId}
       aria-activedescendant={results[active] ? resultsId + "-" + results[active].id : undefined}
@@ -61,7 +64,7 @@ export function PlaceSearch({ geo, failed, choose }: { geo: Geography | null; fa
       </li>)}
     </ul>
     {open && query.trim() && !results.length && <p className="scan-search-status" role="status">
-      {failed ? "Place search unavailable. You can still use the map or coordinates." : geo ? "No matching place in Natural Earth." : "Loading places…"}
+      {failed ? unavailableText : geo ? "No matching place in Natural Earth." : "Loading places…"}
     </p>}
   </div>;
 }

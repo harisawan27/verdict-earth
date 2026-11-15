@@ -13,7 +13,7 @@ const navigation = [
   { id: "cases", title: "Case Studies", short: "Cases", icon: BookOpen },
   { id: "methods", title: "Methods & Sources", short: "Methods", icon: FlaskConical },
 ] as const;
-const entryText = ["Search the map and inspect a NASA grid cell.", "Change the period and test the evidence.", "Follow the verified Karachi comparison."];
+const entryText = ["Inspect a GISTEMP cell or request a POWER temperature record.", "Change the period and test the evidence.", "See how a shorter period changes the Karachi verdict."];
 
 export function Workspace({ children, counts }: { children: ReactNode; counts: { cells: number; sites: number; period: string } }) {
   const [route, setRoute] = useState(initialRoute);
@@ -53,7 +53,7 @@ export function Workspace({ children, counts }: { children: ReactNode; counts: {
       <a className="skip-link" href="#workspace-content" onClick={event => { event.preventDefault(); main.current?.focus(); }}>Skip to workspace</a>
       <aside className="workspace-sidebar" aria-label="Sidebar">
         <a className="workspace-brand" href="#overview" aria-label="Verdict Earth overview"><Globe2 aria-hidden="true" />
-          <span><strong>VERDICT EARTH</strong><small>Earth Intelligence</small></span>
+          <span><strong>VERDICT EARTH</strong><small>NASA temperature evidence</small></span>
         </a>
         <nav aria-label="Primary navigation">
           {navigation.map(({id,title,short,icon: Icon}) => <a href={destinationHref(id,route.dataset)} key={id}
@@ -90,15 +90,15 @@ export function Workspace({ children, counts }: { children: ReactNode; counts: {
           {route.page === "overview" && <div className="mission-overview">
             <section className="mission-hero" aria-labelledby="mission-title">
               <div className="mission-globe" aria-hidden="true" />
-              <div className="mission-copy"><p className="eyebrow">Earth intelligence workspace</p>
+              <div className="mission-copy"><p className="eyebrow">NASA Space Apps Challenge 2026</p>
                 <h2 id="mission-title">Don’t just detect a trend.<br/><span>Test whether it survives scrutiny.</span></h2>
-                <p>Explore NASA Earth data, investigate temperature change, and examine the evidence behind each conclusion.</p>
+                <p>Map surface temperature anomalies, investigate local air temperature, and see how the choice of period and method changes the evidence.</p>
                 <div className="mission-actions"><a className="workspace-primary" href={destinationHref("explore",route.dataset)}>Explore Earth <ArrowRight aria-hidden="true"/></a>
                   <a className="workspace-secondary" href={destinationHref("evidence",route.dataset)}>Try an investigation</a></div>
               </div>
             </section>
-            <dl className="mission-data"><div><dt>GISTEMP grid cells</dt><dd>{counts.cells.toLocaleString("en-US")}</dd></div><div><dt>POWER investigations</dt><dd>{counts.sites}</dd></div>
-              <div><dt>Analyzed years</dt><dd>{counts.period}</dd></div><div><dt>NASA data sources</dt><dd><a href="#methods/sources">GISTEMP · POWER · Giovanni</a></dd></div></dl>
+            <dl className="mission-data"><div><dt>GISTEMP grid cells</dt><dd>{counts.cells.toLocaleString("en-US")}</dd></div><div><dt>Archived POWER samples</dt><dd>{counts.sites}</dd></div>
+              <div><dt>Analysis period</dt><dd>{counts.period}</dd></div><div><dt>NASA data sources</dt><dd><a href="#methods/sources">GISTEMP · POWER · Giovanni</a></dd></div></dl>
             <div className="mission-entry">{(["explore","evidence","cases"] as Destination[]).map((page,i) => {
               const Icon = navigation.find(item => item.id === page)!.icon;
               return <a className="panel" key={page} href={destinationHref(page,route.dataset,page === "cases" ? "karachi" : undefined)}>
@@ -106,7 +106,6 @@ export function Workspace({ children, counts }: { children: ReactNode; counts: {
               </a>;
             })}</div>
             <div className="mission-case"><p className="eyebrow">Guided case · Karachi</p><a href="#cases/karachi">Can nearly identical warming rates lead to different statistical interpretations? <ArrowRight aria-hidden="true"/></a></div>
-            <p className="mission-steps">Choose a place <ArrowRight aria-hidden="true"/> Examine the evidence <ArrowRight aria-hidden="true"/> Test the conclusion</p>
           </div>}
           {children}
         </main>
