@@ -1,0 +1,15 @@
+Verdict Earth
+Copyright 2026 Haris Awan
+
+The original Verdict Earth source code is licensed under the Apache License,
+Version 2.0. See LICENSE.
+
+Temperature inputs are credited to the NASA Langley Research Center POWER
+Project, NASA GMAO MERRA-2, NASA GISS GISTEMP v4 (including NOAA ERSSTv5), and
+NASA GES DISC Giovanni. Geographic references include Natural Earth data,
+land outlines from World Atlas, GeoNames reference coordinates, and reference
+coordinates from the Pakistan Meteorological Department.
+
+Datasets, geographic references, and third-party dependencies retain their
+respective terms and attribution requirements. See submission/DATA_SOURCES.md
+for data credits and provenance.
