@@ -21,10 +21,10 @@ const [firstYear, lastYear] = period;
 const totalYears = lastYear - firstYear + 1;
 const colors = [
   { edge: -0.4, fill: "#3f72a7", label: "≤ −0.4" },
-  { edge: -0.1, fill: "#699bb8", label: "−0.4 to −0.1" },
-  { edge: 0.1, fill: "#354752", label: "−0.1 to +0.1" },
-  { edge: 0.4, fill: "#a3825b", label: "+0.1 to +0.4" },
-  { edge: 0.7, fill: "#c28155", label: "+0.4 to +0.7" },
+  { edge: -0.1, fill: "#699bb8", label: "> −0.4 to −0.1" },
+  { edge: 0.1, fill: "#354752", label: "> −0.1 to +0.1" },
+  { edge: 0.4, fill: "#a3825b", label: "> +0.1 to +0.4" },
+  { edge: 0.7, fill: "#c28155", label: "> +0.4 to +0.7" },
   { edge: Infinity, fill: "#d56859", label: "> +0.7" },
 ];
 const maxZoom = 32;
@@ -533,7 +533,7 @@ export function WorldScan() {
   return <div className={(route ? "workspace-world " : "") + (expanded ? "scan-layout scan-expanded" : "scan-layout")}>
     <div className="workspace-map-area" hidden={!showMap}>
     <figure ref={mapPanel} className="panel scan-map">
-      <figcaption><div><h3>Global surface temperature trends</h3><p>NASA GISTEMP v4 LOTI · {firstYear}–{lastYear}</p></div><span>{manifest.valid_cells.toLocaleString("en-US")} analyzed cells</span></figcaption>
+      <figcaption><div><h3>Global surface temperature trends</h3><p>NASA GISTEMP v4 LOTI · {firstYear}–{lastYear}</p></div><span>{manifest.valid_cells.toLocaleString("en-US")} cells with mapped slopes</span></figcaption>
       <PlaceSearch geo={geo} failed={geoFailed} choose={choosePlace} />
       <div className="scan-viewport">
         <canvas aria-label="World Scan grid. Select a cell with the pointer or move the selection with the arrow keys." tabIndex={0}
@@ -585,7 +585,7 @@ export function WorldScan() {
         setDetailError(false);
         setPinError(false);
         setRetry(retry + 1);
-      }}>Retry loading NASA data</button>}
+      }}>Retry loading map data</button>}
     </figure>
     <aside className="panel location-card scan-cell" aria-labelledby="scan-cell-title" data-expanded={inspectorOpen}>
       {route && <button className="inspector-toggle" type="button" aria-expanded={inspectorOpen} aria-controls="inspector-extra inspector-data"
@@ -596,7 +596,7 @@ export function WorldScan() {
       <div className="scan-result" aria-live="polite">
         <strong data-testid="scan-slope">{rate === null ? "Unavailable" : signed(rate)}</strong>
         {rate !== null && <span>°C per decade</span>}
-        <p>{firstYear}–{lastYear} · GISTEMP grid-cell trend</p>
+        <p>{firstYear}–{lastYear} · mapped GISTEMP grid-cell trend</p>
       </div>
       <div className="inspector-extra" id="inspector-extra">{complete > 1 && <svg className="scan-sparkline" viewBox="0 0 248 52" role="img" aria-label="Selected cell annual temperature anomaly history">
         <path d="M0 51H248" stroke="#46596a" />
@@ -618,15 +618,15 @@ export function WorldScan() {
         <div><dt>Complete years</dt><dd>{record ? complete + " / " + totalYears : "—"}</dd></div>
       </dl>
       <p className="scan-cell-status" role="status">{record ? rate === null ? `A slope requires at least ${manifest.minimum_complete_years} complete years.` : "OLS fit on complete calendar years." : detailError ? "Cell details did not load." : "Loading cell history…"}</p>
-      <button className="secondary-action" type="button" disabled={!record} onClick={download}>Download cell data ↓</button>
+      <button className="secondary-action" type="button" disabled={!record} onClick={download}>Download {firstYear}–{lastYear} cell data ↓</button>
       </details>
     </aside>
     </div>
     {lab && <div className="workspace-lab-context panel">
-      <div><p className="eyebrow">NASA GISTEMP · Surface temperature anomalies</p><h2>{selected.title}</h2><p>{caption} · 2° smoothed grid · 1951–1980 reference</p></div>
-      <label>Analysis period<select value={analysisWindow} onChange={event => setAnalysisWindow(Number(event.target.value))}>
+      <div><p className="eyebrow">NASA GISTEMP · Surface temperature anomalies</p><h2>{selected.title}</h2><p>{caption} · {step}° grid · {manifest.baseline.join("–")} anomaly baseline</p></div>
+      {route.view !== "comparison" && <label>Analysis period<select value={analysisWindow} onChange={event => setAnalysisWindow(Number(event.target.value))}>
         {fits.map((fit, index) => <option key={fit.start+"-"+fit.end} value={index}>{fit.start}–{fit.end}</option>)}
-      </select></label>
+      </select></label>}
       <a href="#explore/gistemp" className="workspace-secondary">Change place</a>
     </div>}
     {(!route || (lab && (route.view === "sensitivity" || route.view === "verdict"))) && <GlobalStress name={selected.title} coordinates={{ latitude, longitude }} point={selection.point}
@@ -635,10 +635,11 @@ export function WorldScan() {
     <GlobalEvidence visible={showComparison} first={pin && { title: pin.title, center: pin.center, record: pinDetail?.pin === pin ? pinDetail.record : null }}
       second={selected} sameCell={sameCell} waiting={!!pin && !sameCell && !pinError && !detailError && (!record || pinDetail?.pin !== pin)}
       error={!!pin && (pinError || detailError)} ready={!!geo}
+      windowIndex={analysisWindow} setWindowIndex={setAnalysisWindow}
       chooseFirst={() => pinPoint(selection.point, selected.title)} clear={() => { setPin(null); setPinDetail(null); setPinError(false); }} examples={loadExample} />
     {showChart && <div className="workspace-trend-grid"><figure id="scan-series" className="panel chart-panel scan-series">
       <figcaption className="panel-title"><div><p className="eyebrow muted">GISTEMP v4 LOTI · {caption}</p><h3>Annual surface temperature anomalies</h3></div><span className="unit-label">°C</span></figcaption>
-      <p>Relative to the NASA 1951–1980 baseline. Each annual mean uses 12 months weighted by calendar days.</p>
+      <p>Relative to NASA’s {manifest.baseline.join("–")} baseline. Each annual anomaly requires 12 valid months weighted by calendar days.</p>
       {complete > 0 ? <TemperatureChart points={chart} window={currentFit} anomaly /> : <p className="scan-no-series">{record ? "This cell has no complete calendar years in the analysis period." : "Annual series pending."}</p>}
       {complete > 0 && <div className="legend"><span><i className="legend-line" />Annual anomaly</span>{currentFit.slope !== null && <span><i className="legend-line legend-fit" />{currentFit.start}–{currentFit.end} fit</span>}</div>}
     </figure>
@@ -646,13 +647,13 @@ export function WorldScan() {
       <p className="eyebrow">Estimated temperature trend</p>
       <p className="slope">{!record ? detailError ? "Unavailable" : "Loading…" : currentFit.slope === null ? "Unavailable" : signed(currentFit.slope)}</p>
       <p>°C per decade · {shownPeriod}</p>
-      <p>{currentFit.years.length} complete years · {currentFit.minimum} required</p>
+      {record && <p>{currentFit.years.length} complete years · {currentFit.minimum} required</p>}
       <a className="workspace-primary" href="#global-stress">Test window sensitivity ↗</a>
     </aside>}
     </div>}
     {lab && route.view === "uncertainty" && <article className="panel verdict-report">
       <p className="eyebrow">GISTEMP · Evidence limits</p><h3>Statistical strength not assessed</h3>
-      <p>World Scan provides descriptive fits for smoothed 2° grid cells. A calibrated cell-level confidence interval or significance test is unavailable.</p>
+      <p>World Scan provides descriptive fits for smoothed 2° grid cells. The app reports no cell-level confidence interval or significance test.</p>
       <p>You can test whether the fitted direction changes across time windows.</p>
       <a className="workspace-secondary" href="#global-stress">Inspect window sensitivity ↗</a>
     </article>}

@@ -4,14 +4,14 @@
 
 NASA Space Apps Challenge 2026 · Be An Earth System Trend Detective! · Sahiwal Virtual, Pakistan
 
-Verdict Earth is a temperature-trend investigation tool. It maps NASA GISTEMP v4 surface temperature anomalies, fits local air temperature records from NASA POWER, and shows how conclusions depend on the period and the evidence available. Its main analysis period is **1981–2025**.
+Verdict Earth is a temperature-trend investigation tool. It maps NASA GISTEMP v4 surface temperature anomalies, fits local air temperature records from NASA POWER, and shows how conclusions depend on the period and the evidence available. Its default analysis period is **1981–2025**. POWER supports worldwide point lookup by place name or coordinates, subject to NASA response availability and record completeness.
 
 [Open Verdict Earth](https://verdict-earth.vercel.app/) · [GitHub repository](https://github.com/harisawan27/verdict-earth) · [Submission checklist](submission/SUBMISSION_CHECKLIST.md) · [Demo script](submission/DEMO_SCRIPT.md)
 
 ## A three-minute walkthrough
 
 1. **Explore a global pattern.** Open **Explore Earth → Global · GISTEMP** and search for a place or pick a grid cell. The place marker and the center of the smoothed 2° cell are separate. Pin a second cell to compare annual anomalies and fitted rates on common years.
-2. **Investigate a local record.** Switch to **Local · POWER** and search for **Istanbul**. Choose the result to request NASA’s monthly 2-meter air temperatures. Coordinates work for points outside the place index. To work offline, use an archived sample such as **Karachi**. Add a second point to overlay annual temperatures.
+2. **Investigate a local record.** Switch to **Local · POWER** and search for **Istanbul**. Choose the result to request NASA’s monthly 2-meter air temperatures. Use latitude and longitude for a point outside the Natural Earth place index. To work without contacting NASA, choose an archived sample such as **Karachi**. Add a second point to overlay annual temperatures.
 3. **Change the evidence.** Open **Evidence Lab** and switch between **1981–2025** and **2001–2025**. Read the slope under **Trend**, compare conventional and Newey–West intervals under **Uncertainty**, and inspect the fitted rates under **Sensitivity**. The **Anomalies** view compares each month with that location’s 1991–2020 normal for the same month.
 4. **Trace the verdict.** Open **Case Studies → Karachi** for a reproducible example. The two periods give similar warming estimates (+0.114 and +0.116 °C per decade, rounded), while the recent interval interpretation depends on the uncertainty method. Open **Methods & Sources** for input URLs, receipts and the coverage audit. Use the export action in **Verdict** to take the selected results with you.
 
@@ -19,15 +19,15 @@ Verdict Earth is a temperature-trend investigation tool. It maps NASA GISTEMP v4
 
 | Workspace | NASA input | What the app reports |
 | --- | --- | --- |
-| Global · GISTEMP | GISTEMP v4 LOTI surface temperature anomalies relative to 1951–1980 on a smoothed 2° grid | Descriptive fits in °C per decade across 15,875 analyzed cells for 1981–2025. Compare any two available cells over shared years. Cell-level significance is unavailable. |
-| Local · POWER | MERRA-2 gridded 2-meter air temperature in °C, generally 0.5° latitude × 0.625° longitude | Day-weighted annual means, OLS slopes, nominal conventional and HAC intervals, monthly anomalies and comparisons. The app ships 31 archived samples across six continents and requests additional points on demand. |
-| Case Studies · Karachi | A NASA GES DISC Giovanni MERRA-2 export and NASA POWER for the same matched native cell | A 540-month comparison of two processing paths from the same underlying reanalysis. The case also links the four-window POWER analysis and the regional baseline. |
+| Global · GISTEMP | GISTEMP v4 LOTI surface temperature anomalies relative to 1951–1980 on a smoothed 2° grid | Descriptive fits in °C per decade for 15,875 of 16,200 grid cells over 1981–2025. Mapped cells have at least 40 complete years. For a two-cell comparison, both fits use the same complete years when at least 80% of the selected period is shared. |
+| Local · POWER | MERRA-2 gridded 2-meter air temperature in °C on the native 0.5° latitude × 0.625° longitude grid | Day-weighted annual means, OLS slopes, nominal conventional and HAC intervals, monthly anomalies and comparisons. Request historical series worldwide by place or coordinates. Archived map samples provide a fallback. |
+| Methods & Sources · Giovanni | A NASA GES DISC Giovanni export and NASA POWER at the same matched MERRA-2 cell near Karachi | A consistency check using 540 matched months and 45 shared complete years. The guided Karachi case separately compares two POWER fits. |
 
 [Official NASA Space Apps challenge](https://www.spaceappschallenge.org/2026/challenges/earth-system-trend-detective/) · [NASA GISTEMP downloads](https://data.giss.nasa.gov/gistemp/data_v4.html) · [NASA POWER monthly API](https://power.larc.nasa.gov/docs/services/api/temporal/monthly/)
 
 ## Run locally
 
-Use Node.js 22 or newer and Python 3.11–3.13. With the checked-in result, the app only needs Node.js:
+Use Node.js 22.18 or newer for the app and JavaScript tests. Python 3.11–3.13 is for scientific tests and snapshot regeneration.
 
 ```sh
 npm ci
@@ -54,7 +54,7 @@ Run `node --test tests/*.test.mjs` and `npm run typecheck` to check the TypeScri
 
 ## Release and submission
 
-The repository is [public on GitHub](https://github.com/harisawan27/verdict-earth). The existing production domain is [verdict-earth.vercel.app](https://verdict-earth.vercel.app/). Check that the deployed release displays the worldwide atlas and the Karachi Giovanni comparison. The [submission checklist](submission/SUBMISSION_CHECKLIST.md) covers Vercel import, public-link verification, and the NASA project form. The [demo script](submission/DEMO_SCRIPT.md) includes a 30-second storyboard. For a local production preview use `npm run build` followed by `npm run start`. Archived results and exports require no NASA sign-in. The deployed version determines whether on-demand POWER lookup is available.
+The repository is [public on GitHub](https://github.com/harisawan27/verdict-earth). The existing production domain is [verdict-earth.vercel.app](https://verdict-earth.vercel.app/). Check that the deployed release displays the worldwide atlas and the Karachi Giovanni comparison. The [submission checklist](submission/SUBMISSION_CHECKLIST.md) covers Vercel import, public-link verification, and the NASA project form. The [demo script](submission/DEMO_SCRIPT.md) includes a 29-second storyboard. For a local production preview use `npm run build` followed by `npm run start`. Archived results, on-demand POWER lookup, and app exports require no NASA sign-in. A fresh Giovanni export requires an Earthdata sign-in.
 
 ## Data and provenance
 
@@ -70,9 +70,9 @@ If the point service becomes unavailable, the [NASA POWER archive on AWS](https:
 
 ## How on-demand POWER works
 
-- Search uses the bundled Natural Earth gazetteer. Country and regional results provide reference coordinates. Use the latitude and longitude fields to choose any valid geographic point. The server rounds request coordinates to four decimal places. NASA reports returned coordinates separately, typically to three decimal places.
+- Search uses a bundled Natural Earth index of named places, including cities, regions, countries and marine areas. Country and regional results use representative points. Coordinates support geographic points outside the index. The server rounds request coordinates to four decimal places. NASA reports returned coordinates separately, typically to three decimal places.
 - The server requests monthly `T2M` from NASA POWER for 1981–2025 and validates the response type, returned point, NASA source, unit and coverage before fitting. A record needs at least five complete years. A missing or partial month excludes that calendar year, and a window with fewer than five complete years is omitted. A monthly anomaly requires all 30 values for that calendar month in 1991–2020.
-- A timeout, upstream error, or unusable record shows a message. Previously loaded results and the archived samples stay available. The response checksum identifies the NASA bytes used for that analysis. Live requests record the URL, retrieval time, coverage, unit, returned point and checksum in the export. Upstream revisions can change the data returned later.
+- A timeout, upstream error, or unusable record shows a message. Previously loaded results and the archived samples stay available. The response checksum identifies the NASA bytes used for that analysis. On-demand exports record the URL, retrieval time, coverage, unit, returned point and checksum. Upstream revisions can change the data returned later.
 - The app infers candidate native grid centers for on-demand points from nominal grid spacing. Two nearby coordinates can sample the same grid cell. Annual overlays show both series. The app reports matched-window slopes together only when their valid-year lists agree, and it provides no test of the difference.
 
 ### Repository structure
@@ -133,11 +133,11 @@ This compares two products derived from MERRA-2. Spatial sampling, time basis, m
 
 ## Attribution and AI use
 
-NASA Langley Research Center POWER Project and NASA GMAO MERRA-2 provide the temperature inputs. NASA GES DISC operates Giovanni. Pakistan Meteorological Department supplies regional location references. OpenAI Codex assisted with implementation, testing, and documentation. All production temperature values are traceable to the recorded NASA responses. Synthetic data appear only in automated tests.
+NASA Langley Research Center POWER Project and NASA GMAO MERRA-2 provide the temperature inputs. NASA GES DISC operates Giovanni. Pakistan Meteorological Department supplies regional location references. OpenAI Codex assisted with implementation, testing, and documentation. Temperature values trace to NASA responses. Synthetic series are used in tests and in the separately labeled interval coverage audit.
 
 ## Application workspace
 
-Open Overview, Explore Earth, Evidence Lab, Case Studies, or Methods & Sources from the workspace navigation. The evidence tabs use shareable URLs, for example `#evidence/gistemp/sensitivity` and `#evidence/power/verdict`. The older section links, `/sindh`, and `/karachi-baseline` still work. Global and local analyses retain their own places and periods while you move through the app.
+Open Overview, Explore Earth, Evidence Lab, Case Studies, or Methods & Sources from the workspace navigation. The evidence tabs use shareable URLs, for example `#evidence/gistemp/sensitivity` and `#evidence/power/verdict`. The older section links, `/sindh`, and `/karachi-baseline` still work. Each dataset retains its own selected point and period during navigation.
 
 ## Guided scientific verdicts
 
@@ -149,11 +149,11 @@ This repository currently has no project-wide software license grant. Dependenci
 
 ### Archived POWER atlas
 
-The world artifact is `data/results/world-t2m.v1.json`. Run `python -m science.world --offline` to rebuild from verified local snapshots or omit `--offline` to fetch missing snapshots. The archive contains 31 NASA POWER grid-point records for January 1981 to December 2025, all complete. Coordinates were cross-checked with the [GeoNames populated-place dataset](https://download.geonames.org/export/dump/) except the original Karachi reference. The map uses land outlines derived from [Natural Earth via world-atlas 2.0.2](https://github.com/topojson/world-atlas). Only markers encode trends. Karachi has a verified native cell. Other worldwide grid centers are inferred from the nominal grid spacing. Monthly anomalies use the same month’s complete 1991–2020 average at the same grid cell.
+The world artifact is `data/results/world-t2m.v1.json`. Run `python -m science.world --offline` to rebuild from verified local snapshots or omit `--offline` to fetch missing snapshots. The versioned archive contains 31 reproducible fallback records across six continents. All have 540 valid monthly means from January 1981 through December 2025. Coordinates were cross-checked with the [GeoNames populated-place dataset](https://download.geonames.org/export/dump/) except the original Karachi reference. The map uses land outlines derived from [Natural Earth via world-atlas 2.0.2](https://github.com/topojson/world-atlas). Only markers encode trends. Karachi has a verified native cell. The other archived centers and on-demand candidates are inferred from nominal grid spacing. Monthly anomalies use the same month’s complete 1991–2020 average at the same grid cell.
 
 ### World Scan
 
-Run `python -m science.gistemp` to regenerate the offline map and cell records. The pipeline validates the archived NetCDF and NASA global table against their retrieval receipts. See [GISTEMP source and methods](submission/SCIENTIFIC_METHODOLOGY.md#world-scan--nasa-gistemp-v4).
+World Scan’s versioned snapshot uses NASA’s 1951–1980 anomaly baseline. Of the 15,875 cells meeting the 40-year threshold, 15,809 have all 45 complete years. The remaining 325 of the 16,200 total cells have no mapped slope. Shorter single-cell fits require at least 80% complete years, rounded up. Run `python -m science.gistemp` to regenerate the map and its cell records. The pipeline validates the archived NetCDF and NASA global table against their retrieval receipts. See [GISTEMP source and methods](submission/SCIENTIFIC_METHODOLOGY.md#world-scan--nasa-gistemp-v4).
 
 ### World Scan geography
 

@@ -6,11 +6,11 @@ import { interval, signed } from "./stress-format";
 import { TemperatureChart } from "./temperature-chart";
 
 type CaseSite = { id: string; location: {city: string}; annual_series: {year: number; temperature_c: number | null}[];
-  windows: {id:string; trend:{slope_c_per_decade:number}}[] };
+  windows: {id:string; start:number; end:number; valid_years:number[]; trend:{slope_c_per_decade:number}}[] };
 const stories = [
   {id:"karachi", peer:"", title:"Can nearly identical warming rates lead to different statistical interpretations?", question:"Compare two periods in the same Karachi reanalysis cell.", icon:ChartNoAxesCombined},
   {id:"oslo", peer:"karachi", title:"How do the Oslo and Karachi trends compare?", question:"Compare a northern European cell with a cell on Pakistan’s coast.", icon:GitCompareArrows},
-  {id:"nairobi", peer:"sao-paulo", title:"How do two tropical grid cells compare?", question:"Examine the same years in Nairobi and São Paulo.", icon:BookOpen},
+  {id:"nairobi", peer:"sao-paulo", title:"How do Nairobi and São Paulo compare?", question:"Examine the same years in Nairobi and São Paulo.", icon:BookOpen},
 ];
 const steps = ["Question", "Observations", "Checks", "Finding"];
 
@@ -38,21 +38,24 @@ export function CaseWorkspace({ chosen, sites, open, openKarachi, step, setStep 
   const points = focal.annual_series.map(point => ({ ...point, fitted_c: null,
     comparison_c: peer?.annual_series.find(row => row.year === point.year)?.temperature_c ?? null }));
   const isKarachi = current.id === "karachi";
+  const focalWindow = focal.windows[0];
+  const peerWindow = peer?.windows.find(window => window.id === focalWindow.id);
+  const sharedPeriod = focalWindow.start + "–" + focalWindow.end;
   return <article className="panel case-guide" aria-label="Guided case">
     <div className="case-guide-top"><a className="workspace-secondary" href="#cases"><ArrowLeft aria-hidden="true"/> Exit case</a><span>NASA POWER · {focal.location.city}{peer && " and " + peer.location.city}</span></div>
     <ol className="case-steps">{steps.map((label,index)=><li key={label} aria-current={step===index ? "step" : undefined}>{label}</li>)}</ol>
     <div className="case-step" aria-live="polite">
       {step === 0 && <><h2>{current.title}</h2><p>{current.question} {isKarachi ? "First inspect the annual record, then compare what two uncertainty methods say about zero." : "Ask how the two fitted rates differ and what comparison can establish."}</p></>}
-      {step === 1 && <><h2>Inspect the annual temperatures</h2><p>{isKarachi ? "The same archived POWER record supplies 45 complete years. Each annual mean is calendar-day weighted." : "The chart uses near-surface air temperature from the same POWER analysis period."}</p><TemperatureChart points={points} primaryName={focal.location.city} comparisonName={peer?.location.city}/></>}
+      {step === 1 && <><h2>Inspect the annual temperatures</h2><p>{isKarachi ? "The archived POWER record supplies " + full.complete_years + " complete years. Each annual mean is weighted by the number of days in each month." : "The chart shows annual mean 2-meter air temperature from the two POWER grid cells."}</p><TemperatureChart points={points} primaryName={focal.location.city} comparisonName={peer?.location.city}/></>}
       {step === 2 && <><h2>{isKarachi ? "Change the period. Compare the intervals." : "Compare the same years."}</h2>
         {isKarachi ? <><div className="table-wrap"><table><thead><tr><th scope="col">Period</th><th scope="col">Slope (°C/decade)</th><th scope="col">Nominal 95% OLS interval</th><th scope="col">Nominal 95% HAC interval</th></tr></thead>
           <tbody>{[full,recent].map(row=><tr key={row.start}><th scope="row">{row.start}–{row.end}</th><td>{signed(row.slope_c_per_decade)}</td><td>{interval(row.nominal_intervals.conventional)}</td><td>{interval(row.nominal_intervals.hac)}</td></tr>)}</tbody></table></div>
           <div className="mission-actions"><a className="workspace-secondary" href="#local-verdict" onClick={()=>openKarachi("1981-2025")}>Inspect 1981–2025 verdict</a><a className="workspace-primary" href="#local-verdict" onClick={()=>openKarachi("2001-2025")}>Inspect 2001–2025 verdict</a></div></>
-          : <><p>{focal.location.city} {signed(focal.windows[0].trend.slope_c_per_decade)} °C per decade{peer && " · " + peer.location.city + " " + signed(peer.windows[0].trend.slope_c_per_decade) + " °C per decade"}, 1981–2025.</p><a className="workspace-primary" href="#stress-test" onClick={()=>open(current.id,current.peer)}>Inspect both series ↗</a></>}
+          : <><p>{focal.location.city} {signed(focalWindow.trend.slope_c_per_decade)} °C per decade{peer && peerWindow && " · " + peer.location.city + " " + signed(peerWindow.trend.slope_c_per_decade) + " °C per decade"}, {sharedPeriod}.</p><a className="workspace-primary" href="#stress-test" onClick={()=>open(current.id,current.peer)}>Inspect both series ↗</a></>}
       </>}
       {step === 3 && <><h2>{isKarachi ? "The fitted rates are similar. The interpretation changes." : "The fitted rates describe these sampled cells."}</h2>
         <p>{isKarachi ? "Both long-window intervals exclude zero. The recent-window conventional interval includes zero and the HAC interval excludes it. The intervals are nominal and their coverage depends on the error process." : "The comparison uses the same calendar years and is descriptive. Neighboring or distant samples may share reanalysis errors. The app does not test a difference between the slopes."}</p>
-        {isKarachi ? <p>Exploratory example independently checked from the archived monthly NASA response. <a href="/evidence-verification.v1.json">Verification record ↗</a> · <a href="#calibration-audit">Calibration audit ↗</a></p> : <a href="#methods/limits">Scientific limitations ↗</a>}
+        {isKarachi ? <p>Exploratory example independently checked from the archived monthly NASA response. <a href="/evidence-verification.v1.json">Verification record ↗</a> · <a href="#calibration-audit">Calibration audit ↗</a> · <a href="#methods/giovanni">Giovanni consistency check ↗</a></p> : <a href="#methods/limits">Scientific limitations ↗</a>}
       </>}
     </div>
     <div className="case-guide-bottom"><button className="workspace-secondary" type="button" disabled={step===0} onClick={()=>setStep(step-1)}>Previous</button>

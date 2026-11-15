@@ -78,11 +78,11 @@ export default function Home() {
           <div className="hero-copy">
             <p className="eyebrow"><span className="status-dot" />NASA Space Apps Challenge 2026</p>
             <h1 id="location-title">{location.city}<span>.</span></h1>
-            <p className="subtitle">How has Karachi’s air temperature changed?</p>
+            <p className="subtitle">How has estimated 2-meter air temperature changed at this grid cell near Karachi?</p>
             <p className="mission">Don’t just detect a trend. Test whether it survives scrutiny.</p>
           </div>
           <dl className="location-meta">
-            <div><dt>Location</dt><dd>{location.country} <span>{location.latitude.toFixed(1)}° N · {location.longitude.toFixed(1)}° E</span></dd></div>
+            <div><dt>Requested POWER point</dt><dd>{location.country} <span>{location.latitude.toFixed(1)}° N · {location.longitude.toFixed(1)}° E</span></dd></div>
             <div><dt>Period analyzed</dt><dd>{period} <span>{result.valid_annual_observations} complete years</span></dd></div>
           </dl>
         </section>
@@ -141,7 +141,7 @@ export default function Home() {
             <p>{provenance.attribution} T2M represents {dataset.description} in a gridded reanalysis.</p>
             <ul>
               <li>Annual means weight each valid monthly mean by its calendar days. Each year requires all 12 months.</li>
-              <li>Ordinary least squares fits temperature against calendar time. Both two-sided tests use a Student t reference.</li>
+              <li>Ordinary least squares fits temperature against calendar time. The two-sided tests use a Student t reference, with an approximate reference for the HAC estimate.</li>
               <li>Newey–West uses Bartlett weights, {trend.hac.max_lag_years} annual lags and a finite-sample covariance correction.</li>
             </ul>
             <h3>Limits of the comparison</h3>

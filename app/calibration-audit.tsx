@@ -13,17 +13,18 @@ const percent = (n: number) => (100 * n).toFixed(1) + "%";
 
 export function CalibrationAudit() {
   const examples = audit.rows.filter(row => row.years === 25 && ["iid", "ar1:.6", "ar2"].includes(row.process));
+  const trials = audit.rows[0].hac.trials.toLocaleString("en-US");
   return <section className="panel verdict-report audit-panel" id="calibration-audit" aria-labelledby="calibration-title">
     <p className="eyebrow">Uncertainty audit</p>
     <h3 id="calibration-title">How often do the intervals cover the true trend?</h3>
-    <p>We simulated known zero trends and measured empirical coverage in {audit.rows.length} independent validation scenarios, with 5,000 runs per scenario. The alternative widened the HAC interval using a cutoff set on separate simulations. It failed the 93% minimum-coverage screen, so its intervals are excluded from the investigation.</p>
+    <p>The true slope was zero in every simulation. The audit tested {audit.validation_processes.length} error processes at {audit.lengths.length} record lengths, for {audit.rows.length} validation combinations and {trials} runs per combination. The candidate used cutoffs estimated from separate simulations. It failed the 93% minimum-coverage screen and is excluded from trend reports.</p>
     <div className="table-wrap"><table aria-label="Selected 25-year simulation results">
       <thead><tr><th scope="col">25-year error process</th><th scope="col">Conventional</th><th scope="col">Nominal HAC</th><th scope="col">Calibrated candidate</th></tr></thead>
       <tbody>{examples.map(row => <tr key={row.process}><th scope="row">{labels[row.process]}</th>
         <td>{percent(row.conventional.fraction)}</td><td>{percent(row.hac.fraction)}</td><td>{percent(row.calibrated_hac.fraction)}</td></tr>)}</tbody>
     </table></div>
     <details><summary>All scenarios and Monte Carlo uncertainty</summary>
-      <p>The diagnostics include 25, 35, 45 and 100 years, separate calibration and validation seeds, and scenarios absent from cutoff calibration. Brackets show 95% Wilson intervals for simulated HAC coverage, rather than uncertainty on NASA trends.</p>
+      <p>Record lengths were {audit.lengths.slice(0, -1).join(", ")} and {audit.lengths.at(-1)} years. Calibration and validation used separate seeds. Validation included error processes absent from calibration. Brackets show 95% Wilson intervals for the simulated HAC coverage rate.</p>
       <div className="table-wrap"><table>
         <thead><tr><th scope="col">Years</th><th scope="col">Error process</th><th scope="col">Conventional</th><th scope="col">HAC [Wilson]</th><th scope="col">Candidate</th></tr></thead>
         <tbody>{audit.rows.map(row => <tr key={row.years + row.process}><td>{row.years}</td><th scope="row">{labels[row.process]}</th>

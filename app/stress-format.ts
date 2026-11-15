@@ -32,6 +32,6 @@ export function compareIntervals(conventional: Estimate, hac: Estimate) {
     return "At least one uncertainty estimate is unavailable.";
   }
   if (conventionalZero && hacZero) return "Both nominal 95% intervals include zero.";
-  if (conventionalZero !== hacZero) return "Only one 95% interval includes zero. The uncertainty conclusion depends on the method.";
+  if (conventionalZero !== hacZero) return "Only one nominal 95% interval includes zero. The uncertainty conclusion depends on the method.";
   return "Both nominal 95% intervals exclude zero for the fitted slope.";
 }

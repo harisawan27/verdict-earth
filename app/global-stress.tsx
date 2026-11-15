@@ -8,9 +8,9 @@ import type { Fit } from "./verdict";
 import { VerdictReport, downloadEvidence } from "./verdict-report";
 
 const limits = [
-  "NASA blends land air and sea surface temperature into a smoothed anomaly field. The grid spacing is 2° and the spatial smoothing scale is 1,200 km.",
+  "GISTEMP combines land-surface air and sea-surface temperatures in a smoothed anomaly field. Grid spacing is " + manifest.resolution_degrees + "° and the smoothing scale is " + manifest.smoothing_km.toLocaleString("en-US") + " km.",
   "Nearby cells share information. These grid estimates do not resolve individual weather stations or neighborhoods.",
-  "Fits describe the selected years. No calibrated confidence interval, significance test, or attribution is established here.",
+  "Fits describe the selected years. The app reports no cell-level confidence interval, significance test, or attribution.",
 ];
 
 export function GlobalStress({ name, coordinates, point, fit, fits, active, setActive, annual, available, failed, checks, setChecks, view }: {
@@ -40,7 +40,7 @@ export function GlobalStress({ name, coordinates, point, fit, fits, active, setA
     variable: "Land-ocean surface temperature anomaly", measurement_units: "°C",
     slope_units: "°C per decade", baseline: manifest.baseline, spatial_resolution_degrees: manifest.resolution_degrees,
     smoothing_km: manifest.smoothing_km, requested_point: { longitude: point[0], latitude: point[1] },
-    grid_cell: coordinates, source_period: manifest.period, analysis_window: fit,
+    grid_cell: coordinates, source_period: manifest.period, source_coverage_months: manifest.metadata.source_coverage, analysis_window: fit,
     method: manifest.trend_method, comparison_windows: checks ? fits : null,
     uncertainty: { assessed: false, reason: limits[2] }, verdict, limitations: limits,
     annual_anomalies: annual.map((anomaly_c, index) => ({year: manifest.period[0] + index, anomaly_c})),
@@ -62,7 +62,7 @@ export function GlobalStress({ name, coordinates, point, fit, fits, active, setA
         calculations={checks ? "#global-window-results" : "#scan-series"} calculationLabel={checks ? "Inspect calculated windows" : "Inspect the annual series and fit"}
         download={() => downloadEvidence(`gistemp-verdict-${coordinates.latitude}-${coordinates.longitude}-${fit.start}-${fit.end}.json`, report)}
         items={[
-          { heading: "Data", detail: <>NASA GISTEMP v4 LOTI temperature anomalies (°C), relative to 1951–1980. <a href={manifest.source.url}>Original NASA NetCDF ↗</a></> },
+          { heading: "Data", detail: <>NASA GISTEMP v4 LOTI temperature anomalies (°C), relative to {manifest.baseline.join("–")}. <a href={manifest.source.url}>Original NASA NetCDF ↗</a></> },
           { heading: "Estimate", detail: <>{fit.slope === null ? "Trend unavailable" : signed(fit.slope) + " °C per decade"} · {fit.start}–{fit.end} · {complete}/{fit.end - fit.start + 1} complete years ({fit.minimum} required)</> },
           { heading: "Assumptions", detail: "Ordinary least squares with an intercept and the actual spacing between complete calendar years. Each annual anomaly uses month-length weights." },
           { heading: "Sensitivity", detail: checks && range.length ? `${supported.length} of ${fits.length} windows supported · slopes ${signed(Math.min(...range))} to ${signed(Math.max(...range))} °C/decade` : checks ? "No window meets the completeness threshold." : "Window sensitivity check is off." },

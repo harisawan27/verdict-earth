@@ -25,11 +25,12 @@ const color = (slope: number) => bands.find(band => slope <= band.ceiling)?.colo
 const size = { width: 960, height: 386 };
 const folded = (value: string) => value.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
 
-export function WorldMap({ stations, selected, select, liveSite, children }: {
+export function WorldMap({ stations, selected, select, liveSite, period, children }: {
   stations: MapSite[];
   selected: string;
   select: (id: string) => void;
   liveSite?: MapSite;
+  period: string;
   children?: ReactNode;
 }) {
   const [continent, setContinent] = useState("");
@@ -64,21 +65,22 @@ export function WorldMap({ stations, selected, select, liveSite, children }: {
 
   return (
     <figure className="panel atlas-map">
-      <figcaption><div><h3>NASA POWER temperature atlas</h3><span>Grid-point estimates · 1981–2025 slopes</span></div><span>{eligible.length} of {stations.length} archived samples</span></figcaption>
+      <figcaption><div><h3>NASA POWER temperature atlas</h3><span>MERRA-2 grid-point trends · {period}</span></div></figcaption>
       {children && <div className="atlas-power-search">{children}</div>}
       <details className="atlas-archive-filters" open={!children || undefined}>
-        <summary>Filter archived map samples</summary>
+        <summary>Browse archived map samples</summary>
       <div className="atlas-filters">
-        <label>Search locations<input type="search" placeholder="City or country" value={search} onChange={event => setSearch(event.target.value)} /></label>
+        <label>Filter archived samples<input type="search" placeholder="City or country" value={search} onChange={event => setSearch(event.target.value)} /></label>
         <label>Continent<select value={continent} onChange={event => setContinent(event.target.value)}>
           <option value="">All continents</option>{continents.map(value => <option key={value}>{value}</option>)}
         </select></label>
-        <label>Location<select value={eligible.some(site => site.id === selected) ? selected : ""} onChange={event => select(event.target.value)}>
-          <option value="" disabled>{eligible.length ? "Select a location" : "No locations found"}</option>
+        <label>Archived sample<select value={eligible.some(site => site.id === selected) ? selected : ""} onChange={event => select(event.target.value)}>
+          <option value="" disabled>{eligible.length ? "Select an archive point" : "No archive points match"}</option>
           {eligible.map(site => <option value={site.id} key={site.id}>{site.location.city}, {site.country}</option>)}
         </select></label>
       </div>
       </details>
+      <p className="atlas-polar-note">Markers show archived samples and the selected on-demand point within the map bounds.</p>
       <div className="atlas-viewport">
         <svg aria-label="World map of sampled NASA POWER grid points" viewBox={`${offset.x} ${offset.y} ${width} ${height}`}
           className={zoom > 1 ? "can-pan" : ""}
@@ -116,7 +118,7 @@ export function WorldMap({ stations, selected, select, liveSite, children }: {
           <button type="button" disabled={zoom <= 1} onClick={() => scale(1)}>Reset</button>
         </div>
       </div>
-      {liveSite && !markers.includes(liveSite) && <p className="atlas-polar-note">The selected point is outside this map’s latitude bounds. Its record is available in Evidence Lab.</p>}
+      {liveSite && !markers.includes(liveSite) && <p className="atlas-polar-note">The selected point is outside the map’s latitude bounds. Its NASA POWER record is available in Evidence Lab.</p>}
       <div className="geo-legend atlas-legend" aria-label="Slope legend in degrees Celsius per decade">
         {bands.map(band => <span key={band.label}><i style={{ background: band.color }} />{band.label}</span>)}
         <span>°C/decade</span>

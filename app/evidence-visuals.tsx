@@ -58,7 +58,7 @@ export function AnomalyCalendar({ calendar, city }: { calendar: Calendar; city: 
     <figcaption className="panel-title">
       <div><p className="eyebrow muted">{city} · NASA POWER</p><h3>Monthly temperature anomalies</h3></div><span className="unit-label">°C</span>
     </figcaption>
-    <p>Each month is compared with the {calendar.baseline_years.join("–")} mean for that same month at this grid cell.</p>
+    <p>Each month is compared with the {calendar.baseline_years.join("–")} mean for that same month at this grid cell. The reference mean requires a valid value for that month in every baseline year.</p>
     <div className="anomaly-key">
       {[-3, -1.5, 0, 1.5, 3, null].map(value => <span key={String(value)}><i style={{ background: anomalyColor(value) }} />{value === null ? "Missing" : value === -3 ? "≤ −3" : value === 3 ? "≥ +3" : signed(value, 1)}</span>)}
     </div>

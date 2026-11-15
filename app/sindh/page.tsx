@@ -20,9 +20,9 @@ export default function Home() {
       <main className="shell" id="top" tabIndex={-1}>
         <section className="regional-hero">
           <p className="eyebrow"><span className="status-dot" />NASA Space Apps Challenge 2026</p>
-          <h1>Temperature trends<br className="hero-break" /> across Sindh<span>.</span></h1>
+          <h1>Air temperature trends<br className="hero-break" /> at Sindh sample points<span>.</span></h1>
           <p className="hero-mission">Don’t just detect a trend. Test whether it survives scrutiny.</p>
-          <div className="hero-facts"><span>Pakistan</span><span>{data.stations.length} locations</span><span>1981–2025</span><span>NASA POWER · MERRA-2</span></div>
+          <div className="hero-facts"><span>Pakistan</span><span>{data.stations.length} sampled grid points</span><span>{data.requested_years.start}–{data.requested_years.end}</span><span>NASA POWER · MERRA-2</span></div>
           <p className="hero-question">How much does a reported trend change when you test a different time window or uncertainty method?</p>
           <div className="hero-actions">
             <a className="primary-action" href="#region">Explore sampling locations <span aria-hidden="true">　↓</span></a>

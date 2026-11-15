@@ -4,7 +4,7 @@ import { Investigation } from "./investigation";
 import { Workspace } from "./workspace";
 
 export default function Home() {
-  return <Workspace counts={{ cells: scan.valid_cells, sites: data.stations.length, period: scan.period.join("–") }}>
+  return <Workspace counts={{ cells: scan.valid_cells, period: scan.period.join("–") }}>
     <Investigation data={data} worldwide />
   </Workspace>;
 }

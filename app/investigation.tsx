@@ -96,6 +96,7 @@ function SitePlot({ stations, selected, select }: { stations: Station[]; selecte
   );
 }
 
+const nasaDate = (date: string) => [date.slice(0, 4), date.slice(4, 6), date.slice(6, 8)].join("-");
 const period = (start: number, end: number) => `${start}–${end}`;
 const quietRequest = { pending: false, message: "" };
 
@@ -192,10 +193,11 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
     comparison_c: peer?.annual_series.find(item => item.year === point.year)?.temperature_c ?? null,
   }));
   const cell = site.native_cell;
-  const matched = data.stations.filter(item => item.native_cell !== null).length;
+  const requestedPeriod = period(data.requested_years.start, data.requested_years.end);
   const returned = site.provenance.returned_coordinates;
 
-  const coordinate = (lat: number, lon: number) => `${Math.abs(lat).toFixed(3)}° ${lat < 0 ? "S" : "N"} · ${Math.abs(lon).toFixed(3)}° ${lon < 0 ? "W" : "E"}`;
+  const coordinate = (lat: number, lon: number, digits = 3) => `${Math.abs(lat).toFixed(digits)}° ${lat < 0 ? "S" : "N"} · ${Math.abs(lon).toFixed(digits)}° ${lon < 0 ? "W" : "E"}`;
+  const requestedPoint = coordinate(site.latitude, site.longitude, site.live ? 4 : 3);
   const gridLabel = cell ? coordinate(cell.latitude, cell.longitude)
     : site.candidate_native_cells.map(([lat, lon]) => coordinate(lat, lon)).join(" / ");
   const gridDetail = cell ? gridLabel : gridLabel && worldwide ? gridLabel + " (inferred)" : "No unique match";
@@ -205,7 +207,7 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
     grid_check: "Candidate MERRA-2 native centers are inferred from nominal grid spacing. This request has no regional grid match." } : data.methods;
   const featured = [
     { id: "oslo", peer: "karachi", title: "How do Oslo and Karachi compare?", window: "1981-2025" },
-    { id: "nairobi", peer: "sao-paulo", title: "How do two tropical grid cells compare?", window: "1981-2025" },
+    { id: "nairobi", peer: "sao-paulo", title: "How do Nairobi and São Paulo compare?", window: "1981-2025" },
     { id: "karachi", peer: "", title: "Does the uncertainty method change the reading?", window: "2001-2025" },
   ];
 
@@ -291,7 +293,7 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
           <a href={destinationHref(route.page,"gistemp",route.view)} aria-current={route.dataset==="gistemp" ? "page" : undefined}>Global · GISTEMP</a>
           <a href={destinationHref(route.page,"power",route.view)} aria-current={route.dataset==="power" ? "page" : undefined}>Local · POWER</a>
         </nav>
-        <p>{route.dataset==="gistemp" ? "Surface temperature anomalies on NASA’s 2° grid." : "Gridded 2-meter air temperature. Search a place, enter coordinates, or choose an archived sample."}</p>
+        <p>{route.dataset==="gistemp" ? "Surface temperature anomalies on NASA’s 2° grid." : "Request historical 2-meter air temperature worldwide by place or coordinates. Results depend on NASA POWER data availability."}</p>
       </div>}
       {route?.page === "evidence" && <nav className="workspace-tabs" aria-label="Evidence views">{evidenceViews.map(([view,label]) =>
         <a href={destinationHref("evidence",route.dataset,view)} key={view} aria-current={route.view===view ? "page" : undefined}>
@@ -304,10 +306,10 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
           <button type="button" aria-pressed={mode === "local"} onClick={() => setMode("local")}>Local Investigations · POWER</button>
         </div>}
         {!route && worldwide && mode === "scan" ? <WorldScan /> : <div className="regional-grid">
-          {worldwide ? <WorldMap stations={data.stations} selected={site.id} select={selectSite} liveSite={site.live ? site : undefined}>
+          {worldwide ? <WorldMap stations={data.stations} selected={site.id} select={selectSite} liveSite={site.live ? site : undefined} period={requestedPeriod}>
             {route && powerPicker()}
           </WorldMap> : <figure className="panel geo-panel">
-            <figcaption><strong>Sampling points in Sindh</strong><span>1981–2025 linear slope</span></figcaption>
+            <figcaption><strong>Sampling points in Sindh</strong><span>{requestedPeriod} linear slopes</span></figcaption>
             <SitePlot stations={data.stations} selected={site.id} select={selectSite} />
             <div className="geo-legend" aria-label="Slope legend in degrees Celsius per decade">
               <span><i style={{ background: gridColor.cooling }} />&lt; −0.025</span>
@@ -322,12 +324,12 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
             <h3>{site.location.city}</h3>
             {site.country && <p className="atlas-country">{site.country} · {site.continent}</p>}
             {route && <p className="location-note">{site.live ? "On-demand NASA record" : "Archived NASA sample"}</p>}
-            <p className="location-coordinate">{coordinate(site.latitude, site.longitude)}</p>
+            <p className="location-coordinate">{requestedPoint}</p>
             {route && <div className="scan-result"><strong>{signed(rate)}</strong><span>°C per decade</span><p>{period(active.start, active.end)} · estimated temperature trend</p></div>}
             <dl className="selected-meta">
-              <div><dt>Full record</dt><dd>{site.completeness.complete_calendar_years} complete years</dd></div>
+              <div><dt>{requestedPeriod} coverage</dt><dd>{site.completeness.complete_calendar_years} complete years</dd></div>
               {worldwide && <div><dt>Native grid</dt><dd>{gridDetail}</dd></div>}
-              <div><dt>Full-record slope</dt><dd>{signed(site.windows[0].trend.slope_c_per_decade)} °C/decade</dd></div>
+              <div><dt>{requestedPeriod} slope</dt><dd>{signed(site.windows[0].trend.slope_c_per_decade)} °C/decade</dd></div>
               <div><dt>Source</dt><dd>NASA POWER</dd></div>
             </dl>
             {site.shared_sample_flags.length > 0 && <p className="location-note">This site has a possible shared sample. See the source record.</p>}
@@ -359,7 +361,7 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
         </div>
         }
         {route && <div className="workspace-lab-context panel">
-          <div><p className="eyebrow">NASA POWER · Near-surface air temperature</p><h2>{site.location.city}</h2><p>{coordinate(site.latitude, site.longitude)} · {site.live ? "On-demand" : "Archived"} MERRA-2 record</p></div>
+          <div><p className="eyebrow">NASA POWER · Near-surface air temperature</p><h2>{site.location.city}</h2><p>{requestedPoint} · {site.live ? "On-demand" : "Archived"} MERRA-2 record</p></div>
           {powerPicker()}
           <label className="power-period">Analysis period<select value={active.id} onChange={event => setWindowId(event.target.value)}>{site.windows.map(item =>
             <option key={item.id} value={item.id}>{period(item.start,item.end)}</option>)}</select></label>
@@ -381,12 +383,12 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
         <VerdictReport id="local-verdict" title={site.location.city} {...verdict}
           calculations="#local-calculations" calculationLabel="Inspect the regression and interval calculations"
           download={exportVerdict} items={[
-            { heading: "Data", detail: <>NASA POWER {site.provenance.header.api.version} T2M near-surface air temperature (°C), derived from MERRA-2. <a href={site.provenance.source_url}>Original NASA response ↗</a></> },
+            { heading: "Data", detail: <>NASA POWER {site.provenance.header.api.version} T2M near-surface air temperature (°C), derived from MERRA-2. <a href={site.provenance.source_url}>Open NASA POWER query ↗</a></> },
             { heading: "Estimate", detail: <>{signed(rate)} °C per decade · {period(active.start, active.end)} · {active.valid_years.length} complete years</> },
             { heading: "Assumptions", detail: intervalCheck ? "Conventional OLS uses independent, constant-variance errors. Newey–West allows short-range dependence and heteroskedasticity." : "Ordinary least squares with an intercept. Interval agreement was excluded from this verdict." },
             { heading: "Sensitivity", detail: <>{windowCheck ? "Fitted slopes across windows range from " + signed(Math.min(...rates)) + " to " + signed(Math.max(...rates)) + " °C/decade. " : "Window sensitivity check is off. "}
               {intervalCheck && compareIntervals(trend.conventional, trend.hac)}</> },
-            { heading: "Limits", detail: <>Sampled near {coordinate(site.latitude, site.longitude)}. These grid estimates cannot attribute causes or resolve neighborhood conditions. {nominalNotice} <a href="#calibration-audit">Read the audit ↗</a></> },
+            { heading: "Limits", detail: <>Requested point {requestedPoint}. These grid estimates cannot attribute causes or resolve neighborhood conditions. {nominalNotice} <a href="#calibration-audit">Read the audit ↗</a></> },
           ]} /></>}
         {(!route || localView === "trend") && <div className="analysis-grid">
           <figure className="panel chart-panel">
@@ -492,20 +494,23 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
             <h3>NASA POWER · {site.location.city}</h3>
             <p>{data.dataset.name} ({data.dataset.variable}), {data.dataset.data_type.toLowerCase()} from {data.dataset.original_product}.</p>
             <dl className="selected-meta">
-              <div><dt>Resolution</dt><dd>{data.dataset.spatial_resolution} · monthly</dd></div>
-              <div><dt>NASA coverage</dt><dd>{site.provenance.header.start} – {site.provenance.header.end}</dd></div>
+              <div><dt>Native grid spacing</dt><dd>{data.dataset.spatial_resolution}</dd></div>
+              <div><dt>NASA response dates</dt><dd>{nasaDate(site.provenance.header.start)} to {nasaDate(site.provenance.header.end)}</dd></div>
+              <div><dt>Requested point</dt><dd>{requestedPoint}</dd></div>
               <div><dt>Returned point</dt><dd>{coordinate(returned[1], returned[0])}</dd></div>
               <div><dt>Native cell</dt><dd>{gridDetail}</dd></div>
-              <div><dt>Valid months</dt><dd>{site.completeness.valid_months} / {site.completeness.requested_months}</dd></div>
-              <div><dt>Retrieved (UTC)</dt><dd>{site.provenance.retrieved_at_utc.slice(0, 10)}</dd></div>
+              <div><dt>Valid monthly means</dt><dd>{site.completeness.valid_months} of {site.completeness.requested_months} requested</dd></div>
+              <div><dt>Complete calendar years</dt><dd>{site.completeness.complete_calendar_years}</dd></div>
+              <div><dt>Retrieved (UTC)</dt><dd><time dateTime={site.provenance.retrieved_at_utc}>{site.provenance.retrieved_at_utc.slice(0, 10)}</time></dd></div>
               <div><dt>Response SHA-256</dt><dd className="source-checksum">{site.provenance.sha256}</dd></div>
             </dl>
-            {site.live ? <p>This point was retrieved on demand. Its candidate native grid centers are inferred from the nominal spacing.</p>
-              : <p>{matched} of {data.stations.length} archived sites matched a unique 2023 native cell by monthly values. {worldwide && "Other archived locations show inferred grid centers."} {data.duplicate_pairs.length} pairs flagged by the duplicate screen.</p>}
+            <p>{site.live ? "On-demand record. The native grid center is inferred from grid spacing."
+              : cell ? "Archived record. The native grid center was matched using monthly values from " + data.grid_verification.comparison_year + "."
+              : "Archived record. Candidate native grid centers are inferred from grid spacing."}</p>
             <div className="source-links">
-              <a href={site.provenance.source_url}>Original NASA response ↗</a>
+              <a href={site.provenance.source_url}>Open NASA POWER query ↗</a>
               <a href={site.provenance.documentation_url}>POWER methods ↗</a>
-              {!site.live && <a href={data.grid_verification.source_url}>Native-grid check ↗</a>}
+              {cell && <a href={data.grid_verification.source_url}>Regional grid query ↗</a>}
               {site.coordinate_source?.startsWith("https://") && <a href={site.coordinate_source}>PMD reference coordinates ↗</a>}
             </div>
             <details className="annual-details"><summary>Annual temperature values</summary>
@@ -516,25 +521,34 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
           </div>
           {route && <div className="panel source-detail">
             <h3>NASA GISTEMP v4 LOTI</h3>
-            <p>Land air and sea-surface temperature anomalies relative to 1951–1980. The original 2° grid uses 1,200 km spatial smoothing.</p>
-            <p>World Scan fits 1981–2025 and supports {scan.valid_cells.toLocaleString("en-US")} analyzed grid cells.</p>
+            <p>Land-surface air and sea-surface temperature anomalies relative to {scan.baseline.join("–")}. The {scan.resolution_degrees}° × {scan.resolution_degrees}° grid uses {scan.smoothing_km.toLocaleString("en-US")} km spatial smoothing.</p>
+            <p>For {scan.period.join("–")}, {scan.valid_cells.toLocaleString("en-US")} of {(scan.rows * scan.columns).toLocaleString("en-US")} grid cells meet the map’s minimum of {scan.minimum_complete_years} complete calendar years.</p>
             <div className="source-links"><a href={scan.source.url}>Original NASA archive ↗</a><a href="https://data.giss.nasa.gov/gistemp/data_v4.html">GISTEMP documentation ↗</a><a href="https://www.naturalearthdata.com/">Natural Earth geographic data ↗</a></div>
           </div>}</>}
-          {(!route || route.view === "methods" || route.view === "limits") && <div className="panel source-detail">
-            <h3>Methods and limitations</h3>
+          {(!route || route.view === "methods") && <div className="panel source-detail">
+            <h3>How the trends are fitted</h3>
             <ul>
-              <li>{data.methods.annual_aggregation}</li><li>{data.methods.regression}</li>
+              <li>{data.methods.annual_aggregation}</li>
+              <li>{data.methods.regression}</li>
               <li>{data.methods.conventional} {data.methods.hac}</li>
-              <li>In a seeded 100-year AR(1) simulation, the nominal 95% HAC intervals covered the true slope in 337 of 400 runs. The nominal level is a reference, and actual coverage depends on the residual process and sample length.</li>
+              {route && <li>On-demand POWER fits require at least five complete years per window.</li>}
+              {route && <li>The full-period GISTEMP fit requires {scan.minimum_complete_years} complete years. Shorter single-cell windows require at least 80% complete years. Two-cell fits require at least 80% shared complete years in any window.</li>}
+            </ul>
+            {route && <a href="#methods/calibration">See the simulated interval coverage audit ↗</a>}
+          </div>}
+          {(!route || route.view === "limits") && <div className="panel source-detail">
+            <h3>What the data can support</h3>
+            <ul>
               {data.limitations.map(item => <li key={item}>{item}</li>)}
-              {route && <li>GISTEMP trends describe a smoothed 2° cell. Nearby cells share information. The app does not establish an attribution or calibrated cell-level interval.</li>}
+              {route && <li>GISTEMP smoothing makes neighboring cells spatially dependent. The app provides descriptive slopes for these cells.</li>}
+              {route && <li>Natural Earth names locate the selected point. POWER and GISTEMP values describe grid-cell estimates.</li>}
             </ul>
           </div>}
         </div>
         {(!route || route.view === "calibration") && <CalibrationAudit />}
         {(!route || route.view === "giovanni") && <GiovanniEvidence />}
         {route?.view === "reproduce" && <article className="panel source-detail">
-          <h3>Reproduce from the original records</h3><p>The repository contains archived NASA inputs, receipt checksums, generated results, and analysis code. On-demand POWER exports record the request URL, retrieval time, and response checksum alongside the selected fit.</p>
+          <h3>Reproduce from the original records</h3><p>Archived results can be reproduced from the checked-in NASA responses, checksums, and analysis code. An on-demand POWER export records its request URL, retrieval time, and response checksum. Rerunning the request may retrieve a revised NASA record.</p>
           <div className="source-links"><a href="https://github.com/harisawan27/verdict-earth/blob/master/submission/SCIENTIFIC_METHODOLOGY.md">Full scientific methodology ↗</a><a href="/evidence-verification.v1.json" download>Calibration and case verification JSON ↓</a></div>
         </article>}
         {route && ["methods","limits"].includes(route.view) && <p className="workspace-legacy"><a href="https://github.com/harisawan27/verdict-earth/blob/master/submission/SCIENTIFIC_METHODOLOGY.md">Full methodology and reproducibility notes ↗</a></p>}

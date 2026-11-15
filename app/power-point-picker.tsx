@@ -40,7 +40,7 @@ export function PowerPointPicker({ stations, value, select, choose, status, seco
       unavailableText="Place search is unavailable. You can still enter coordinates or choose an archived sample."
       choose={place => choose({ latitude: place[6], longitude: place[5], label: searchedPlaceLabel(place) })} />
     <details className="power-picker-options">
-      <summary>{secondary ? "Other comparison options" : "Enter coordinates or choose an archived sample"}</summary>
+      <summary>{secondary ? "Enter comparison coordinates or use an archived sample" : "Enter coordinates or use an archived sample"}</summary>
       <form className="power-coordinates" onSubmit={submit}>
         <label>Latitude<input type="number" min="-90" max="90" step="any" required value={latitude}
           onChange={event => setLatitude(event.target.value)} placeholder="41.01" /></label>

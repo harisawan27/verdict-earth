@@ -13,9 +13,9 @@ const navigation = [
   { id: "cases", title: "Case Studies", short: "Cases", icon: BookOpen },
   { id: "methods", title: "Methods & Sources", short: "Methods", icon: FlaskConical },
 ] as const;
-const entryText = ["Inspect a GISTEMP cell or request a POWER temperature record.", "Change the period and test the evidence.", "See how a shorter period changes the Karachi verdict."];
+const entryText = ["Inspect a GISTEMP cell or request a POWER record by place or coordinates.", "Change the period and test the evidence.", "See how a shorter period changes the Karachi verdict."];
 
-export function Workspace({ children, counts }: { children: ReactNode; counts: { cells: number; sites: number; period: string } }) {
+export function Workspace({ children, counts }: { children: ReactNode; counts: { cells: number; period: string } }) {
   const [route, setRoute] = useState(initialRoute);
   const [compact, setCompact] = useState(false);
   const [help, setHelp] = useState(false);
@@ -83,7 +83,7 @@ export function Workspace({ children, counts }: { children: ReactNode; counts: {
         </header>
         <div id="workspace-help" className="workspace-help panel" hidden={!help} onKeyDown={event => { if (event.key === "Escape") closeHelp(); }}>
           <h2>Start an investigation</h2>
-          <ol><li>Search or select a place in Explore Earth.</li><li>Open Evidence Lab and choose a time window.</li><li>Read the verdict, inspect the sources, or export your results.</li></ol>
+          <ol><li>In Explore Earth, select a GISTEMP grid cell or request a POWER record by place or coordinates.</li><li>Open Evidence Lab and choose a time window.</li><li>Read the verdict, inspect the sources, or export your results.</li></ol>
           <button type="button" className="workspace-secondary" onClick={closeHelp}>Dismiss</button>
         </div>
         <main ref={main} tabIndex={-1} id="workspace-content" className={"workspace-content workspace-" + route.page}>
@@ -97,8 +97,8 @@ export function Workspace({ children, counts }: { children: ReactNode; counts: {
                   <a className="workspace-secondary" href={destinationHref("evidence",route.dataset)}>Try an investigation</a></div>
               </div>
             </section>
-            <dl className="mission-data"><div><dt>GISTEMP grid cells</dt><dd>{counts.cells.toLocaleString("en-US")}</dd></div><div><dt>Archived POWER samples</dt><dd>{counts.sites}</dd></div>
-              <div><dt>Analysis period</dt><dd>{counts.period}</dd></div><div><dt>NASA data sources</dt><dd><a href="#methods/sources">GISTEMP · POWER · Giovanni</a></dd></div></dl>
+            <dl className="mission-data"><div><dt>GISTEMP cells with a mapped trend</dt><dd>{counts.cells.toLocaleString("en-US")}</dd></div><div><dt>NASA POWER point coverage</dt><dd>Worldwide lookup</dd></div>
+              <div><dt>Default analysis period</dt><dd>{counts.period}</dd></div><div><dt>NASA products &amp; tools</dt><dd><a href="#methods/sources">GISTEMP · POWER · Giovanni</a></dd></div></dl>
             <div className="mission-entry">{(["explore","evidence","cases"] as Destination[]).map((page,i) => {
               const Icon = navigation.find(item => item.id === page)!.icon;
               return <a className="panel" key={page} href={destinationHref(page,route.dataset,page === "cases" ? "karachi" : undefined)}>
