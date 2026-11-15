@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import manifest from "../public/world-scan/v1/manifest.json";
 import { TemperatureChart } from "./temperature-chart";
 import { compareAnomalies, compareWindows } from "./scan-comparison";
-import { signed } from "./stress-format";
+import { SlopeComparison } from "./evidence-visuals";
 
 export type ScanRecord = [slope: number | null, intercept: number | null, annual: (number | null)[]];
 export type ComparisonPlace = { title: string; center: string; record: ScanRecord | null };
@@ -63,7 +63,7 @@ export function GlobalEvidence({ first, second, sameCell, waiting, error, ready,
           <span className={"scan-letter " + (index === 1 ? "scan-letter-b" : "")}>{index === 0 ? "A" : "B"}</span>
           <div><strong>{index === 1 && sameCell ? "Choose a second cell" : location.title}</strong>
           <p>{index === 1 && sameCell ? "Search a place or tap a different cell." : location.center}</p></div>
-          {result?.slopes && <div className="global-rate"><strong>{signed(result.slopes[index])}</strong><small>°C/decade</small></div>}
+
         </div>)}
       </div>
       <fieldset className="global-window"><legend>Comparison period</legend>
@@ -76,6 +76,8 @@ export function GlobalEvidence({ first, second, sameCell, waiting, error, ready,
         ? "The fits describe each cell. The difference between slopes has no significance test here."
         : `At least ${result.minimum} shared complete years are required for trends in this period.`}</p>}
       {visible && result && result.pairs.length > 0 && <TemperatureChart points={points} primaryName={first.title} comparisonName={second.title} anomaly />}
+      {result?.slopes && <SlopeComparison rows={[{ label: first.title, rate: result.slopes[0] }, { label: second.title, rate: result.slopes[1] }]}
+        context={result.pairs.length + " shared complete years · descriptive"} />}
       {result && result.pairs.length === 0 && <p className="global-note">The two cells have no complete years in common for this period.</p>}
     </>}
   </section>;

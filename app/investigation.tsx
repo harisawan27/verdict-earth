@@ -17,7 +17,7 @@ import scan from "../public/world-scan/v1/manifest.json";
 import dynamic from "next/dynamic";
 
 const WorldScan = dynamic(() => import("./world-scan").then(module => module.WorldScan));
-import { AnomalyCalendar, IntervalPlot } from "./evidence-visuals";
+import { AnomalyCalendar, IntervalPlot, SlopeComparison, slopeAxis } from "./evidence-visuals";
 
 type RegionalStation = (typeof region)["stations"][number];
 export type Calendar = { baseline_years: number[]; baseline_c: (number | null)[]; first_year: number; temperature_c: (number | null)[]; anomaly_c: (number | null)[] };
@@ -52,8 +52,8 @@ type Region = Omit<typeof region, "stations" | "duplicate_pairs"> & { stations: 
 type Method = "conventional" | "hac";
 
 const methods = [
-  { id: "conventional", label: "Conventional OLS" },
-  { id: "hac", label: "Newey–West HAC" },
+  { id: "conventional", label: "Conventional OLS", description: "The conventional interval assumes independent errors with constant variance." },
+  { id: "hac", label: "Newey–West HAC", description: "This interval allows for short-range dependence and changing error variance. Its Student t reference is approximate." },
 ] as const;
 const gridColor = { cooling: "#9cb9ff", small: "#a6b1b7", warming: "#71e8cb" };
 const gridBounds = { west: 66.5, east: 70.3, south: 24, north: 28 };
@@ -185,6 +185,8 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
   const nominalNotice = "Nominal intervals can under-cover in short or autocorrelated records. The stated model assumptions and the synthetic coverage audit qualify these comparisons.";
   const rates = site.windows.map(item => item.trend.slope_c_per_decade);
   const signs = new Set(rates.map(Math.sign));
+  const intervalBound = slopeAxis(site.windows.flatMap(({ trend }) => [trend.slope_c_per_decade,
+    ...(trend.conventional.confidence_interval ?? []), ...(trend.hac.confidence_interval ?? [])]));
   const zeroIncluded = includesZero(estimate.confidence_interval);
   const points = site.annual_series.map(point => ({
     ...point,
@@ -325,9 +327,9 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
             {site.country && <p className="atlas-country">{site.country} · {site.continent}</p>}
             {route && <p className="location-note">{site.live ? "On-demand NASA record" : "Archived NASA sample"}</p>}
             <p className="location-coordinate">{requestedPoint}</p>
-            {route && <div className="scan-result"><strong>{signed(rate)}</strong><span>°C per decade</span><p>{period(active.start, active.end)} · estimated temperature trend</p></div>}
+            {route && <div className="scan-result"><strong key={rate} className="data-swap">{signed(rate)}</strong><span>°C per decade</span><p key={active.id} className="data-swap">{period(active.start, active.end)} · estimated temperature trend</p></div>}
             <dl className="selected-meta">
-              <div><dt>{requestedPeriod} coverage</dt><dd>{site.completeness.complete_calendar_years} complete years</dd></div>
+              <div><dt>{requestedPeriod} coverage</dt><dd key={site.completeness.complete_calendar_years} className="data-swap">{site.completeness.complete_calendar_years} complete years</dd></div>
               {worldwide && <div><dt>Native grid</dt><dd>{gridDetail}</dd></div>}
               <div><dt>{requestedPeriod} slope</dt><dd>{signed(site.windows[0].trend.slope_c_per_decade)} °C/decade</dd></div>
               <div><dt>Source</dt><dd>NASA POWER</dd></div>
@@ -361,7 +363,7 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
         </div>
         }
         {route && <div className="workspace-lab-context panel">
-          <div><p className="eyebrow">NASA POWER · Near-surface air temperature</p><h2>{site.location.city}</h2><p>{requestedPoint} · {site.live ? "On-demand" : "Archived"} MERRA-2 record</p></div>
+          <div><p className="eyebrow">NASA POWER · Near-surface air temperature</p><h2 key={site.id} className="data-swap">{site.location.city}</h2><p>{requestedPoint} · {site.live ? "On-demand" : "Archived"} MERRA-2 record</p></div>
           {powerPicker()}
           <label className="power-period">Analysis period<select value={active.id} onChange={event => setWindowId(event.target.value)}>{site.windows.map(item =>
             <option key={item.id} value={item.id}>{period(item.start,item.end)}</option>)}</select></label>
@@ -396,20 +398,18 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
               <div><p className="eyebrow muted">{site.location.city} · NASA POWER</p><h3>Annual mean air temperature</h3></div>
               <span className="unit-label">°C</span>
             </figcaption>
-            <TemperatureChart points={points} window={active} comparisonName={peer?.location.city} />
-            <div className="legend">
-              <span><i className="legend-line" />{site.location.city}</span>
-              <span><i className="legend-line legend-fit" />Selected OLS fit</span>
-              {peer && <span><i className="legend-line legend-peer" />{peer.location.city}</span>}
-            </div>
+            <TemperatureChart points={points} window={active} primaryName={site.location.city} comparisonName={peer?.location.city} />
+            {peer && peerWindow && comparable && <SlopeComparison
+              rows={[{ label: site.location.city, rate }, { label: peer.location.city, rate: peerWindow.trend.slope_c_per_decade }]}
+              context={active.valid_years.length + " matched complete years · descriptive"} />}
           </figure>
           <aside className="panel interpretation" aria-live="polite">
-            <p className="eyebrow">Fitted slope · {period(active.start, active.end)}</p>
-            <p className="slope" data-testid="slope">{signed(rate)}</p>
+            <p className="eyebrow data-swap" key={active.id}>Fitted slope · {period(active.start, active.end)}</p>
+            <p className="slope" data-testid="slope"><span key={rate} className="data-swap">{signed(rate)}</span></p>
             <p className="slope-unit">°C per decade</p>
             <dl className="selected-meta active-meta">
               <div><dt>Uncertainty method</dt><dd>{methods.find(item => item.id === method)?.label}</dd></div>
-              <div><dt>Complete years</dt><dd>{active.valid_years.length}</dd></div>
+              <div><dt>Complete years</dt><dd key={active.valid_years.length} className="data-swap">{active.valid_years.length}</dd></div>
               <div><dt>Nominal 95% interval</dt><dd data-testid="active-ci">{interval(estimate.confidence_interval)}</dd></div>
               <div><dt>Two-sided p-value</dt><dd data-testid="active-p">{pValue(estimate.p_value)}</dd></div>
             </dl>
@@ -426,7 +426,9 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
           <h3 id="estimate-heading">{localView === "sensitivity" ? "Time-window sensitivity" : "Compare the uncertainty estimates"}</h3>
           {(!route || localView === "uncertainty") && <>
           <p>The methods use the same fitted line. Newey–West allows residuals in nearby years to be related, which can make its interval narrower or wider than the conventional interval. Both intervals and p-values are model-based. <a href="#calibration-audit">See the coverage audit ↗</a></p>
-          {worldwide && <IntervalPlot rows={methods.map(item => ({ label: item.label, rate, ci: trend[item.id].confidence_interval, selected: method === item.id }))} />}
+          {worldwide && <IntervalPlot bound={intervalBound} methods rows={methods.map(item => ({ label: item.label, rate,
+            ci: trend[item.id].confidence_interval, selected: method === item.id, description: item.description,
+            select: () => setMethod(item.id) }))} />}
           <div className="table-wrap">
             <table>
               <thead><tr><th scope="col">Method</th><th scope="col">Nominal 95% interval (°C/decade)</th><th scope="col">p-value</th></tr></thead>
@@ -441,7 +443,7 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
           </div>
           <p className="evidence-summary"><strong>{rate > 0 ? "The fitted series warms" : rate < 0 ? "The fitted series cools" : "The fitted slope is zero"} over {period(active.start, active.end)}.</strong>{" "}
             {compareIntervals(trend.conventional, trend.hac)} Across the available windows, slopes range from {signed(Math.min(...rates))} to {signed(Math.max(...rates))} °C/decade{signs.size > 1 ? " and change sign." : "."} Shorter windows typically have less power. These checks cannot attribute the change to a cause.</p></>}
-          {worldwide && (!route || localView === "sensitivity") && <div className="window-plot"><h4>Time-window sensitivity</h4><p>Each row shows the fitted slope, interval and sample size for the selected uncertainty method.</p><IntervalPlot rows={site.windows.map(item => ({label: period(item.start, item.end), rate: item.trend.slope_c_per_decade, ci: item.trend[method].confidence_interval, selected: item.id === active.id, count: item.valid_years.length, select: () => setWindowId(item.id)}))} /></div>}
+          {worldwide && (!route || localView === "sensitivity") && <div className="window-plot"><h4>Time-window sensitivity</h4><p>Each row shows the fitted slope, interval and sample size for the selected uncertainty method.</p><IntervalPlot bound={intervalBound} rows={site.windows.map(item => ({label: period(item.start, item.end), rate: item.trend.slope_c_per_decade, ci: item.trend[method].confidence_interval, selected: item.id === active.id, count: item.valid_years.length, select: () => setWindowId(item.id)}))} /></div>}
           {peer && (!route || localView === "uncertainty") && (
             <div className="peer-summary">
               <h4>{site.location.city} and {peer.location.city}</h4>
@@ -452,7 +454,7 @@ export function Investigation({ data, worldwide = false }: { data: Region; world
             </div>
           )}
         </section>}
-      {site.calendar && (!route || localView === "comparison") && <AnomalyCalendar calendar={site.calendar} city={site.location.city} />}
+      {site.calendar && (!route || localView === "comparison") && <AnomalyCalendar key={site.id} calendar={site.calendar} city={site.location.city} />}
       </section>}
 
       {route?.page === "cases" && <CaseWorkspace key={route.view} chosen={route.view} sites={data.stations} step={caseSteps[route.view] ?? 0}

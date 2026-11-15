@@ -26,7 +26,7 @@ export function VerdictReport({ id, title, label, reason, items, calculations, c
       <div><p className="eyebrow">Evidence report</p><h3 id={id + "-title"}>{title}</h3></div>
       <button className="secondary-action verdict-download" type="button" onClick={download}>Download report JSON ↓</button>
     </div>
-    <div className="verdict-result" aria-live="polite"><strong>{label}</strong><p>{reason}</p></div>
+    <div className="verdict-result" aria-live="polite"><strong key={label} className="data-swap">{label}</strong><p>{reason}</p></div>
     <dl className="verdict-fields">{items.map(({ heading, detail }) => (
       <div key={heading}><dt>{heading}</dt><dd>{detail}</dd></div>
     ))}</dl>

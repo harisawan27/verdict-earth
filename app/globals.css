@@ -718,3 +718,98 @@ button.interval-row:hover { border-color: #67cbbb; }
   .atlas-archive-filters { margin-inline:.75rem; }
   .power-picker-options summary,.atlas-archive-filters summary,.power-comparison summary { min-height:44px; padding-block:.8rem; }
 }
+
+
+/* Scientific chart motion and inspection. */
+.trend-explorer, .trend-svg { width:100%; min-width:0; }
+.trend-chart { position:relative; margin-inline:0; }
+.trend-svg { display:block; height:100%; touch-action:pan-y; cursor:crosshair; }
+.trend-svg text, .trend-svg line, .trend-svg path, .trend-svg circle { pointer-events:none; }
+.trend-axis { fill:#aec2cb; font:11px var(--mono); }
+.trend-grid-line { stroke:#364958; stroke-dasharray:2 5; }
+.trend-zero { stroke:#8296a3; stroke-dasharray:5 4; }
+.trend-crosshair { stroke:#c6d9de; stroke-width:1; stroke-dasharray:3 4; opacity:.7; }
+.trend-window { fill:#68dcc5; fill-opacity:.10; stroke:#71e8cb; stroke-opacity:.32; stroke-width:1; }
+.series-observed { --series-color:#71e8cb; }
+.series-comparison { --series-color:#ffbd88; }
+.series-fit { --series-color:#b5c5ff; }
+.trend-series-line { fill:none; stroke:var(--series-color); stroke-width:2.1; stroke-linejoin:round; stroke-linecap:round; }
+.series-comparison .trend-series-line { stroke-dasharray:2 4; }
+.trend-series-line.series-fit { stroke-width:1.8; stroke-dasharray:8 4; }
+.trend-sample { fill:var(--series-color); }
+.trend-cursor-point { fill:var(--series-color); stroke:#091822; stroke-width:1.5; }
+.trend-inspector { display:grid; grid-template-columns:minmax(0,1fr); gap:.55rem; margin:.4rem 0 .25rem; }
+.trend-scrubber { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:0 .6rem; align-items:center; }
+.trend-scrubber label, .trend-window-key { font-size:.76rem; color:#b5c8d3; }
+.trend-window-key::before { content:""; display:inline-block; width:.65rem; height:.55rem; margin-right:.25rem; border:1px solid #58ac9a; background:#224646; vertical-align:0; }
+.trend-scrubber input { grid-column:1/-1; width:100%; min-height:32px; accent-color:#71e8cb; cursor:pointer; }
+.trend-readout { display:flex; align-items:flex-start; gap:.5rem .75rem; min-width:0; min-height:48px; padding:.48rem .6rem; border:1px solid #334d60; border-radius:8px; background:#0e1d2a; }
+.trend-readout[data-hover=true], .trend-explorer:focus-within .trend-readout { border-color:#5f918f; }
+.trend-year { align-self:flex-start; color:#c8f5eb; font:700 .9rem/1.5 var(--mono); }
+.trend-readout dl { display:grid; flex:1; grid-template-columns:repeat(auto-fit,minmax(min(100%,102px),1fr)); gap:.42rem .65rem; min-width:0; margin:0; }
+.trend-readout dl > div { display:grid; gap:.06rem; min-width:0; }
+.trend-readout dt { display:flex; align-items:baseline; gap:.3rem; color:#acbecb; font-size:.7rem; line-height:1.15; overflow-wrap:anywhere; }
+.trend-readout dt i { display:inline-block; flex:none; width:.85rem; border-top:2px solid var(--series-color); }
+.trend-readout .series-comparison i { border-top-style:dotted; }
+.trend-readout .series-fit i { border-top-style:dashed; }
+.trend-readout dd { margin:0 0 0 1.15rem; color:#ecf4f8; font:600 .82rem/1.25 var(--mono); white-space:nowrap; }
+.chart-no-data, .scan-no-series { min-height:7rem; display:grid; place-content:center; color:#b5c8d3; }
+
+.interval-plot { --plot-columns:minmax(85px,1.05fr) minmax(64px,2.2fr) minmax(92px,.95fr); margin:.7rem 0; }
+.interval-caption { display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:.2rem .75rem; margin:0 0 .35rem; }
+.interval-caption strong { font-size:.84rem; }
+.interval-caption span { color:#adc0ce; font-size:.72rem; }
+.interval-row, .interval-axis { display:grid; grid-template-columns:var(--plot-columns); gap:.6rem; }
+.interval-axis { margin:0; padding:0 9px .12rem; }
+.interval-axis > div { grid-column:2; display:grid; grid-template-columns:1fr auto 1fr; align-items:center; }
+.interval-axis span:first-child { justify-self:start; }
+.interval-axis span:last-child { justify-self:end; }
+.interval-row { --interval-color:#71e8cb; min-height:42px; }
+.interval-plot[data-mode=methods] .interval-row:nth-of-type(2n+1), .slope-comparison .interval-row[data-series=comparison] { --interval-color:#ffbd88; }
+.interval-track { height:27px; overflow:hidden; }
+.interval-track::before { z-index:1; border-left-color:#a0b4c3; opacity:.85; }
+.interval-track .interval-range { height:4px; border:0; border-radius:2px; background:var(--interval-color); }
+.interval-track .interval-range::before,.interval-track .interval-range::after { position:absolute; content:""; width:2px; height:11px; top:-3.5px; background:inherit; }
+.interval-track .interval-range::before { left:0; }
+.interval-track .interval-range::after { right:0; }
+.interval-point { z-index:2; background:var(--interval-color); height:9px; width:9px; margin-left:-4.5px; border:1px solid #101e29; }
+.slope-stem { background:var(--interval-color); opacity:.7; height:3px; border-radius:2px; }
+.interval-label, .interval-value { overflow-wrap:anywhere; }
+.interval-value strong { color:#e5f5f5; }
+.interval-zero-status { color:#c8dce6 !important; }
+.interval-explanation { min-height:2.8em; margin:.4rem 0 0; color:#b9cbd7; font-size:.8rem; }
+.slope-comparison { margin-top:1rem; padding:.65rem .7rem; border:1px solid #304958; border-radius:8px; background:#0e1b27; }
+
+.calendar-readout { min-height:43px; padding:.4rem .55rem; border:1px solid #355165; border-radius:7px; background:#0e1d2a; }
+.calendar-table tr[data-selected-year=true] th { color:#c3fae6; background:#224247; border-radius:4px; }
+.calendar-table tr[data-selected-year=true] td { box-shadow:inset 0 -1px #7de4cc78; }
+.calendar-table td button:hover,.calendar-table td button:focus-visible,.calendar-table .calendar-selected button {
+  position:relative; z-index:1; outline:2px solid #e4f8f7; outline-offset:0;
+}
+:is(span,strong).data-swap { display:inline-block; }
+
+@keyframes science-trace { from { clip-path:inset(0 100% 0 0); } to { clip-path:inset(0); } }
+@keyframes science-appear { from { opacity:.55; } to { opacity:1; } }
+@keyframes science-value { from { opacity:.62; transform:translateY(2px); } to { opacity:1; transform:translateY(0); } }
+@media (prefers-reduced-motion:no-preference) {
+  .trend-reveal { animation:science-trace 420ms cubic-bezier(.21,.68,.23,1) both; }
+  .trend-fit-reveal,.trend-window { animation:science-trace 335ms cubic-bezier(.21,.68,.23,1) both; }
+  .trend-readout,.interval-row { transition:border-color 220ms ease, background-color 220ms ease; }
+  .interval-point,.interval-range,.slope-stem { transition:left 330ms ease,right 330ms ease,width 330ms ease; }
+  .calendar-table tbody,.calendar-mobile,.scan-no-series { animation:science-appear 260ms ease-out both; }
+  .workspace-content :is(.stress-evidence,.global-stress,.global-evidence:not([hidden]),.anomaly-panel,.chart-panel,.verdict-report) { animation:science-appear 230ms ease-out both; }
+  .data-swap { animation:science-value 250ms ease-out both; }
+  .workspace-tabs a[aria-current=page],.workspace-segments a[aria-current=page] { animation:science-appear 230ms ease-out both; }
+  .workspace-tabs a,.workspace-segments a,.workspace-content button { transition:background-color 220ms ease,border-color 220ms ease,color 220ms ease; }
+  .workspace-content :is(.workspace-primary,.workspace-secondary,.button-group button,.global-window button):active { transform:translateY(1px); }
+}
+@media (max-width:600px) {
+  .trend-scrubber input { min-height:44px; }
+  .trend-inspector { gap:.4rem; }
+  .trend-readout { gap:.4rem .6rem; }
+  .trend-readout dl { gap:.4rem .55rem; }
+  .interval-plot { --plot-columns:minmax(0,1fr) minmax(56px,1.45fr) minmax(0,1.05fr); }
+  .interval-row,.interval-axis { gap:.35rem; padding-inline:5px; }
+  button.interval-row { min-height:48px; }
+  .interval-value small { font-size:.64rem; }
+}

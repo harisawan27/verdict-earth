@@ -640,14 +640,14 @@ export function WorldScan() {
     {showChart && <div className="workspace-trend-grid"><figure id="scan-series" className="panel chart-panel scan-series">
       <figcaption className="panel-title"><div><p className="eyebrow muted">GISTEMP v4 LOTI · {caption}</p><h3>Annual surface temperature anomalies</h3></div><span className="unit-label">°C</span></figcaption>
       <p>Relative to NASA’s {manifest.baseline.join("–")} baseline. Each annual anomaly requires 12 valid months weighted by calendar days.</p>
-      {complete > 0 ? <TemperatureChart points={chart} window={currentFit} anomaly /> : <p className="scan-no-series">{record ? "This cell has no complete calendar years in the analysis period." : "Annual series pending."}</p>}
-      {complete > 0 && <div className="legend"><span><i className="legend-line" />Annual anomaly</span>{currentFit.slope !== null && <span><i className="legend-line legend-fit" />{currentFit.start}–{currentFit.end} fit</span>}</div>}
+      {complete > 0 ? <TemperatureChart points={chart} window={currentFit} anomaly /> : <p className="scan-no-series" role="status">{record ? "This cell has no complete calendar years in the analysis period." : detailError ? "Annual series unavailable." : "Loading the annual series…"}</p>}
+
     </figure>
     {route && <aside className="panel interpretation workspace-trend-summary">
       <p className="eyebrow">Estimated temperature trend</p>
-      <p className="slope">{!record ? detailError ? "Unavailable" : "Loading…" : currentFit.slope === null ? "Unavailable" : signed(currentFit.slope)}</p>
-      <p>°C per decade · {shownPeriod}</p>
-      {record && <p>{currentFit.years.length} complete years · {currentFit.minimum} required</p>}
+      <p className="slope"><span className="data-swap" key={currentFit.slope ?? (record ? "unavailable" : "loading")}>{!record ? detailError ? "Unavailable" : "Loading…" : currentFit.slope === null ? "Unavailable" : signed(currentFit.slope)}</span></p>
+      <p className="data-swap" key={shownPeriod}>°C per decade · {shownPeriod}</p>
+      {record && <p className="data-swap" key={currentFit.years.length + "/" + currentFit.minimum}>{currentFit.years.length} complete years · {currentFit.minimum} required</p>}
       <a className="workspace-primary" href="#global-stress">Test window sensitivity ↗</a>
     </aside>}
     </div>}

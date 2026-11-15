@@ -72,8 +72,8 @@ export function Workspace({ children, counts }: { children: ReactNode; counts: {
           <a className="mobile-brand" href="#overview" aria-label="Verdict Earth overview"><Globe2 aria-hidden="true"/></a>
           <h1>{destination.title}</h1>
           {inAnalysis && <div className="workspace-context" aria-live="polite">
-            <span className="context-dataset">{datasetName}</span><span className="context-location">{summary?.location ?? "Karachi"}</span>
-            <span className="context-period">{summary?.period ?? counts.period}</span>
+            <span className="context-dataset">{datasetName}</span><span className="context-location data-swap" key={summary?.location ?? "Karachi"}>{summary?.location ?? "Karachi"}</span>
+            <span className="context-period data-swap" key={summary?.period ?? counts.period}>{summary?.period ?? counts.period}</span>
           </div>}
           <div className="workspace-actions">
             {inAnalysis && summary?.exportAction && <button type="button" className="workspace-icon" aria-label="Export current analysis" title="Export current analysis" onClick={summary.exportAction}><ArrowDownToLine aria-hidden="true"/></button>}

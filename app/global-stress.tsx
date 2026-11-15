@@ -6,6 +6,7 @@ import { signed } from "./stress-format";
 import { assessTrend } from "./verdict";
 import type { Fit } from "./verdict";
 import { VerdictReport, downloadEvidence } from "./verdict-report";
+import { SlopeComparison } from "./evidence-visuals";
 
 const limits = [
   "GISTEMP combines land-surface air and sea-surface temperatures in a smoothed anomaly field. Grid spacing is " + manifest.resolution_degrees + "° and the smoothing scale is " + manifest.smoothing_km.toLocaleString("en-US") + " km.",
@@ -68,6 +69,9 @@ export function GlobalStress({ name, coordinates, point, fit, fits, active, setA
           { heading: "Sensitivity", detail: checks && range.length ? `${supported.length} of ${fits.length} windows supported · slopes ${signed(Math.min(...range))} to ${signed(Math.max(...range))} °C/decade` : checks ? "No window meets the completeness threshold." : "Window sensitivity check is off." },
           { heading: "Limits", detail: <>{Math.abs(coordinates.latitude)}° {coordinates.latitude < 0 ? "S" : "N"} · {Math.abs(coordinates.longitude)}° {coordinates.longitude < 0 ? "W" : "E"} grid-cell center. {limits[0]} {limits[2]}</> },
         ]} />}
+      {view !== "verdict" && supported.length > 0 && <SlopeComparison rows={supported.map(item => ({
+        label: item.start + "–" + item.end, rate: item.slope!,
+      }))} context="descriptive GISTEMP fits" paired={false} />}
       {view !== "verdict" && <div className="table-wrap" id="global-window-results"><table>
         <caption>Time-window estimates for this cell</caption>
         <thead><tr><th scope="col">Period</th><th scope="col">Complete years</th><th scope="col">Fitted slope (°C/decade)</th></tr></thead>
